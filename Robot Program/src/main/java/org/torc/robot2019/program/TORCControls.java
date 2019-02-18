@@ -13,8 +13,20 @@ public class TORCControls {
 		/**Left Drivetrain Control Axis*/
 		A_DriveLeft(1, driverController, InputType.Axis), // Left stick Y axis
 		/**Right Drivetrain Control Axis*/
-		A_DriveRight(4, driverController, InputType.Axis); // Right stick X axis
-
+        A_DriveRight(4, driverController, InputType.Axis), // Right stick X axis
+        /**Mantis-Arm Left Drivewheel*/
+        A_MantisLeft(2, driverController, InputType.Axis), // Left Trigger
+        /**Mantis-Arm Right Drivewheel*/
+        A_MantisRight(3, driverController, InputType.Axis), // Right Trigger
+        /**Mantis-Arm Pivot*/
+        A_MantisArm(1, driverController, InputType.Axis), // Left stick Y axis
+        /**Pogo-Sticks Control*/
+        A_PogoControl(5, driverController, InputType.Axis), // Right stick Y axis
+        /**Pogo Contracts Downwards Control Button*/
+        //B_PogoContract(5, driverController, InputType.Button), // Left Bumper
+        /**Pogo Extends Downwards Control Button*/
+		//B_PogoExtend(6, driverController, InputType.Button), // Right Bumper
+        ;
         private int id;
         private GenericHID controller;
         private InputType iType;

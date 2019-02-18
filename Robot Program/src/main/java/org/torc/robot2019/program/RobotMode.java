@@ -1,6 +1,9 @@
 package org.torc.robot2019.program;
 
+import com.ctre.phoenix.sensors.PigeonIMU;
+
 import org.torc.robot2019.subsystems.BasicDriveTrain;
+import org.torc.robot2019.subsystems.Climber;
 import org.torc.robot2019.tools.Pneumatics;
 import org.torc.robot2019.vision.VisionManager;
 
@@ -19,14 +22,17 @@ public class RobotMode {
 	 * should go here.
 	 */
 	public static void Init() {
-		// Keep this at top of other constructor calls
-		RobotMap.RobInfo = new RobotInfo(9);
 		
 		RobotMap.PNUPressure = new AnalogInput(0);
 
 		RobotMap.Controls = new TORCControls(new XboxController(0));
+		// _leftMID, _rightMID, _leftS0ID, _rightS0ID, _leftS1ID, _rightS1ID, 
+		// _rightShifterID, _leftShifterID
+		RobotMap.S_DriveTrain = new BasicDriveTrain(10, 11, 12, 13, 14, 15, 0, 1);
+		
+		RobotMap.S_Climber = new Climber(41, 42, 40, 43);
 
-		RobotMap.DriveTrain = new BasicDriveTrain(22, 10, 23, 11, 0, 1);
+		RobotMap.PigeonGyro = new PigeonIMU(4);
 
 		RobotMap.VManager = new VisionManager(NetworkTableInstance.getDefault());
 	}
@@ -38,6 +44,8 @@ public class RobotMode {
 	public static void Periodic() {
 		
 		SmartDashboard.putNumber("PSI", Pneumatics.getPSIFromAnalog(RobotMap.PNUPressure));
+
+		SmartDashboard.putNumber("GyroFusedHeading", RobotMap.PigeonGyro.getFusedHeading());
 		
 	}
 }

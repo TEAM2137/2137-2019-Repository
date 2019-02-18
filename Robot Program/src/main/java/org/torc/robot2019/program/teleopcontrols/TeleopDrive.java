@@ -1,17 +1,18 @@
 package org.torc.robot2019.program.teleopcontrols;
 
+import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.program.RobotMap;
+import org.torc.robot2019.program.KMap.KNumeric;
 import org.torc.robot2019.program.TORCControls.ControllerInput;
 import org.torc.robot2019.subsystems.BasicDriveTrain;
-import org.torc.robot2019.subsystems.BasicDriveTrain.ShifterState;
 import org.torc.robot2019.tools.CLCommand;
 import org.torc.robot2019.tools.MathExtra;
 
 public class TeleopDrive extends CLCommand {
 
-    final double QUICK_TURN_CONSTANT = 0.3;
-	final double QUICK_TURN_SENSITIVITY = 0.7;
-	final double SPEED_TURN_SENSITIVITY = 0.7;
+    final double QUICK_TURN_CONSTANT = KMap.GetKNumeric(KNumeric.DBL_QUICK_TURN);
+	final double QUICK_TURN_SENSITIVITY = KMap.GetKNumeric(KNumeric.DBL_QUICK_TURN_SENSITIVITY);
+	final double SPEED_TURN_SENSITIVITY = KMap.GetKNumeric(KNumeric.DBL_SPEED_TURN_SENSITIVITY);
 
     BasicDriveTrain driveTrain;
 
@@ -32,6 +33,21 @@ public class TeleopDrive extends CLCommand {
         haloDrive(RobotMap.Controls.getInput(ControllerInput.A_DriveLeft), 
             -RobotMap.Controls.getInput(ControllerInput.A_DriveRight), false);
         
+        /*
+        if (RobotMap.Controls.getInput(ControllerInput.A_DriveLeft) < -0.5) {
+            System.out.println("Is less than!!");
+            RobotMap.S_DriveTrain.setVelTarget(400, 400);
+        }
+        */
+        
+
+        /*
+
+        double driveLeft = RobotMap.Controls.getInput(ControllerInput.A_DriveLeft);
+        double driveRight = RobotMap.Controls.getInput(ControllerInput.A_DriveRight);
+
+        RobotMap.S_DriveTrain.setPercSpeed(driveLeft, driveRight);
+        */
     }
 
     // Called once after isFinished returns true
@@ -68,13 +84,15 @@ public class TeleopDrive extends CLCommand {
 		}
         
 		// If low gear, drive percVBus
-		if (driveTrain.getGearShifters() == ShifterState.Low) {
-			driveTrain.setPercSpeed(leftMotorOutput, rightMotorOutput);
-		}
-		// High gear: drive velocity
-		else {
+		//if (driveTrain.getGearShifters() == ShifterState.Low) {
+			//driveTrain.setPercSpeed(-leftMotorOutput, rightMotorOutput);
+		//}
+        // High gear: drive velocity
+        
+		//else {
 			driveTrain.setVelSpeed(leftMotorOutput, rightMotorOutput);
-        }
+        //}
+        //*/
 		
 	}
 }

@@ -3,6 +3,7 @@ package org.torc.robot2019.program;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
 import org.torc.robot2019.subsystems.BasicDriveTrain;
+import org.torc.robot2019.subsystems.Climber;
 import org.torc.robot2019.vision.VisionManager;
 
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -21,7 +22,11 @@ public class RobotMap {
 
 	public static TORCControls Controls;
 
-	public static BasicDriveTrain DriveTrain;
+	public static BasicDriveTrain S_DriveTrain;
+
+	public static Climber S_Climber;
+
+	public static PigeonIMU PigeonGyro;
 
 	public static VisionManager VManager;
 	

@@ -9,7 +9,7 @@ public class TeleopMode {
 
 	public static void Init() {
 		System.out.println("Teleop Mode Enabled!!");
-		driveCommand = new TeleopDrive(RobotMap.DriveTrain);
+		driveCommand = new TeleopDrive(RobotMap.S_DriveTrain);
 		driveCommand.start();
 		//System.out.println("Is Practice Bot: " + (RobotMap.RobInfo.getRobotType() == RobotType.Practice));
 	}
