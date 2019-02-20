@@ -3,6 +3,7 @@ package org.torc.robot2019.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.sensors.PigeonIMU;
 
 import org.torc.robot2019.robot.InheritedPeriodic;
 import org.torc.robot2019.robot.Robot;
@@ -21,10 +22,12 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
     private VictorSPX[] leftS = new VictorSPX[2];
     private VictorSPX[] rightS = new VictorSPX[2];
 
+    private PigeonIMU gyro;
+
     public final double VELOCITY_MAXIMUM = 440;
 
     public BasicDriveTrain(int _leftMID, int _rightMID, int _leftS0ID, int _rightS0ID,
-        int _leftS1ID, int _rightS1ID) {
+        int _leftS1ID, int _rightS1ID, int _pigeonID) {
         // "Subscribe" to inherited Periodic
         Robot.AddToPeriodic(this);
 
@@ -38,6 +41,8 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
 
         MotorControllers.TalonSRXConfig(leftM);
         MotorControllers.TalonSRXConfig(rightM);
+
+        gyro = new PigeonIMU(_pigeonID);
 
         // Invert left so it goes forwards with right (same phase)
         leftM.setSensorPhase(true);
@@ -131,6 +136,27 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
         }
 
         return retVal;
+    }
+
+    public void resetDriveEncoder(DriveSide _driveSide) {
+        switch (_driveSide) {
+            case kRight:
+                rightM.getSensorCollection().setQuadraturePosition(0, 0);
+                break;
+            case kLeft:
+                leftM.getSensorCollection().setQuadraturePosition(0, 0);
+            break;
+        }
+    }
+
+    public void resetGyro() {
+        gyro.setYaw(0);
+    }
+
+    public double getGyroAngle() {
+        double[] ypr = new double[3];
+        gyro.getYawPitchRoll(ypr);
+        return ypr[0];
     }
 
     @Override

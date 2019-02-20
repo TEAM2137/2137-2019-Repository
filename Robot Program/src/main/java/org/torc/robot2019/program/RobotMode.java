@@ -27,7 +27,7 @@ public class RobotMode {
 		
 		RobotMap.PNUPressure = new AnalogInput(0);
 		
-		RobotMap.S_DriveTrain = new BasicDriveTrain(10, 11, 12, 13, 14, 15);
+		RobotMap.S_DriveTrain = new BasicDriveTrain(10, 11, 12, 13, 14, 15, 4);
 		
 		RobotMap.S_Climber = new Climber(41, 42, 40, 43);
 
