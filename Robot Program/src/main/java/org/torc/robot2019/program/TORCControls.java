@@ -1,13 +1,14 @@
 package org.torc.robot2019.program;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.XboxController;
 
 public class TORCControls {
     /*
      * Declare currently-used controllers up here!
-     * (Make sure you define them in the constructor!)
+     * (Make sure you define them inline!)
      */
-    private static GenericHID driverController;
+    private static GenericHID driverController = new XboxController(0);
 
     public static enum ControllerInput {
 		/**Left Drivetrain Control Axis*/
@@ -22,11 +23,16 @@ public class TORCControls {
         A_MantisArm(1, driverController, InputType.Axis), // Left stick Y axis
         /**Pogo-Sticks Control*/
         A_PogoControl(5, driverController, InputType.Axis), // Right stick Y axis
-        /**Pogo Contracts Downwards Control Button*/
-        //B_PogoContract(5, driverController, InputType.Button), // Left Bumper
-        /**Pogo Extends Downwards Control Button*/
-		//B_PogoExtend(6, driverController, InputType.Button), // Right Bumper
+        /**Flip PivotArm side-selction*/
+        B_PivotFlipSelection(270, driverController, InputType.POV), // Left POV
+        /**PivotArm Up position*/
+        B_PivotUp(4, driverController, InputType.Button), // Y button
+        /**PivotArm Low position*/
+        B_PivotLow(1, driverController, InputType.Button), // A button
+        /**Pivot Arm Up position*/
+        B_PivotHigh(4, driverController, InputType.Button), // Y button
         ;
+        
         private int id;
         private GenericHID controller;
         private InputType iType;
@@ -39,15 +45,11 @@ public class TORCControls {
     }
     
     public static enum InputType {
-        Axis, Button
+        Axis, Button, POV
     }
 
     public static enum InputState {
         Raw, Pressed, Released
-    }
-
-    public TORCControls(GenericHID _driver) {
-        driverController = _driver;
     }
 
     /**
@@ -56,7 +58,7 @@ public class TORCControls {
      * @param _iState Requested InputState of the ControllerInput.
      * @return Double value of retrieved Input (1.0 for true, 0.0 for false).
      */
-    public double getInput(ControllerInput _cInput, InputState _iState) {
+    public static double GetInput(ControllerInput _cInput, InputState _iState) {
 
         double retVal = 0; // Value to return
 
@@ -77,6 +79,9 @@ public class TORCControls {
                 retVal = _cInput.controller.getRawAxis(_cInput.id);
                 //System.out.printf("Axis: %d value: %f\n", _cInput.id, retVal);
                 break;
+            case POV:
+                retVal = BoolToDouble(_cInput.controller.getPOV() == _cInput.id);
+                break;
             default:
                 System.out.println("getInput: Not an implemented InputType for provided ControllerInput!");
                 break;
@@ -85,8 +90,8 @@ public class TORCControls {
         return retVal; // Return value
     }
 
-    public double getInput(ControllerInput _cInput) {
-        return getInput(_cInput, InputState.Raw);
+    public static double GetInput(ControllerInput _cInput) {
+        return GetInput(_cInput, InputState.Raw);
     }
 
     /**
@@ -116,5 +121,10 @@ public class TORCControls {
      */
     public static boolean DoubleToBool(double _value) {
         return (_value >= 1.0);
+    }
+
+    //TODO: get rid of this function and implement it correctly
+    public static GenericHID GetDriverController() {
+        return driverController;
     }
 }

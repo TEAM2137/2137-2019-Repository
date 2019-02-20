@@ -6,10 +6,12 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 
 public class DisabledMode {
 	public static void Init() {
-		// Remove all commands
-		Scheduler.getInstance().removeAll();
-		// Stop all CommandLists
-		CommandList.StopAllCommandLists();
+		Scheduler.getInstance().removeAll(); // Remove all commands
+		CommandList.StopAllCommandLists(); // Stop all CommandLists
+		
+		// Garuntee that arm doesn't have a set target upon next enable
+		RobotMap.S_PivotArm.setPercSpeed(0);
+		RobotMap.S_Elevator.deHomeElevator(); // Dehome elevator
 	}
 	
 	public static void Periodic() {

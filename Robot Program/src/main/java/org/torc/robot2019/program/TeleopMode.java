@@ -1,6 +1,5 @@
 package org.torc.robot2019.program;
 
-import org.torc.robot2019.program.RobotInfo.RobotType;
 import org.torc.robot2019.program.teleopcontrols.TeleopDrive;
 
 public class TeleopMode {
@@ -9,9 +8,10 @@ public class TeleopMode {
 
 	public static void Init() {
 		System.out.println("Teleop Mode Enabled!!");
+		RobotMap.S_Elevator.homeElevator();
+		// Initialize Teleop Drive Command
 		driveCommand = new TeleopDrive(RobotMap.S_DriveTrain);
 		driveCommand.start();
-		//System.out.println("Is Practice Bot: " + (RobotMap.RobInfo.getRobotType() == RobotType.Practice));
 	}
 	
 	public static void Periodic() {

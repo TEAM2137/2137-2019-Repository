@@ -4,6 +4,8 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 
 import org.torc.robot2019.subsystems.BasicDriveTrain;
 import org.torc.robot2019.subsystems.Climber;
+import org.torc.robot2019.subsystems.Elevator;
+import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.tools.Pneumatics;
 import org.torc.robot2019.vision.VisionManager;
 
@@ -24,13 +26,14 @@ public class RobotMode {
 	public static void Init() {
 		
 		RobotMap.PNUPressure = new AnalogInput(0);
-
-		RobotMap.Controls = new TORCControls(new XboxController(0));
-		// _leftMID, _rightMID, _leftS0ID, _rightS0ID, _leftS1ID, _rightS1ID, 
-		// _rightShifterID, _leftShifterID
-		RobotMap.S_DriveTrain = new BasicDriveTrain(10, 11, 12, 13, 14, 15, 0, 1);
+		
+		RobotMap.S_DriveTrain = new BasicDriveTrain(10, 11, 12, 13, 14, 15);
 		
 		RobotMap.S_Climber = new Climber(41, 42, 40, 43);
+
+		RobotMap.S_PivotArm = new PivotArm(20);
+
+		RobotMap.S_Elevator = new Elevator(21, 0);
 
 		RobotMap.PigeonGyro = new PigeonIMU(4);
 

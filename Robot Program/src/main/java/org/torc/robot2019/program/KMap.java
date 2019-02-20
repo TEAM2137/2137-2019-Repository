@@ -12,10 +12,23 @@ public class KMap {
     public static enum KNumeric {
         // TYPE_NAME(practiceVal, competitionVal)
 
+        //Initilization IDs
+        /*
+        INT_DRIVETRAIN_LEFT_MASTER_ID(),
+        INT_DRIVETRAIN_RIGHT_MASTER_ID(),
+        */
+
         DBL_QUICK_TURN(0.3, 0.3),
         DBL_QUICK_TURN_SENSITIVITY(0.7, 0.7),
         DBL_SPEED_TURN_SENSITIVITY(0.7, 0.7),
         DBL_MANTIS_ARM_MAX_PERCENT_OUT(0.5, 0.5),
+        // Elevator
+        INT_ELEVATOR_MAX_POSITION(19100, 19100),
+        // PivotArm
+        DBL_PIVOT_ARM_MAX_PERCENT_OUTPUT_FORWARD(0.5, 0.5),
+        DBL_PIVOT_ARM_MAX_PERCENT_OUTPUT_REVERSE(-0.5, -0.5),
+        INT_PIVOT_ARM_ENCODER_OFFSET(1077, 1077),
+        INT_PIVOT_ARM_ALLOWABLE_ERROR(60, 60),
         ;
 
         double practiceValue;
@@ -63,14 +76,14 @@ public class KMap {
         return single_instance;
     }
 
-	public RobotType getRobotType() {
-		return CurrentRobotType;
+	public static RobotType GetRobotType() {
+		return GetInstance().CurrentRobotType;
     }
     
     // The following is dirty, dirty code. Right now I can't figure out how to make it
     // cleaner, so this is what you get right now.
     public static double GetKNumeric(KNumeric _constant) {
-        RobotType CurrentRobotType = GetInstance().getRobotType();
+        RobotType CurrentRobotType = GetRobotType();
 
         if (CurrentRobotType == RobotType.Competition) {
             return _constant.competitionValue;
@@ -85,7 +98,7 @@ public class KMap {
         }
     }
     public static String GetKString(KString _constant) {
-        RobotType CurrentRobotType = GetInstance().getRobotType();
+        RobotType CurrentRobotType = GetRobotType();
         
         if (CurrentRobotType == RobotType.Competition) {
             return _constant.competitionValue;

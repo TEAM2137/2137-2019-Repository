@@ -4,6 +4,8 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 
 import org.torc.robot2019.subsystems.BasicDriveTrain;
 import org.torc.robot2019.subsystems.Climber;
+import org.torc.robot2019.subsystems.Elevator;
+import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.vision.VisionManager;
 
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -17,14 +19,14 @@ import edu.wpi.first.wpilibj.AnalogInput;
 public class RobotMap {
 	
 	public static AnalogInput PNUPressure;
-	
-	public static RobotInfo RobInfo;
-
-	public static TORCControls Controls;
 
 	public static BasicDriveTrain S_DriveTrain;
 
 	public static Climber S_Climber;
+
+	public static PivotArm S_PivotArm;
+
+	public static Elevator S_Elevator;
 
 	public static PigeonIMU PigeonGyro;
 

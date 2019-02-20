@@ -9,7 +9,6 @@ import org.torc.robot2019.robot.Robot;
 import org.torc.robot2019.tools.MathExtra;
 import org.torc.robot2019.tools.MotorControllers;
 
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -22,13 +21,10 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
     private VictorSPX[] leftS = new VictorSPX[2];
     private VictorSPX[] rightS = new VictorSPX[2];
 
-    Solenoid rightShifter;
-	Solenoid leftShifter;
-
     public final double VELOCITY_MAXIMUM = 440;
 
     public BasicDriveTrain(int _leftMID, int _rightMID, int _leftS0ID, int _rightS0ID,
-        int _leftS1ID, int _rightS1ID, int _rightShifterID, int _leftShifterID) {
+        int _leftS1ID, int _rightS1ID) {
         // "Subscribe" to inherited Periodic
         Robot.AddToPeriodic(this);
 
@@ -60,9 +56,6 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
 
         leftM.config_IntegralZone(0, 30);
         rightM.config_IntegralZone(0, 30);
-
-        rightShifter = new Solenoid(_rightShifterID);
-		leftShifter = new Solenoid(_leftShifterID);
     }
 
     public void setPercSpeed(double _leftSpd, double _rightSpd) {
