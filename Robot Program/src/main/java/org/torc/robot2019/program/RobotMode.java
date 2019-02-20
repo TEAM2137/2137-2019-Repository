@@ -28,7 +28,7 @@ public class RobotMode {
 		RobotMap.Controls = new TORCControls(new XboxController(0));
 		// _leftMID, _rightMID, _leftS0ID, _rightS0ID, _leftS1ID, _rightS1ID, 
 		// _rightShifterID, _leftShifterID
-		RobotMap.S_DriveTrain = new BasicDriveTrain(10, 11, 12, 13, 14, 15, 0, 1);
+		RobotMap.S_DriveTrain = new BasicDriveTrain(10, 11, 12, 13, 14, 15, 0, 1, 4);
 		
 		RobotMap.S_Climber = new Climber(41, 42, 40, 43);
 
