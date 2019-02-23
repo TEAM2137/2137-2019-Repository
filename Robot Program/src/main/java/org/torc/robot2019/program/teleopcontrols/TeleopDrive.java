@@ -1,5 +1,7 @@
 package org.torc.robot2019.program.teleopcontrols;
 
+import com.ctre.phoenix.CANifier;
+
 import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.program.RobotMap;
 import org.torc.robot2019.program.TORCControls;
@@ -13,6 +15,10 @@ import org.torc.robot2019.tools.MathExtra;
 import edu.wpi.first.wpilibj.GenericHID;
 
 public class TeleopDrive extends CLCommand {
+
+    public static CANifier canTool;
+
+    boolean oneShot = false;
 
     final double QUICK_TURN_CONSTANT = KMap.GetKNumeric(KNumeric.DBL_QUICK_TURN);
 	final double QUICK_TURN_SENSITIVITY = KMap.GetKNumeric(KNumeric.DBL_QUICK_TURN_SENSITIVITY);
@@ -32,6 +38,7 @@ public class TeleopDrive extends CLCommand {
     // Called just before this Command runs the first time
     @Override
     protected void initialize() {
+        canTool = new CANifier(3);
     }
 
     // Called repeatedly when this Command is scheduled to run
@@ -70,7 +77,26 @@ public class TeleopDrive extends CLCommand {
         else if (driversController.getRawButton(4)) { // Y Button
             RobotMap.S_Elevator.setPosition(19000);
             RobotMap.S_PivotArm.setRawPosition(2164);
-		}
+        }
+        
+        if (driversController.getRawButton(9) && oneShot == false){
+            if (driversController.getRawButtonReleased(9)){
+            oneShot = true;
+            }
+          } else if (driversController.getRawButton(9) && oneShot == true){
+            if (driversController.getRawButtonReleased(9)){
+            oneShot = false;
+            }
+          }
+        if (oneShot == true){
+            canTool.setLEDOutput(1.0, CANifier.LEDChannel.LEDChannelA);
+            canTool.setLEDOutput(0.65, CANifier.LEDChannel.LEDChannelB);
+            canTool.setLEDOutput(0.0, CANifier.LEDChannel.LEDChannelC);
+        } else {
+            canTool.setLEDOutput(1.0, CANifier.LEDChannel.LEDChannelA);
+            canTool.setLEDOutput(1.0, CANifier.LEDChannel.LEDChannelB);
+            canTool.setLEDOutput(1.0, CANifier.LEDChannel.LEDChannelC);
+        }
     }
 
     // Called once after isFinished returns true
