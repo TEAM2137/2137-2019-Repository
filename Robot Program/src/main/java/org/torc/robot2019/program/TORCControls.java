@@ -20,8 +20,8 @@ public class TORCControls {
         /**Mantis-Arm Pivot*/
         A_MantisArm(1, climberController, InputType.Axis), // Left stick Y axis
 
-        A_MantisLeft(2, climberController, InputType.Axis),
-        A_MantisRight(3, climberController, InputType.Axis),
+        A_MantisLeft(2, climberController, InputType.Axis), // Left trigger
+        A_MantisRight(3, climberController, InputType.Axis), // Right trigger
 
         /**Pogo-Sticks Manual Control*/
         A_PogoControl(5, climberController, InputType.Axis), // Right stick Y axis

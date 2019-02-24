@@ -24,6 +24,24 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 	//public enum ElevatorPositions { Zero,  }
 	
 	//public ElevatorPositions elevatorPosition = ElevatorPositions.floor;
+
+	public static enum ElevatorPositions { 
+		/** 
+		 * Used for when robot should be driving around,
+		 * with no need to use the pivot arm.
+		 */
+		Retracted(0),
+		Level1(0),
+		Level2(5000),
+		Level3(15000),
+		;
+	
+		private int positionValue;
+	
+		ElevatorPositions(int _positionValue) {
+		  positionValue = _positionValue;
+		}
+	  }
 	
 	private DigitalInput elevatorEndstop;
 	
@@ -127,6 +145,10 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 		elevator.set(ControlMode.MotionMagic, MathExtra.clamp(targPos, 0, ELEVATOR_MAX_POSITION));
 	}
 	*/
+
+	public void setPosition(ElevatorPositions _position) {
+		setPosition(_position.positionValue);
+	}
 
 	public void setPosition(int _position) {
 		if (!hasBeenHomed) {

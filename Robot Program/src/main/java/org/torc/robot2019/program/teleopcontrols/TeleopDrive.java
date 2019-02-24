@@ -9,6 +9,7 @@ import org.torc.robot2019.program.TORCControls.InputState;
 import org.torc.robot2019.subsystems.BasicDriveTrain;
 import org.torc.robot2019.subsystems.Climber;
 import org.torc.robot2019.subsystems.Elevator;
+import org.torc.robot2019.subsystems.Elevator.ElevatorPositions;
 import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.subsystems.PivotArm.PivotArmPositions;
 import org.torc.robot2019.tools.CLCommand;
@@ -69,13 +70,14 @@ public class TeleopDrive extends CLCommand {
         // Arm position control
         if (TORCControls.GetInput(ControllerInput.B_PivotUp, InputState.Pressed) >= 1) {
             pivotArm.setPosition(PivotArmPositions.Up);
-            elevator.setPosition(0);
+            elevator.setPosition(ElevatorPositions.Retracted);
             
         }
 
         if (TORCControls.GetInput(ControllerInput.B_PivotFlipSelection) >= 1) {
             if (TORCControls.GetInput(ControllerInput.B_PivotHorizontal, InputState.Pressed) >= 1) {
                 pivotArm.setPosition(PivotArmPositions.HorizontalF);
+                elevator.setPosition(ElevatorPositions.Retracted);
             }
             /*
             else if (TORCControls.GetInput(ControllerInput.B_PivotRocket1, InputState.Pressed) >= 1) {
@@ -84,14 +86,17 @@ public class TeleopDrive extends CLCommand {
             */
             else if (TORCControls.GetInput(ControllerInput.B_PivotRocket2, InputState.Pressed) >= 1) {
                 pivotArm.setPosition(PivotArmPositions.Level2F);
+                elevator.setPosition(ElevatorPositions.Level2);
             }
             else if (TORCControls.GetInput(ControllerInput.B_PivotRocket3, InputState.Pressed) >= 1) {
                 pivotArm.setPosition(PivotArmPositions.Level3F);
+                elevator.setPosition(ElevatorPositions.Level3);
             }
         }
         else {
             if (TORCControls.GetInput(ControllerInput.B_PivotHorizontal, InputState.Pressed) >= 1) {
                 pivotArm.setPosition(PivotArmPositions.HorizontalR);
+                elevator.setPosition(ElevatorPositions.Retracted);
             }
             /*
             else if (TORCControls.GetInput(ControllerInput.B_PivotRocket1, InputState.Pressed) >= 1) {
@@ -100,9 +105,11 @@ public class TeleopDrive extends CLCommand {
             */
             else if (TORCControls.GetInput(ControllerInput.B_PivotRocket2, InputState.Pressed) >= 1) {
                 pivotArm.setPosition(PivotArmPositions.Level2R);
+                elevator.setPosition(ElevatorPositions.Level2);
             }
             else if (TORCControls.GetInput(ControllerInput.B_PivotRocket3, InputState.Pressed) >= 1) {
                 pivotArm.setPosition(PivotArmPositions.Level3R);
+                elevator.setPosition(ElevatorPositions.Level3);
             }
         }
 

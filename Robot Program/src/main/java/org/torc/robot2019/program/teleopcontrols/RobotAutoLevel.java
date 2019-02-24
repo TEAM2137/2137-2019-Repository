@@ -16,13 +16,13 @@ public class RobotAutoLevel extends CLCommand {
   Climber climber;
   BasicDriveTrain driveTrain;
 
-  private static final double TARGET_ANGLE = 0;
+  private static final double TARGET_ANGLE = 6;
 
   private double errSum = 0;
 	private double dLastPos = 0;
 
   double kFF = 0;
-  double kP = 0;
+  double kP = 0.08;
   double kI = 0;
   double kD = 0;
 
@@ -45,7 +45,7 @@ public class RobotAutoLevel extends CLCommand {
 
     double currentAngle = driveTrain.getGyroYPR()[2];
 
-    double err = TARGET_ANGLE - currentAngle; // TODO: Correct this
+    double err = TARGET_ANGLE + currentAngle; // TODO: Correct this
 
     // Add to error sum for Integral
     errSum += err;

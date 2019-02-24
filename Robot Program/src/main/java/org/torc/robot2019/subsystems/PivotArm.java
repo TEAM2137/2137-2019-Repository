@@ -27,19 +27,19 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
      * with no need to use the pivot arm.
      */
     Up(2048),
-    // Front-side positions
-    PickupF(0),
-    Level1F(0),
-    Level2F(0),
-    Level3F(0),
     // Rear-side positions
-    PickupR(0),
-    Level1R(0),
-    Level2R(0),
-    Level3R(0),
+    PickupR(824),
+    Level1R(1024),
+    Level2R(1224),
+    Level3R(1424),
+    // Front-side positions
+    PickupF(3272),
+    Level1F(3072),
+    Level2F(2872),
+    Level3F(2672),
     // McBride
-    HorizontalF(AngleToPosition(90)),
-    HorizontalR(AngleToPosition(270))
+    HorizontalR(1024),
+    HorizontalF(3072),
     ;
 
     private int positionValue;

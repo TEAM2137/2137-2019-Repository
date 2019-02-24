@@ -59,7 +59,15 @@ public class Climber extends Subsystem {
 	}
 
 	public void setPogoStickSpeed(double _speed) {
-		pogoStick.set(_speed);
+		if (_speed < 0) { 
+			pogoStick.setSecondaryCurrentLimit(2);
+			pogoStick.set(_speed);
+			// System.out.println("limited");
+		} else {
+			pogoStick.setSecondaryCurrentLimit(0);
+			pogoStick.set(_speed);
+			// System.out.println("not limited");
+		}
 	}
 
 	public void initDefaultCommand() {
