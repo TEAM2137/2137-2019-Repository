@@ -6,6 +6,7 @@ import org.torc.robot2019.subsystems.BasicDriveTrain;
 import org.torc.robot2019.subsystems.Climber;
 import org.torc.robot2019.subsystems.Elevator;
 import org.torc.robot2019.subsystems.PivotArm;
+import org.torc.robot2019.subsystems.Pneumatics;
 import org.torc.robot2019.vision.VisionManager;
 
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -18,7 +19,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
  */
 public class RobotMap {
 	
-	public static AnalogInput PNUPressure;
+	public static Pneumatics S_Pneumatics;
 
 	public static BasicDriveTrain S_DriveTrain;
 
@@ -27,8 +28,6 @@ public class RobotMap {
 	public static PivotArm S_PivotArm;
 
 	public static Elevator S_Elevator;
-
-	public static PigeonIMU PigeonGyro;
 
 	public static VisionManager VManager;
 	

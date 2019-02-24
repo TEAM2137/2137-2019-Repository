@@ -22,23 +22,23 @@ public class Climber extends Subsystem {
 
 	/** Motor Controller for the Mantis arm */
 	private CANSparkMax rightMantis, leftMantis;
-	private VictorSPX pivotMantis;
-	private VictorSPX pogoStick;
+	private CANSparkMax pivotMantis;
+	private CANSparkMax pogoStick;
 
 	public Climber(int _leftManID, int _rightManID, int _pivotManID, int _pogoStickID) {
 		rightMantis = new CANSparkMax(_rightManID, MotorType.kBrushless);
 		leftMantis = new CANSparkMax(_leftManID, MotorType.kBrushless);
 
-		pivotMantis = new VictorSPX(_pivotManID);
+		pivotMantis = new CANSparkMax(_pivotManID, MotorType.kBrushless);
 
-		pogoStick = new VictorSPX(_pogoStickID);
+		pogoStick = new CANSparkMax(_pogoStickID, MotorType.kBrushless);
 	}
 
 	public void setMantisSpeed(double _speed) {
 		setMantisSpeed(_speed, -_speed);
 	}
 	public void setMantisSpeed(double _leftSpeed, double _rightSpeed) {
-		leftMantis.set(_leftSpeed);
+		leftMantis.set(-_leftSpeed);
 		rightMantis.set(_rightSpeed);
 	}
 	public void setMantisSpeed(double _speed, MantisSide _side) {
@@ -55,11 +55,11 @@ public class Climber extends Subsystem {
 	public void setMantisPivotSpeed(double _speed) {
 		// Clamp Mantis arm to max speed
 		_speed = MathExtra.clamp(_speed, -MANTIS_ARM_MAX_PERC, MANTIS_ARM_MAX_PERC);
-		pivotMantis.set(ControlMode.PercentOutput, _speed);
+		pivotMantis.set(_speed);
 	}
 
 	public void setPogoStickSpeed(double _speed) {
-		pogoStick.set(ControlMode.PercentOutput, _speed);
+		pogoStick.set(_speed);
 	}
 
 	public void initDefaultCommand() {
