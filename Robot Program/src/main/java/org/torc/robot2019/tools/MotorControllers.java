@@ -29,7 +29,11 @@ public class MotorControllers {
         talon.config_kF(PIDLoopIdx, kF, timeoutMs);
         talon.config_kP(PIDLoopIdx, kP, timeoutMs);
         talon.config_kI(PIDLoopIdx, kI, timeoutMs); 
-        talon.config_kD(PIDLoopIdx, kD, timeoutMs);
+		talon.config_kD(PIDLoopIdx, kD, timeoutMs);
+		
+		//talon.configPeakCurrentLimit(amps);
+		//talon.configPeakCurrentDuration(milliseconds);
+		//talon.configContinuousCurrentLimit(amps);
 	}
 	
 	public static void TalonSRXSensorZero(TalonSRX talon, int timeoutMs, int PIDLoopIdx) {
