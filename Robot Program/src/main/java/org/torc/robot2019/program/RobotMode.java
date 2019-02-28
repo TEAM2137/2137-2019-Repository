@@ -45,7 +45,8 @@ public class RobotMode {
 
 		RobotMap.S_Elevator = new Elevator(
 			(int)KMap.GetKNumeric(KNumeric.INT_ELEVATOR_MOTOR_ID),
-			(int)KMap.GetKNumeric(KNumeric.INT_ELEVATOR_ENDSTOP_ID));
+			(int)KMap.GetKNumeric(KNumeric.INT_ELEVATOR_ENDSTOP_ID),
+			RobotMap.S_PivotArm);
 
 		RobotMap.VManager = new VisionManager(NetworkTableInstance.getDefault());
 	}

@@ -33,20 +33,23 @@ public class KMap {
         // Elevator
         INT_ELEVATOR_MOTOR_ID(21, 21),
         INT_ELEVATOR_ENDSTOP_ID(0, 0),
-
+        INT_ELEVATOR_MAX_POSITION(15600, 15600),
+        INT_ELEVATOR_TICKS_PER_INCH(1000, 1000), // TODO: Adjust this is be accurate
+        DBL_ELEVATOR_MINIMUM_DISTANCE_FROM_FRAME_EDGE_INCHES(10, 10), // TODO: Adjust this is be accurate
+        DBL_GRABBER_LENGTH_INCHES(5, 5), // TODO: Adjust this is be accurate
         // Teleop Drive
         DBL_QUICK_TURN(0.3, 0.3),
         DBL_QUICK_TURN_SENSITIVITY(0.7, 0.7),
         DBL_SPEED_TURN_SENSITIVITY(0.7, 0.7),
-        DBL_MANTIS_ARM_MAX_PERCENT_OUT(0.5, 0.5),
-        // Elevator
-        INT_ELEVATOR_MAX_POSITION(15600, 15600),
+        DBL_MANTIS_ARM_MAX_PERCENT_OUT(0.3, 0.3),
         // PivotArm
         DBL_PIVOT_ARM_MAX_PERCENT_OUTPUT_FORWARD(0.5, 0.5),
         DBL_PIVOT_ARM_MAX_PERCENT_OUTPUT_REVERSE(-0.5, -0.5),
         INT_PIVOT_ARM_ENCODER_OFFSET(1077, 1077),
         INT_PIVOT_ARM_ALLOWABLE_ERROR(60, 60),
         INT_PIVOT_ARM_360_DEGREE_RESOLUTION(4096, 4096),
+        // RobotVars
+        DBL_ROBOT_MAX_EXTEND_OUTSIDE_OF_FRAME_INCHES(30, 30)
         ;
 
         double practiceValue;

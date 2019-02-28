@@ -25,7 +25,7 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
 
     private PigeonIMU gyro;
 
-    public final double VELOCITY_MAXIMUM = 440;
+    public final double VELOCITY_MAXIMUM = 480;
 
     public BasicDriveTrain(int _leftMID, int _rightMID, int _leftS0ID, int _rightS0ID,
         int _leftS1ID, int _rightS1ID, int _pigeonID) {
@@ -58,14 +58,17 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
         leftM.config_kP(0, 3);
         rightM.config_kP(0, 3);
 
-        leftM.config_kI(0, 0.05);
-        rightM.config_kI(0, 0.05);
+        leftM.config_kI(0, 0.01);
+        rightM.config_kI(0, 0.01);
+
+        leftM.config_IntegralZone(0, 50);
+        rightM.config_IntegralZone(0, 50);
 
         leftM.configClosedloopRamp(0.25);
         rightM.configClosedloopRamp(0.25);
 
-        leftM.config_IntegralZone(0, 30);
-        rightM.config_IntegralZone(0, 30);
+        leftM.configContinuousCurrentLimit(40);
+        rightM.configContinuousCurrentLimit(40);
     }
 
     public void setPercSpeed(double _leftSpd, double _rightSpd) {
@@ -93,7 +96,7 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
         // If switching from a different mode, set slave followers.
         checkSlavesToFollow();
 
-        leftM.set(ControlMode.Velocity, -_leftTarget);
+        leftM.set(ControlMode.Velocity, _leftTarget);
         rightM.set(ControlMode.Velocity, _rightTarget);
     }
 

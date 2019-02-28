@@ -22,7 +22,7 @@ public class RobotAutoLevel extends CLCommand {
 	private double dLastPos = 0;
 
   double kFF = 0;
-  double kP = 0.08;
+  double kP = 0.1;
   double kI = 0;
   double kD = 0;
 

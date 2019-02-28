@@ -9,7 +9,7 @@ public class TORCControls {
      * (Make sure you define them inline!)
      */
     private static GenericHID driverController = new XboxController(0);
-    private static GenericHID climberController = new XboxController(1);
+    private static GenericHID climberController = new XboxController(2);
 
     public static enum ControllerInput {
 		/**Left Drivetrain Control Axis*/

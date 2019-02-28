@@ -16,6 +16,7 @@ import org.torc.robot2019.tools.CLCommand;
 import org.torc.robot2019.tools.MathExtra;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TeleopDrive extends CLCommand {
 
@@ -57,21 +58,40 @@ public class TeleopDrive extends CLCommand {
     @Override
     protected void initialize() {
         autoLevelCommand.start();
+        //SmartDashboard.putNumber("velDrive", 0);
     }
 
     // Called repeatedly when this Command is scheduled to run
     @Override
     protected void execute() {
 
-        // Drive the robot
-        haloDrive(TORCControls.GetInput(ControllerInput.A_DriveLeft), 
-            -TORCControls.GetInput(ControllerInput.A_DriveRight), false);
+        double driveLeft = TORCControls.GetInput(ControllerInput.A_DriveLeft);
+        double driveRight = TORCControls.GetInput(ControllerInput.A_DriveRight);
         
+        double mantisLeft = TORCControls.GetInput(ControllerInput.A_MantisLeft);
+        double mantisRight = TORCControls.GetInput(ControllerInput.A_MantisRight);
+
+        RobotMap.S_Climber.setMantisSpeed(mantisLeft, mantisRight);
+
+        // Set drive mode based on if mantis wheels should move or not
+        if (mantisLeft > 0.2 || mantisRight > 0.2) {
+            RobotMap.S_DriveTrain.setVelSpeed(-mantisLeft, mantisRight);
+        }
+        else {
+            // Drive the robot
+            haloDrive(driveLeft, -driveRight, false);
+        }
+        
+        // Mantis Arm Control
+        double mantisPivot = MathExtra.applyDeadband(
+            TORCControls.GetInput(ControllerInput.A_MantisArm), 0.2) *
+            KMap.GetKNumeric(KNumeric.DBL_MANTIS_ARM_MAX_PERCENT_OUT);
+        RobotMap.S_Climber.setMantisPivotSpeed(mantisPivot);
+
         // Arm position control
         if (TORCControls.GetInput(ControllerInput.B_PivotUp, InputState.Pressed) >= 1) {
             pivotArm.setPosition(PivotArmPositions.Up);
             elevator.setPosition(ElevatorPositions.Retracted);
-            
         }
 
         if (TORCControls.GetInput(ControllerInput.B_PivotFlipSelection) >= 1) {
@@ -112,16 +132,6 @@ public class TeleopDrive extends CLCommand {
                 elevator.setPosition(ElevatorPositions.Level3);
             }
         }
-
-        // Mantis Arm Control
-        double mantisPivot = MathExtra.applyDeadband(
-			TORCControls.GetInput(ControllerInput.A_MantisArm), 0.2);
-        RobotMap.S_Climber.setMantisPivotSpeed(mantisPivot);
-        
-        double mantisLeft = TORCControls.GetInput(ControllerInput.A_MantisLeft);
-        double mantisRight = TORCControls.GetInput(ControllerInput.A_MantisRight);
-
-        RobotMap.S_Climber.setMantisSpeed(mantisLeft, mantisRight);
 
         // Pogo sticks auto control
         if (TORCControls.GetInput(ControllerInput.B_PogoAuto) >= 1) {
@@ -170,7 +180,7 @@ public class TeleopDrive extends CLCommand {
 			leftMotorOutput = driverThrottle + Math.abs(driverThrottle) * driverWheel * SPEED_TURN_SENSITIVITY;
 		}
         // Set drivetrain speed to MotorOutput values
-        driveTrain.setPercSpeed(leftMotorOutput, rightMotorOutput);
+        driveTrain.setVelSpeed(leftMotorOutput, rightMotorOutput);
     }
     
     public ArmSide getPivotArmSide() {
