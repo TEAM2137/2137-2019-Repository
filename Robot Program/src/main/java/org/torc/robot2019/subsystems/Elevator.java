@@ -4,7 +4,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import org.torc.robot2019.program.KMap;
-import org.torc.robot2019.program.RobotMap;
 import org.torc.robot2019.program.KMap.KNumeric;
 import org.torc.robot2019.robot.InheritedPeriodic;
 import org.torc.robot2019.robot.Robot;
@@ -15,7 +14,6 @@ import org.torc.robot2019.tools.MotorControllers;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Solenoid;
 
 public class Elevator extends Subsystem implements InheritedPeriodic {
 	// Put methods for controlling this subsystem
@@ -24,10 +22,30 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 	//public enum ElevatorPositions { Zero,  }
 	
 	//public ElevatorPositions elevatorPosition = ElevatorPositions.floor;
+
+	public static enum ElevatorPositions { 
+		/** 
+		 * Used for when robot should be driving around,
+		 * with no need to use the pivot arm.
+		 */
+		Retracted(0),
+		Level1(0),
+		Level2(5000),
+		Level3(15000),
+		;
+	
+		private int positionValue;
+	
+		ElevatorPositions(int _positionValue) {
+		  positionValue = _positionValue;
+		}
+	  }
 	
 	private DigitalInput elevatorEndstop;
 	
 	private TalonSRX elevatorM;
+
+	private PivotArm pivotArm;
 	
 	public final static int ELEVATOR_MAX_POSITION = 
 		(int)KMap.GetKNumeric(KNumeric.INT_ELEVATOR_MAX_POSITION);
@@ -41,7 +59,7 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 	
 	Elevator_Home elevatorHomer;
 	
-	public Elevator(int _elevatorMID, int _endstopID) {
+	public Elevator(int _elevatorMID, int _endstopID, PivotArm _pivotArm) {
 		// Add to periodic list
 		Robot.AddToPeriodic(this);
 		
@@ -60,6 +78,8 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 		elevatorM.config_IntegralZone(0, 0);
 		
 		elevatorEndstop = new DigitalInput(_endstopID);
+
+		pivotArm = _pivotArm;
 	}
 	
 	/*
@@ -128,6 +148,10 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 	}
 	*/
 
+	public void setPosition(ElevatorPositions _position) {
+		setPosition(_position.positionValue);
+	}
+
 	public void setPosition(int _position) {
 		if (!hasBeenHomed) {
 			hasNotHomedAlert();
@@ -160,6 +184,7 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 	}
 	*/
 	
+	/*
 	public void jogElevatorPos(double positionInc) {
 		if (!hasBeenHomed) {
 			hasNotHomedAlert();
@@ -169,6 +194,7 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 		elevatorTargetPosition = MathExtra.clamp(elevatorTargetPosition, 0, ELEVATOR_MAX_POSITION);
 		elevatorM.set(ControlMode.MotionMagic, elevatorTargetPosition);
 	}
+	*/
 	
 	/*
 	public void jogElevatorPosInc(int increment) {
@@ -181,16 +207,32 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 	}
 	*/
 	
-	static void hasNotHomedAlert() {
+	private static void hasNotHomedAlert() {
 		System.out.println("Cannot move Elevator; has not homed!!");
 	}
-	
+
+	private double getMaxArmExtension() {
+		int inchConversion = (int)KMap.GetKNumeric(KNumeric.INT_ELEVATOR_TICKS_PER_INCH);
+		int distanceAllowed = 
+		(int)(KMap.GetKNumeric(KNumeric.DBL_ROBOT_MAX_EXTEND_OUTSIDE_OF_FRAME_INCHES) * inchConversion) - 
+		(int)(
+			(KMap.GetKNumeric(KNumeric.DBL_ELEVATOR_MINIMUM_DISTANCE_FROM_FRAME_EDGE_INCHES) * inchConversion)
+			+ 
+			(KMap.GetKNumeric(KNumeric.DBL_GRABBER_LENGTH_INCHES) * inchConversion));
+		double otherAngle = 90 - PivotArm.PositionToAngle(pivotArm.getEncoder());
+		double angleTan = Math.tan(Math.toRadians(otherAngle));
+		double verticalDistance = angleTan * distanceAllowed;
+		double maxExtension = Math.sqrt(Math.pow(distanceAllowed, 2) + Math.pow(verticalDistance, 2));
+		return maxExtension;
+	}
+
 	@Override
 	protected void initDefaultCommand() {
 	}
 	
 	@Override
 	public void Periodic() {
+		// Check if homer has homed
 		if (!hasBeenHomed && elevatorHomer != null && elevatorHomer.isFinished()) {
 			System.out.println("Elevator Homed!!");
 			elevatorHomer.free();
@@ -198,6 +240,21 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 			hasBeenHomed = true;
 			setPosition(0);
 		}
+
+		// Check to maintain elevator is within bounds
+		if (elevatorM.getControlMode() == ControlMode.Position ||
+			elevatorM.getControlMode() == ControlMode.MotionMagic) {
+			
+			int elevatorTarget = elevatorTargetPosition;
+			int elevatorMax = (int)getMaxArmExtension();
+			if (elevatorTarget > elevatorMax) {
+				setPosition(elevatorMax);
+			}
+			else {
+				setPosition(elevatorTarget);
+			}
+		}
+
 		// Print Encoders
 		printEncoder();
 		

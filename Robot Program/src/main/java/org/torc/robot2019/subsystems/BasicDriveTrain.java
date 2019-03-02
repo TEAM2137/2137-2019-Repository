@@ -1,8 +1,10 @@
 package org.torc.robot2019.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.sensors.PigeonIMU;
 
 import org.torc.robot2019.robot.InheritedPeriodic;
 import org.torc.robot2019.robot.Robot;
@@ -21,10 +23,12 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
     private VictorSPX[] leftS = new VictorSPX[2];
     private VictorSPX[] rightS = new VictorSPX[2];
 
-    public final double VELOCITY_MAXIMUM = 440;
+    private PigeonIMU gyro;
+
+    public final double VELOCITY_MAXIMUM = 480;
 
     public BasicDriveTrain(int _leftMID, int _rightMID, int _leftS0ID, int _rightS0ID,
-        int _leftS1ID, int _rightS1ID) {
+        int _leftS1ID, int _rightS1ID, int _pigeonID) {
         // "Subscribe" to inherited Periodic
         Robot.AddToPeriodic(this);
 
@@ -39,6 +43,12 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
         MotorControllers.TalonSRXConfig(leftM);
         MotorControllers.TalonSRXConfig(rightM);
 
+        // Configure masters to use quad encoders
+        leftM.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
+        rightM.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
+
+        gyro = new PigeonIMU(_pigeonID);
+
         // Invert left so it goes forwards with right (same phase)
         leftM.setSensorPhase(true);
 
@@ -48,40 +58,32 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
         leftM.config_kP(0, 3);
         rightM.config_kP(0, 3);
 
-        leftM.config_kI(0, 0.05);
-        rightM.config_kI(0, 0.05);
+        leftM.config_kI(0, 0.01);
+        rightM.config_kI(0, 0.01);
+
+        leftM.config_IntegralZone(0, 50);
+        rightM.config_IntegralZone(0, 50);
 
         leftM.configClosedloopRamp(0.25);
         rightM.configClosedloopRamp(0.25);
 
-        leftM.config_IntegralZone(0, 30);
-        rightM.config_IntegralZone(0, 30);
+        leftM.configContinuousCurrentLimit(40);
+        rightM.configContinuousCurrentLimit(40);
     }
 
     public void setPercSpeed(double _leftSpd, double _rightSpd) {
-        leftM.set(ControlMode.PercentOutput, _leftSpd);
+        leftM.set(ControlMode.PercentOutput, -_leftSpd);
         rightM.set(ControlMode.PercentOutput, _rightSpd);
 
-        leftS[0].set(ControlMode.PercentOutput, _leftSpd);
+        leftS[0].set(ControlMode.PercentOutput, -_leftSpd);
         rightS[0].set(ControlMode.PercentOutput, _rightSpd);
-        leftS[1].set(ControlMode.PercentOutput, _leftSpd);
+        leftS[1].set(ControlMode.PercentOutput, -_leftSpd);
         rightS[1].set(ControlMode.PercentOutput, _rightSpd);
     }
 
     public void setVelSpeed(double _leftSpd, double _rightSpd) {
         // If switching from a different mode, set slave followers.
-        for (VictorSPX v : leftS) {
-            if (v.getControlMode() != ControlMode.Follower) {
-                //v.set(ControlMode.Follower, leftM.getDeviceID());
-                v.follow(leftM);
-            }
-        }
-        for (VictorSPX v : rightS) {
-            if (v.getControlMode() != ControlMode.Follower) {
-                //v.set(ControlMode.Follower, rightM.getDeviceID());
-                v.follow(rightM);
-            }
-        }
+        checkSlavesToFollow();
 
         _leftSpd = -MathExtra.clamp(_leftSpd, -1, 1) * VELOCITY_MAXIMUM;
         _rightSpd = MathExtra.clamp(_rightSpd, -1, 1) * VELOCITY_MAXIMUM;
@@ -92,29 +94,9 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
 
     public void setVelTarget(double _leftTarget, double _rightTarget) {
         // If switching from a different mode, set slave followers.
-        for (VictorSPX v : leftS) {
-            if (v.getControlMode() != ControlMode.Follower) {
-                //v.set(ControlMode.Follower, leftM.getDeviceID());
-                v.follow(leftM);
-            }
-        }
-        for (VictorSPX v : rightS) {
-            if (v.getControlMode() != ControlMode.Follower) {
-                //v.set(ControlMode.Follower, rightM.getDeviceID());
-                v.follow(rightM);
-            }
-        }
-        /*
-        if (leftM.getControlMode() != ControlMode.Velocity || 
-            rightM.getControlMode() != ControlMode.Velocity) {
-                leftS0.set(ControlMode.Follower, leftM.getDeviceID());
-                rightS0.set(ControlMode.Follower, rightM.getDeviceID());
-                leftS1.set(ControlMode.Follower, leftM.getDeviceID());
-                rightS1.set(ControlMode.Follower, rightM.getDeviceID());
-        }
-        */
+        checkSlavesToFollow();
 
-        leftM.set(ControlMode.Velocity, -_leftTarget);
+        leftM.set(ControlMode.Velocity, _leftTarget);
         rightM.set(ControlMode.Velocity, _rightTarget);
     }
 
@@ -133,13 +115,52 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
         return retVal;
     }
 
+    public void resetDriveEncoder(DriveSide _driveSide) {
+        switch (_driveSide) {
+            case kRight:
+                rightM.getSensorCollection().setQuadraturePosition(0, 0);
+                break;
+            case kLeft:
+                leftM.getSensorCollection().setQuadraturePosition(0, 0);
+            break;
+        }
+    }
+
+    public void resetGyro() {
+        gyro.setYaw(0);
+    }
+
+    public double getGyroAngle() {
+        return getGyroYPR()[0];
+    }
+
+    public double[] getGyroYPR() {
+        double[] ypr = new double[3];
+        gyro.getYawPitchRoll(ypr);
+        return ypr;
+    }
+
+    /** 
+     * Checks the drivetrain's slave motor controllers, and garuntees that
+     * they are set to follow mode in relation to the masters.
+     */
+    private void checkSlavesToFollow() {
+        for (VictorSPX v : leftS) {
+            if (v.getControlMode() != ControlMode.Follower) {
+                v.follow(leftM);
+            }
+        }
+        for (VictorSPX v : rightS) {
+            if (v.getControlMode() != ControlMode.Follower) {
+                v.follow(rightM);
+            }
+        }
+    }
+
     @Override
     protected void initDefaultCommand() {
 
     }
-
-    int maxRVelocity = 0;
-    int maxLVelocity = 0;
 
     @Override
     public void Periodic() {
@@ -152,14 +173,6 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
         SmartDashboard.putNumber("rightVelocity", rVel);
         SmartDashboard.putNumber("leftVelocity", lVel);
 
-        SmartDashboard.putNumber("maxRightVel", maxRVelocity);
-        SmartDashboard.putNumber("maxLeftVel", maxLVelocity);
-
-        if (rVel > maxRVelocity) {
-            maxRVelocity = rVel;
-        }
-        if (lVel > maxLVelocity) {
-            maxLVelocity = lVel;
-        }
+        SmartDashboard.putNumberArray("GyroYPR", getGyroYPR());
     }
 }

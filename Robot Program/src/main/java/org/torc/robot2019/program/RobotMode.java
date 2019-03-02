@@ -1,17 +1,14 @@
 package org.torc.robot2019.program;
 
-import com.ctre.phoenix.sensors.PigeonIMU;
-
+import org.torc.robot2019.program.KMap.KNumeric;
 import org.torc.robot2019.subsystems.BasicDriveTrain;
 import org.torc.robot2019.subsystems.Climber;
 import org.torc.robot2019.subsystems.Elevator;
 import org.torc.robot2019.subsystems.PivotArm;
-import org.torc.robot2019.tools.Pneumatics;
+import org.torc.robot2019.subsystems.Pneumatics;
 import org.torc.robot2019.vision.VisionManager;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //import org.torc.robot2019.robot.subsystems.DriveTrain;
@@ -25,17 +22,31 @@ public class RobotMode {
 	 */
 	public static void Init() {
 		
-		RobotMap.PNUPressure = new AnalogInput(0);
+		RobotMap.S_Pneumatics = new Pneumatics(
+			(int)KMap.GetKNumeric(KNumeric.INT_PNEUMATICS_PSI_SENSOR_ID));
 		
-		RobotMap.S_DriveTrain = new BasicDriveTrain(10, 11, 12, 13, 14, 15);
+		RobotMap.S_DriveTrain = new BasicDriveTrain(
+			(int)KMap.GetKNumeric(KNumeric.INT_DRIVETRAIN_LEFT_MASTER_ID),
+			(int)KMap.GetKNumeric(KNumeric.INT_DRIVETRAIN_RIGHT_MASTER_ID),
+			(int)KMap.GetKNumeric(KNumeric.INT_DRIVETRAIN_LEFT_SLAVE_0_ID),
+			(int)KMap.GetKNumeric(KNumeric.INT_DRIVETRAIN_RIGHT_SLAVE_0_ID),
+			(int)KMap.GetKNumeric(KNumeric.INT_DRIVETRAIN_LEFT_SLAVE_1_ID),
+			(int)KMap.GetKNumeric(KNumeric.INT_DRIVETRAIN_RIGHT_SLAVE_1_ID),
+			(int)KMap.GetKNumeric(KNumeric.INT_DRIVETRAIN_PIGEON_ID));
 		
-		RobotMap.S_Climber = new Climber(41, 42, 40, 43);
+		RobotMap.S_Climber = new Climber(
+			(int)KMap.GetKNumeric(KNumeric.INT_CLIMBER_MANTIS_LEFT_MOTOR_ID),
+			(int)KMap.GetKNumeric(KNumeric.INT_CLIMBER_MANTIS_RIGHT_MOTOR_ID),
+			(int)KMap.GetKNumeric(KNumeric.INT_CLIMBER_MANTIS_PIVOT_MOTOR_ID),
+			(int)KMap.GetKNumeric(KNumeric.INT_CLIMBER_POGO_MOTOR_ID));
 
-		RobotMap.S_PivotArm = new PivotArm(20);
+		RobotMap.S_PivotArm = new PivotArm(
+			(int)KMap.GetKNumeric(KNumeric.INT_PIVOT_ARM_MASTER_ID));
 
-		RobotMap.S_Elevator = new Elevator(21, 0);
-
-		RobotMap.PigeonGyro = new PigeonIMU(4);
+		RobotMap.S_Elevator = new Elevator(
+			(int)KMap.GetKNumeric(KNumeric.INT_ELEVATOR_MOTOR_ID),
+			(int)KMap.GetKNumeric(KNumeric.INT_ELEVATOR_ENDSTOP_ID),
+			RobotMap.S_PivotArm);
 
 		RobotMap.VManager = new VisionManager(NetworkTableInstance.getDefault());
 	}
@@ -46,9 +57,9 @@ public class RobotMode {
 	 */
 	public static void Periodic() {
 		
-		SmartDashboard.putNumber("PSI", Pneumatics.getPSIFromAnalog(RobotMap.PNUPressure));
+		SmartDashboard.putNumber("PSI", RobotMap.S_Pneumatics.getPSI());
 
-		SmartDashboard.putNumber("GyroFusedHeading", RobotMap.PigeonGyro.getFusedHeading());
+		SmartDashboard.putNumber("GyroFusedHeading", RobotMap.S_DriveTrain.getGyroAngle());
 		
 	}
 }

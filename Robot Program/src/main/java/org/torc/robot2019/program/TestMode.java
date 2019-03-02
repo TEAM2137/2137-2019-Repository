@@ -17,9 +17,11 @@ public class TestMode {
 	public static void Periodic() {
 		
 		// Might need to alter these by 0.5
+		/*
 		double mantisLeft = -TORCControls.GetInput(ControllerInput.A_MantisLeft);
 		double mantisRight = TORCControls.GetInput(ControllerInput.A_MantisRight);
 		RobotMap.S_Climber.setMantisSpeed(mantisLeft, mantisRight);
+		*/
 
 		double mantisPivot = MathExtra.applyDeadband(
 			TORCControls.GetInput(ControllerInput.A_MantisArm), 0.2);

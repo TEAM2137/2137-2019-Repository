@@ -9,28 +9,37 @@ public class TORCControls {
      * (Make sure you define them inline!)
      */
     private static GenericHID driverController = new XboxController(0);
+    private static GenericHID climberController = new XboxController(2);
 
     public static enum ControllerInput {
 		/**Left Drivetrain Control Axis*/
 		A_DriveLeft(1, driverController, InputType.Axis), // Left stick Y axis
 		/**Right Drivetrain Control Axis*/
         A_DriveRight(4, driverController, InputType.Axis), // Right stick X axis
-        /**Mantis-Arm Left Drivewheel*/
-        A_MantisLeft(2, driverController, InputType.Axis), // Left Trigger
-        /**Mantis-Arm Right Drivewheel*/
-        A_MantisRight(3, driverController, InputType.Axis), // Right Trigger
+
         /**Mantis-Arm Pivot*/
-        A_MantisArm(1, driverController, InputType.Axis), // Left stick Y axis
-        /**Pogo-Sticks Control*/
-        A_PogoControl(5, driverController, InputType.Axis), // Right stick Y axis
+        A_MantisArm(1, climberController, InputType.Axis), // Left stick Y axis
+
+        A_MantisLeft(2, climberController, InputType.Axis), // Left trigger
+        A_MantisRight(3, climberController, InputType.Axis), // Right trigger
+
+        /**Pogo-Sticks Manual Control*/
+        A_PogoControl(5, climberController, InputType.Axis), // Right stick Y axis
+        /**Pogo-Sticks Auto-adjust enable*/
+        B_PogoAuto(10, climberController, InputType.Button), // Right stick push-in
+
         /**Flip PivotArm side-selction*/
         B_PivotFlipSelection(270, driverController, InputType.POV), // Left POV
         /**PivotArm Up position*/
         B_PivotUp(4, driverController, InputType.Button), // Y button
-        /**PivotArm Low position*/
-        B_PivotLow(1, driverController, InputType.Button), // A button
-        /**Pivot Arm Up position*/
-        B_PivotHigh(4, driverController, InputType.Button), // Y button
+        /**PivotArm 1st Rocket position*/
+        //B_PivotRocket1(1, driverController, InputType.Button), // A button
+        /**PivotArm 2nd Rocket position*/
+        B_PivotRocket2(3, driverController, InputType.Button), // X button
+        /**PivotArm 3rd Rocket position*/
+        B_PivotRocket3(2, driverController, InputType.Button), // B button
+        /**PivotArm Intake position*/
+        B_PivotHorizontal(1, driverController, InputType.Button), // A button
         ;
         
         private int id;
