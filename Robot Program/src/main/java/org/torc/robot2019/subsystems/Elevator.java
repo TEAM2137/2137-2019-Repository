@@ -31,7 +31,7 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 		Retracted(0),
 		Level1(0),
 		Level2(5000),
-		Level3(15000),
+		Level3(14900),
 		;
 	
 		private int positionValue;
@@ -49,6 +49,9 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 	
 	public final static int ELEVATOR_MAX_POSITION = 
 		(int)KMap.GetKNumeric(KNumeric.INT_ELEVATOR_MAX_POSITION);
+
+	public final static int JOG_ERROR_CUTOFF = 
+	  	(int)KMap.GetKNumeric(KNumeric.INT_ELEVATOR_JOG_ERROR_CUTOFF);
 	
 	private boolean maxLimitTripped = false;
 	private boolean minLimitTripped = false;
@@ -133,20 +136,6 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 		}
 		setPercSpeedUnchecked(_speed);
 	}
-	
-	/*
-	public void positionFind(ElevatorPositions position) {
-		System.out.println("Finding position: " + position.name());
-		if (!hasBeenHomed) {
-			hasNotHomedAlert();
-			return;
-		}
-		int targPos = GetElevatorPositions(position);
-		elevatorTargetPosition = targPos;
-		elevatorPosition = position;
-		elevator.set(ControlMode.MotionMagic, MathExtra.clamp(targPos, 0, ELEVATOR_MAX_POSITION));
-	}
-	*/
 
 	public void setPosition(ElevatorPositions _position) {
 		setPosition(_position.positionValue);
@@ -157,8 +146,8 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 			hasNotHomedAlert();
 			return;
 		}
-		elevatorTargetPosition = _position;
-		elevatorM.set(ControlMode.Position, MathExtra.clamp(_position, 0, ELEVATOR_MAX_POSITION));
+		elevatorTargetPosition = MathExtra.clamp(_position, 0, ELEVATOR_MAX_POSITION);
+		elevatorM.set(ControlMode.Position, elevatorTargetPosition);
 	}
 	
 	protected void zeroEncoder() {
@@ -178,34 +167,22 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 		return !elevatorEndstop.get();
 	}
 	
-	/*
-	public void setPosMagic(int pos) {
-		elevatorM.set(ControlMode.MotionMagic, pos);
-	}
-	*/
-	
-	/*
-	public void jogElevatorPos(double positionInc) {
+	public void jogPosition(int positionInc) {
 		if (!hasBeenHomed) {
 			hasNotHomedAlert();
 			return;
 		}
-		elevatorTargetPosition += positionInc;
-		elevatorTargetPosition = MathExtra.clamp(elevatorTargetPosition, 0, ELEVATOR_MAX_POSITION);
-		elevatorM.set(ControlMode.MotionMagic, elevatorTargetPosition);
-	}
-	*/
-	
-	/*
-	public void jogElevatorPosInc(int increment) {
-		if (!hasBeenHomed) {
-			hasNotHomedAlert();
-			return;
+		/* 
+		* If error is too big, set elevatorTargetPosition to encoder count so jogging is 
+		* instantanious
+		*/
+		int jogErrorThing = Math.abs(elevatorTargetPosition - getEncoder());
+		System.out.println("jogErrorThing: " + jogErrorThing);
+		if (jogErrorThing > JOG_ERROR_CUTOFF) {
+			elevatorTargetPosition = getEncoder();
 		}
-		elevatorPosition = Elevator.ElevatorPositions.values()[(int) MathExtra.clamp(elevatorPosition.ordinal() + increment, 0, Elevator.ElevatorPositions.values().length-1)];
-		positionFind(elevatorPosition);
+		setPosition(elevatorTargetPosition += positionInc);
 	}
-	*/
 	
 	private static void hasNotHomedAlert() {
 		System.out.println("Cannot move Elevator; has not homed!!");
@@ -213,13 +190,23 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 
 	private double getMaxArmExtension() {
 		int inchConversion = (int)KMap.GetKNumeric(KNumeric.INT_ELEVATOR_TICKS_PER_INCH);
-		int distanceAllowed = 
-		(int)(KMap.GetKNumeric(KNumeric.DBL_ROBOT_MAX_EXTEND_OUTSIDE_OF_FRAME_INCHES) * inchConversion) - 
-		(int)(
-			(KMap.GetKNumeric(KNumeric.DBL_ELEVATOR_MINIMUM_DISTANCE_FROM_FRAME_EDGE_INCHES) * inchConversion)
+
+		double distanceAllowedInches = 
+		KMap.GetKNumeric(KNumeric.DBL_ROBOT_MAX_EXTEND_OUTSIDE_OF_FRAME_INCHES) - 
+		(
+			KMap.GetKNumeric(KNumeric.DBL_ELEVATOR_MINIMUM_DISTANCE_FROM_FRAME_EDGE_INCHES)
 			+ 
-			(KMap.GetKNumeric(KNumeric.DBL_GRABBER_LENGTH_INCHES) * inchConversion));
+			KMap.GetKNumeric(KNumeric.DBL_GRABBER_LENGTH_INCHES));
+		
+		int distanceAllowed = (int)(distanceAllowedInches * inchConversion);
+
+		SmartDashboard.putNumber("ElevatorDistanceAllowedInches", distanceAllowedInches);
+		SmartDashboard.putNumber("ElevatorDistanceAllowed", distanceAllowed);
+
 		double otherAngle = 90 - PivotArm.PositionToAngle(pivotArm.getEncoder());
+
+		SmartDashboard.putNumber("otherAngle", otherAngle);
+
 		double angleTan = Math.tan(Math.toRadians(otherAngle));
 		double verticalDistance = angleTan * distanceAllowed;
 		double maxExtension = Math.sqrt(Math.pow(distanceAllowed, 2) + Math.pow(verticalDistance, 2));
@@ -242,29 +229,39 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 		}
 
 		// Check to maintain elevator is within bounds
-		if (elevatorM.getControlMode() == ControlMode.Position ||
-			elevatorM.getControlMode() == ControlMode.MotionMagic) {
-			
+		/*
+		if (hasBeenHomed &&
+			(elevatorM.getControlMode() == ControlMode.Position ||
+			elevatorM.getControlMode() == ControlMode.MotionMagic)) {
+
+			SmartDashboard.putBoolean("CorrectingElevatorOnAngle", true);
+
 			int elevatorTarget = elevatorTargetPosition;
 			int elevatorMax = (int)getMaxArmExtension();
+
+			SmartDashboard.putNumber("CalculatedElevatorMax", elevatorMax);
+
 			if (elevatorTarget > elevatorMax) {
-				setPosition(elevatorMax);
+				SmartDashboard.putBoolean("LimitingElevator", true);
+				//setPosition(elevatorMax);
 			}
 			else {
-				setPosition(elevatorTarget);
+				SmartDashboard.putBoolean("LimitingElevator", false);
+				//setPosition(elevatorTarget);
 			}
 		}
+		else {
+			SmartDashboard.putBoolean("CorrectingElevatorOnAngle", false);
+		}
+		*/
 
 		// Print Encoders
 		printEncoder();
 		
 		SmartDashboard.putNumber("ElevatorError", elevatorTargetPosition - getEncoder());
+		SmartDashboard.putNumber("ElevatorTargetPos", elevatorTargetPosition);
 		SmartDashboard.putNumber("ElevatorEncoder", getEncoder());
-		//System.out.println("ElevatorEncoder " + elevatorM.getSelectedSensorPosition(0));
 		SmartDashboard.putBoolean("ElevatorEndstop", getEndstop());
-		
-		SmartDashboard.putNumber("ElevatorVel", elevatorM.getSelectedSensorVelocity(0));
-		//System.out.println("ElevatorVel " + elevatorM.getSelectedSensorVelocity(0));
 	}
 	
 }

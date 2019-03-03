@@ -8,7 +8,7 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/Gabe/Desktop/java-MultiCameraServer/java-multiCameraServer/cameraserver.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Gabe/Desktop/java-MultiCameraServer/java-multiCameraServer/cscore.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Gabe/Desktop/java-MultiCameraServer/java-multiCameraServer/ntcore.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Public/frc2019/maven/edu/wpi/first/ntcore/ntcore-java/2019.1.1/ntcore-java-2019.1.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Gabe/Desktop/java-MultiCameraServer/java-multiCameraServer/opencv-344.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Gabe/Desktop/java-MultiCameraServer/java-multiCameraServer/wpiutil.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Gabe/Desktop/java-MultiCameraServer/java-multiCameraServer/gson-2.8.5.jar"/>

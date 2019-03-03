@@ -9,6 +9,7 @@ public class TORCControls {
      * (Make sure you define them inline!)
      */
     private static GenericHID driverController = new XboxController(0);
+    private static GenericHID operatorController = new XboxController(1);
     private static GenericHID climberController = new XboxController(2);
 
     public static enum ControllerInput {
@@ -28,18 +29,32 @@ public class TORCControls {
         /**Pogo-Sticks Auto-adjust enable*/
         B_PogoAuto(10, climberController, InputType.Button), // Right stick push-in
 
+        /**Elevator Manual Up-Down Jog */
+        A_ElevatorJog(1, operatorController, InputType.Axis),
+
         /**Flip PivotArm side-selction*/
-        B_PivotFlipSelection(270, driverController, InputType.POV), // Left POV
+        B_PivotFlipSelection(270, operatorController, InputType.POV), // Left POV
         /**PivotArm Up position*/
-        B_PivotUp(4, driverController, InputType.Button), // Y button
+        B_PivotUp(90, operatorController, InputType.POV), // Right POV
+        /**PivotArm shuttle position*/
+        B_PivotShuttle(3, operatorController, InputType.Button), // X button
         /**PivotArm 1st Rocket position*/
-        //B_PivotRocket1(1, driverController, InputType.Button), // A button
+        B_PivotRocket1(1, operatorController, InputType.Button), // A button
         /**PivotArm 2nd Rocket position*/
-        B_PivotRocket2(3, driverController, InputType.Button), // X button
+        B_PivotRocket2(2, operatorController, InputType.Button), // B button
         /**PivotArm 3rd Rocket position*/
-        B_PivotRocket3(2, driverController, InputType.Button), // B button
+        B_PivotRocket3(4, operatorController, InputType.Button), // Y button
+
+        A_PivotJogLeft(2, operatorController, InputType.Axis), // Left Trigger
+        A_PivotJogRight(3, operatorController, InputType.Axis), // Right Trigger
+
+        A_WristJog(5, operatorController, InputType.Axis), // Right stick Y
+
+        B_OpenWrist(6, operatorController, InputType.Button), // Right bumper
+        B_CloseWrist(5, operatorController, InputType.Button), // Light bumper
+        
         /**PivotArm Intake position*/
-        B_PivotHorizontal(1, driverController, InputType.Button), // A button
+        //B_PivotHorizontal(1, driverController, InputType.Button), // A button
         ;
         
         private int id;
@@ -135,5 +150,9 @@ public class TORCControls {
     //TODO: get rid of this function and implement it correctly
     public static GenericHID GetDriverController() {
         return driverController;
+    }
+
+    public static GenericHID GetOperatorController() {
+        return operatorController;
     }
 }

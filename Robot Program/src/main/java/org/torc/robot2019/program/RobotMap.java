@@ -1,10 +1,12 @@
 package org.torc.robot2019.program;
 
+import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
 import org.torc.robot2019.subsystems.BasicDriveTrain;
 import org.torc.robot2019.subsystems.Climber;
 import org.torc.robot2019.subsystems.Elevator;
+import org.torc.robot2019.subsystems.EndEffector;
 import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.subsystems.Pneumatics;
 import org.torc.robot2019.vision.VisionManager;
@@ -30,5 +32,9 @@ public class RobotMap {
 	public static Elevator S_Elevator;
 
 	public static VisionManager VManager;
+
+	public static CANifier Canifier;
+
+	public static EndEffector S_EndEffector;
 	
 }

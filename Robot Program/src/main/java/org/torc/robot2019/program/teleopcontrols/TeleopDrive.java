@@ -1,6 +1,7 @@
 package org.torc.robot2019.program.teleopcontrols;
 
 import com.ctre.phoenix.CANifier;
+import com.ctre.phoenix.CANifier.GeneralPin;
 
 import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.program.RobotMap;
@@ -11,7 +12,9 @@ import org.torc.robot2019.program.TORCControls.InputState;
 import org.torc.robot2019.subsystems.BasicDriveTrain;
 import org.torc.robot2019.subsystems.Climber;
 import org.torc.robot2019.subsystems.Elevator;
+import org.torc.robot2019.subsystems.EndEffector;
 import org.torc.robot2019.subsystems.Elevator.ElevatorPositions;
+import org.torc.robot2019.subsystems.EndEffector.SolenoidStates;
 import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.subsystems.PivotArm.PivotArmPositions;
 import org.torc.robot2019.tools.CLCommand;
@@ -22,13 +25,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TeleopDrive extends CLCommand {
 
-    public static CANifier canTool;
-
-    boolean oneShot = false;
-
     final double QUICK_TURN_CONSTANT = KMap.GetKNumeric(KNumeric.DBL_QUICK_TURN);
 	final double QUICK_TURN_SENSITIVITY = KMap.GetKNumeric(KNumeric.DBL_QUICK_TURN_SENSITIVITY);
-	final double SPEED_TURN_SENSITIVITY = KMap.GetKNumeric(KNumeric.DBL_SPEED_TURN_SENSITIVITY);
+    final double SPEED_TURN_SENSITIVITY = KMap.GetKNumeric(KNumeric.DBL_SPEED_TURN_SENSITIVITY);
+    
+    final double ELEVATOR_JOG_MULTIPLIER = KMap.GetKNumeric(KNumeric.DBL_ELEVATOR_JOG_CONTROL_MULTIPLIER);
+    final double PIVOTARM_JOG_MULTIPLIER = KMap.GetKNumeric(KNumeric.DBL_PIVOTARM_JOG_CONTROL_MULTIPLIER);
+    final double WRIST_JOG_MULTIPLIER = KMap.GetKNumeric(KNumeric.DBL_WRIST_JOG_CONTROL_MULTIPLIER);
 
     BasicDriveTrain driveTrain;
 
@@ -38,13 +41,23 @@ public class TeleopDrive extends CLCommand {
 
     Elevator elevator;
 
+    EndEffector endEffector;
+
     public static enum ArmSide { kFront, kBack }
 
     public ArmSide armSide;
 
     RobotAutoLevel autoLevelCommand;
 
-    public TeleopDrive(BasicDriveTrain _driveTrain, PivotArm _pivotArm, Climber _climber, Elevator _elevator) {
+    GenericHID operatorController;
+
+    /** Controller inputs for driveline speeds. (0 = left, 1 = right) */
+    private double[] driveInput = {0, 0};
+    /** Controller inputs for mantis wheel speeds. (0 = left, 1 = right) */
+    private double[] mantisWheelInput = {0, 0};
+
+    public TeleopDrive(BasicDriveTrain _driveTrain, PivotArm _pivotArm, Climber _climber, 
+            Elevator _elevator, EndEffector _endEffector) {
         driveTrain = _driveTrain;
 
         pivotArm = _pivotArm;
@@ -53,94 +66,64 @@ public class TeleopDrive extends CLCommand {
 
         elevator = _elevator;
 
+        endEffector = _endEffector;
+
         autoLevelCommand = new RobotAutoLevel(climber, driveTrain);
 
         requires(driveTrain);
         requires(pivotArm);
 
         armSide = getPivotArmSide();
+
+        operatorController = TORCControls.GetOperatorController();
     }
     // Called just before this Command runs the first time
     @Override
     protected void initialize() {
-        
-        canTool = new CANifier(3);
 
         autoLevelCommand.start();
-        //SmartDashboard.putNumber("velDrive", 0);
     }
 
     // Called repeatedly when this Command is scheduled to run
     @Override
     protected void execute() {
 
-        double driveLeft = TORCControls.GetInput(ControllerInput.A_DriveLeft);
-        double driveRight = TORCControls.GetInput(ControllerInput.A_DriveRight);
+        drivelineMantisControl();
         
-        double mantisLeft = TORCControls.GetInput(ControllerInput.A_MantisLeft);
-        double mantisRight = TORCControls.GetInput(ControllerInput.A_MantisRight);
+        climbControl();
 
-        RobotMap.S_Climber.setMantisSpeed(mantisLeft, mantisRight);
+        pivotArmElevatorControl();
+
+        endEffectorControl();
+        
+    }
+
+    private void drivelineMantisControl() {
+        // Robot driving
+        driveInput[0] = TORCControls.GetInput(ControllerInput.A_DriveLeft);
+        driveInput[1] = TORCControls.GetInput(ControllerInput.A_DriveRight);
+        
+        mantisWheelInput[0] = TORCControls.GetInput(ControllerInput.A_MantisLeft);
+        mantisWheelInput[1] = TORCControls.GetInput(ControllerInput.A_MantisRight);
+
+        RobotMap.S_Climber.setMantisSpeed(mantisWheelInput[0], mantisWheelInput[1]); 
 
         // Set drive mode based on if mantis wheels should move or not
-        if (mantisLeft > 0.2 || mantisRight > 0.2) {
-            RobotMap.S_DriveTrain.setVelSpeed(-mantisLeft, mantisRight);
+        if (mantisWheelInput[0] > 0.2 || mantisWheelInput[1] > 0.2) {
+            RobotMap.S_DriveTrain.setVelSpeed(-mantisWheelInput[0], mantisWheelInput[1]);
         }
         else {
             // Drive the robot
-            haloDrive(driveLeft, -driveRight, false);
+            haloDrive(driveInput[0], -driveInput[1], false);
         }
-        
+    }
+
+    private void climbControl() {
         // Mantis Arm Control
         double mantisPivot = MathExtra.applyDeadband(
             TORCControls.GetInput(ControllerInput.A_MantisArm), 0.2) *
             KMap.GetKNumeric(KNumeric.DBL_MANTIS_ARM_MAX_PERCENT_OUT);
         RobotMap.S_Climber.setMantisPivotSpeed(mantisPivot);
-
-        // Arm position control
-        if (TORCControls.GetInput(ControllerInput.B_PivotUp, InputState.Pressed) >= 1) {
-            pivotArm.setPosition(PivotArmPositions.Up);
-            elevator.setPosition(ElevatorPositions.Retracted);
-        }
-
-        if (TORCControls.GetInput(ControllerInput.B_PivotFlipSelection) >= 1) {
-            if (TORCControls.GetInput(ControllerInput.B_PivotHorizontal, InputState.Pressed) >= 1) {
-                pivotArm.setPosition(PivotArmPositions.HorizontalF);
-                elevator.setPosition(ElevatorPositions.Retracted);
-            }
-            /*
-            else if (TORCControls.GetInput(ControllerInput.B_PivotRocket1, InputState.Pressed) >= 1) {
-                pivotArm.setPosition(PivotArmPositions.Level1F);
-            }
-            */
-            else if (TORCControls.GetInput(ControllerInput.B_PivotRocket2, InputState.Pressed) >= 1) {
-                pivotArm.setPosition(PivotArmPositions.Level2F);
-                elevator.setPosition(ElevatorPositions.Level2);
-            }
-            else if (TORCControls.GetInput(ControllerInput.B_PivotRocket3, InputState.Pressed) >= 1) {
-                pivotArm.setPosition(PivotArmPositions.Level3F);
-                elevator.setPosition(ElevatorPositions.Level3);
-            }
-        }
-        else {
-            if (TORCControls.GetInput(ControllerInput.B_PivotHorizontal, InputState.Pressed) >= 1) {
-                pivotArm.setPosition(PivotArmPositions.HorizontalR);
-                elevator.setPosition(ElevatorPositions.Retracted);
-            }
-            /*
-            else if (TORCControls.GetInput(ControllerInput.B_PivotRocket1, InputState.Pressed) >= 1) {
-                pivotArm.setPosition(PivotArmPositions.Level1R);
-            }
-            */
-            else if (TORCControls.GetInput(ControllerInput.B_PivotRocket2, InputState.Pressed) >= 1) {
-                pivotArm.setPosition(PivotArmPositions.Level2R);
-                elevator.setPosition(ElevatorPositions.Level2);
-            }
-            else if (TORCControls.GetInput(ControllerInput.B_PivotRocket3, InputState.Pressed) >= 1) {
-                pivotArm.setPosition(PivotArmPositions.Level3R);
-                elevator.setPosition(ElevatorPositions.Level3);
-            }
-        }
 
         // Pogo sticks auto control
         if (TORCControls.GetInput(ControllerInput.B_PogoAuto) >= 1) {
@@ -152,7 +135,88 @@ public class TeleopDrive extends CLCommand {
 			    TORCControls.GetInput(ControllerInput.A_PogoControl), 0.2);
 		    RobotMap.S_Climber.setPogoStickSpeed(pogoSpeed);
         }
-        
+    }
+
+    private void pivotArmElevatorControl() {
+        // Manual elevator jog override
+        double elevatorControl = MathExtra.applyDeadband(
+            TORCControls.GetInput(ControllerInput.A_ElevatorJog), 0.2);
+        if (elevatorControl != 0) {
+            elevator.jogPosition((int)(elevatorControl * ELEVATOR_JOG_MULTIPLIER));
+        }
+        // Manual pivot jog override
+        double pivotArmControl = MathExtra.applyDeadband(
+            TORCControls.GetInput(ControllerInput.A_PivotJogLeft) - 
+            TORCControls.GetInput(ControllerInput.A_PivotJogRight), 0.2);
+        if (pivotArmControl != 0) {
+            pivotArm.jogPosition((int)(pivotArmControl * PIVOTARM_JOG_MULTIPLIER));
+        }
+
+        // Arm position control
+        if (TORCControls.GetInput(ControllerInput.B_PivotUp, InputState.Pressed) >= 1) {
+            pivotArm.setPosition(PivotArmPositions.Up);
+            elevator.setPosition(ElevatorPositions.Retracted);
+        }
+
+        if (TORCControls.GetInput(ControllerInput.B_PivotFlipSelection) >= 1) {
+            /*
+            if (TORCControls.GetInput(ControllerInput.B_PivotHorizontal, InputState.Pressed) >= 1) {
+                pivotArm.setPosition(PivotArmPositions.HorizontalF);
+                //elevator.setPosition(ElevatorPositions.Retracted);
+            }
+            */
+            if (TORCControls.GetInput(ControllerInput.B_PivotRocket1, InputState.Pressed) >= 1) {
+                pivotArm.setPosition(PivotArmPositions.Level1F);
+                elevator.setPosition(ElevatorPositions.Level1);
+            }
+            
+            else if (TORCControls.GetInput(ControllerInput.B_PivotRocket2, InputState.Pressed) >= 1) {
+                pivotArm.setPosition(PivotArmPositions.Level2F);
+                elevator.setPosition(ElevatorPositions.Level2);
+            }
+            else if (TORCControls.GetInput(ControllerInput.B_PivotRocket3, InputState.Pressed) >= 1) {
+                pivotArm.setPosition(PivotArmPositions.Level3F);
+                elevator.setPosition(ElevatorPositions.Level3);
+            }
+        }
+        else {
+            /*
+            if (TORCControls.GetInput(ControllerInput.B_PivotHorizontal, InputState.Pressed) >= 1) {
+                pivotArm.setPosition(PivotArmPositions.HorizontalR);
+                //elevator.setPosition(ElevatorPositions.Retracted);
+            }
+            */
+            if (TORCControls.GetInput(ControllerInput.B_PivotRocket1, InputState.Pressed) >= 1) {
+                pivotArm.setPosition(PivotArmPositions.Level1R);
+                elevator.setPosition(ElevatorPositions.Level1);
+            }
+            
+            else if (TORCControls.GetInput(ControllerInput.B_PivotRocket2, InputState.Pressed) >= 1) {
+                pivotArm.setPosition(PivotArmPositions.Level2R);
+                elevator.setPosition(ElevatorPositions.Level2);
+            }
+            else if (TORCControls.GetInput(ControllerInput.B_PivotRocket3, InputState.Pressed) >= 1) {
+                pivotArm.setPosition(PivotArmPositions.Level3R);
+                elevator.setPosition(ElevatorPositions.Level3);
+            }
+        }
+    }
+
+    private void endEffectorControl() {
+        double endEffectorControl = MathExtra.applyDeadband(
+            TORCControls.GetInput(ControllerInput.A_WristJog), 0.2);
+
+        if (endEffectorControl != 0) {
+            endEffector.jogPosition((int)(endEffectorControl * WRIST_JOG_MULTIPLIER));
+        }
+
+        if (TORCControls.GetInput(ControllerInput.B_OpenWrist) >= 1) {
+            endEffector.setSolenoid(SolenoidStates.Open);
+        }
+        else if (TORCControls.GetInput(ControllerInput.B_CloseWrist) >= 1) {
+            endEffector.setSolenoid(SolenoidStates.Closed);
+        }
+
     }
 
     // Called once after isFinished returns true

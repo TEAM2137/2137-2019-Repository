@@ -5,12 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-import java.awt.Dimension;
-import java.awt.Point;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -32,14 +27,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.vision.VisionPipeline;
 import edu.wpi.first.vision.VisionThread;
 
-import org.apache.commons.lang3.SerializationUtils;
-import org.cheapgsean.serial.SerRotatedRect;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
-import org.opencv.core.RotatedRect;
-import org.opencv.imgproc.Imgproc;
 
 /*
    JSON format:
@@ -84,6 +73,8 @@ public final class Main {
   
   public static T_RectFinder RectFinder;
   public static T_RectSerializeSend RectSerializeSend;
+  
+  private static boolean devMode = false;
 
   private Main() {
   }
@@ -212,7 +203,17 @@ public final class Main {
    */
   public static void main(String... args) throws IOException {
     if (args.length > 0) {
-      configFile = args[0];
+    	if (!args[0].startsWith("-")) {
+    		configFile = args[0];
+    	}
+    	
+    	for (String s : args) {
+    		// If dev mode specified
+    		if (s.toLowerCase().equals("-d")) {
+    			devMode = true;
+    			System.out.println("Devmode Specified");
+    		}
+    	}
     }
 
     // read configuration

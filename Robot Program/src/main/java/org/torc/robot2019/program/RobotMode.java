@@ -1,9 +1,13 @@
 package org.torc.robot2019.program;
 
+import com.ctre.phoenix.CANifier;
+import com.ctre.phoenix.CANifier.GeneralPin;
+
 import org.torc.robot2019.program.KMap.KNumeric;
 import org.torc.robot2019.subsystems.BasicDriveTrain;
 import org.torc.robot2019.subsystems.Climber;
 import org.torc.robot2019.subsystems.Elevator;
+import org.torc.robot2019.subsystems.EndEffector;
 import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.subsystems.Pneumatics;
 import org.torc.robot2019.vision.VisionManager;
@@ -49,6 +53,11 @@ public class RobotMode {
 			RobotMap.S_PivotArm);
 
 		RobotMap.VManager = new VisionManager(NetworkTableInstance.getDefault());
+
+		RobotMap.Canifier = new CANifier((int)KMap.GetKNumeric(KNumeric.INT_CANIFIER_ID));
+		
+		RobotMap.S_EndEffector = new EndEffector(30, 31, 0, 0, 1, RobotMap.Canifier, GeneralPin.LIMR, 
+			GeneralPin.QUAD_B);
 	}
 	
 	/**
@@ -60,6 +69,6 @@ public class RobotMode {
 		SmartDashboard.putNumber("PSI", RobotMap.S_Pneumatics.getPSI());
 
 		SmartDashboard.putNumber("GyroFusedHeading", RobotMap.S_DriveTrain.getGyroAngle());
-		
+
 	}
 }

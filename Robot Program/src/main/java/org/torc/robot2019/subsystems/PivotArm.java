@@ -14,6 +14,7 @@ import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.program.KMap.KNumeric;
 import org.torc.robot2019.robot.InheritedPeriodic;
 import org.torc.robot2019.robot.Robot;
+import org.torc.robot2019.tools.MathExtra;
 import org.torc.robot2019.tools.MotorControllers;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -52,7 +53,17 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
   private static final double ARM_360_RESOLUTION_MULTIPLIER = 
     KMap.GetKNumeric(KNumeric.INT_PIVOT_ARM_360_DEGREE_RESOLUTION) / 360;
 
+  private static final int ARM_MIN_POSITION = 
+    (int)KMap.GetKNumeric(KNumeric.INT_PIVOT_ARM_MIN_POSITION);
+  private static final int ARM_MAX_POSITION = 
+    (int)KMap.GetKNumeric(KNumeric.INT_PIVOT_ARM_MAX_POSITION);
+
+  private static final int JOG_ERROR_CUTOFF = 
+    (int)KMap.GetKNumeric(KNumeric.INT_PIVOT_ARM_JOG_ERROR_CUTOFF);
+
   TalonSRX m_armPivot;
+
+  private int targetPosition = 0;
 
   public PivotArm(int _armPivotID) {
     // Add this class to InheritedPeriodic list
@@ -63,7 +74,7 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
     MotorControllers.TalonSRXConfig(m_armPivot);
 
     // Limit ArmPivot to a max current
-    m_armPivot.configContinuousCurrentLimit(5);
+    m_armPivot.configContinuousCurrentLimit(10);
 
     // Limit maximum output speed
     double maxOutputForward = 
@@ -95,8 +106,16 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
   }
 
   public void setRawPosition(int _position) {
-    configNominalRange(false);
-    m_armPivot.set(ControlMode.Position, _position);
+    int nomRangeMin = 1900;
+    int nomRangeMax = 2200;
+    //if (_position >= nomRangeMin && _position <= nomRangeMax) {
+    //  configNominalRange(true);
+    //}
+    //else {
+      configNominalRange(false);
+    //}
+    targetPosition = MathExtra.clamp(_position, ARM_MIN_POSITION, ARM_MAX_POSITION);
+    m_armPivot.set(ControlMode.Position, targetPosition);
   }
 
   public void setAnglePosition(double _angle) {
@@ -105,14 +124,31 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
 
   public void setPosition(PivotArmPositions _position) {
     switch (_position) {
-      case Up:
-        configNominalRange(true);
+      case Level1R:
+        System.out.println("Pivot: Setting kF to 0.2");
+        m_armPivot.config_kF(0, 0.2);
+        break;
+      case Level1F:
+        System.out.println("Pivot: Setting kF to -0.2");
+        m_armPivot.config_kF(0, -0.2);
         break;
       default:
-        configNominalRange(false);
+        m_armPivot.config_kF(0, 0);
         break;
     }
-    m_armPivot.set(ControlMode.Position, GetPivotArmPositionsValue(_position));
+    setRawPosition(GetPivotArmPositionsValue(_position));
+  }
+
+  public void jogPosition(int _positionInc) {
+    /* 
+		* If error is too big, set elevatorTargetPosition to encoder count so jogging is 
+		* instantanious
+		*/
+    if (Math.abs(targetPosition - getEncoder()) > JOG_ERROR_CUTOFF) {
+      targetPosition = getEncoder();
+    }
+    
+    setRawPosition(targetPosition += _positionInc);
   }
 
   public int getEncoder() {
@@ -141,6 +177,7 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
   public void Periodic() {
     SmartDashboard.putNumber("ArmCorrectedEncoder", getEncoder());
     SmartDashboard.putNumber("ArmPositionError", m_armPivot.getClosedLoopTarget() - getEncoder());
+    SmartDashboard.putNumber("ArmTargetPosition", targetPosition);
   }
 
   @Override
