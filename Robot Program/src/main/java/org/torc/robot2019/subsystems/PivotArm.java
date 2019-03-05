@@ -90,6 +90,8 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
     m_armPivot.config_kD(0, 300);
     m_armPivot.config_IntegralZone(0, 40);
 
+    m_armPivot.configAllowableClosedloopError(0, 0);
+
     int absolutePosition = m_armPivot.getSensorCollection().getPulseWidthPosition();
     absolutePosition += KMap.GetKNumeric(KNumeric.INT_PIVOT_ARM_ENCODER_OFFSET);
 		absolutePosition &= 0xFFF;// Mask out overflows, keep bottom 12 bits
@@ -105,21 +107,13 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
     m_armPivot.set(ControlMode.PercentOutput, _speed);
   }
 
-  public void setRawPosition(int _position) {
-    int nomRangeMin = 1900;
-    int nomRangeMax = 2200;
-    //if (_position >= nomRangeMin && _position <= nomRangeMax) {
-    //  configNominalRange(true);
-    //}
-    //else {
-      configNominalRange(false);
-    //}
+  public void setPosition(int _position) {
     targetPosition = MathExtra.clamp(_position, ARM_MIN_POSITION, ARM_MAX_POSITION);
     m_armPivot.set(ControlMode.Position, targetPosition);
   }
 
   public void setAnglePosition(double _angle) {
-    setRawPosition(AngleToPosition(_angle));
+    setPosition(AngleToPosition(_angle));
   }
 
   public void setPosition(PivotArmPositions _position) {
@@ -136,7 +130,7 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
         m_armPivot.config_kF(0, 0);
         break;
     }
-    setRawPosition(GetPivotArmPositionsValue(_position));
+    setPosition(GetPivotArmPositionsValue(_position));
   }
 
   public void jogPosition(int _positionInc) {
@@ -148,7 +142,7 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
       targetPosition = getEncoder();
     }
     
-    setRawPosition(targetPosition += _positionInc);
+    setPosition(targetPosition += _positionInc);
   }
 
   public int getEncoder() {
@@ -161,16 +155,6 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
 
   public static double PositionToAngle(int _position) {
     return _position / ARM_360_RESOLUTION_MULTIPLIER;
-  }
-
-  private void configNominalRange(boolean _enable) {
-    if (_enable) {
-      m_armPivot.configAllowableClosedloopError(0, 
-        (int)KMap.GetKNumeric(KNumeric.INT_PIVOT_ARM_ALLOWABLE_ERROR));
-    }
-    else {
-      m_armPivot.configAllowableClosedloopError(0, 0);
-    }
   }
 
   @Override
