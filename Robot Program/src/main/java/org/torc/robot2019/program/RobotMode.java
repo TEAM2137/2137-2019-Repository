@@ -10,6 +10,7 @@ import org.torc.robot2019.subsystems.Elevator;
 import org.torc.robot2019.subsystems.EndEffector;
 import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.subsystems.Pneumatics;
+import org.torc.robot2019.subsystems.GamePositionManager;
 import org.torc.robot2019.vision.VisionManager;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -58,6 +59,9 @@ public class RobotMode {
 		
 		RobotMap.S_EndEffector = new EndEffector(30, 31, 0, 0, 1, RobotMap.Canifier, GeneralPin.LIMR, 
 			GeneralPin.QUAD_B);
+
+		RobotMap.S_GPManager = new GamePositionManager(RobotMap.S_PivotArm, RobotMap.S_Elevator, 
+			RobotMap.S_EndEffector);
 	}
 	
 	/**

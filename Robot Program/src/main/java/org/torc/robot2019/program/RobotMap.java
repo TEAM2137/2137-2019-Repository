@@ -9,6 +9,7 @@ import org.torc.robot2019.subsystems.Elevator;
 import org.torc.robot2019.subsystems.EndEffector;
 import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.subsystems.Pneumatics;
+import org.torc.robot2019.subsystems.GamePositionManager;
 import org.torc.robot2019.vision.VisionManager;
 
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -36,5 +37,7 @@ public class RobotMap {
 	public static CANifier Canifier;
 
 	public static EndEffector S_EndEffector;
+
+	public static GamePositionManager S_GPManager;
 	
 }

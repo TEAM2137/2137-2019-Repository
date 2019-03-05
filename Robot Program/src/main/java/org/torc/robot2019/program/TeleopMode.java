@@ -15,8 +15,8 @@ public class TeleopMode {
 		// Keep Pivot arm at init position
 		RobotMap.S_PivotArm.setRawPosition(RobotMap.S_PivotArm.getEncoder());
 		// Initialize Teleop Drive Command
-		driveCommand = new TeleopDrive(RobotMap.S_DriveTrain, RobotMap.S_PivotArm, RobotMap.S_Climber,
-			RobotMap.S_Elevator, RobotMap.S_EndEffector);
+		driveCommand = new TeleopDrive(RobotMap.S_DriveTrain, RobotMap.S_GPManager, 
+			RobotMap.S_PivotArm, RobotMap.S_Climber, RobotMap.S_Elevator, RobotMap.S_EndEffector);
 		driveCommand.start();
 	}
 	

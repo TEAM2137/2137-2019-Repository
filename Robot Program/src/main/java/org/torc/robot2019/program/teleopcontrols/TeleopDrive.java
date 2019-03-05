@@ -18,7 +18,11 @@ import org.torc.robot2019.subsystems.EndEffector.SolenoidStates;
 import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.subsystems.PivotArm.PivotArmPositions;
 import org.torc.robot2019.tools.CLCommand;
+import org.torc.robot2019.subsystems.GamePositionManager;
 import org.torc.robot2019.tools.MathExtra;
+import org.torc.robot2019.subsystems.GamePositionManager.GPeiceTarget;
+import org.torc.robot2019.subsystems.GamePositionManager.GamePositions;
+import org.torc.robot2019.subsystems.GamePositionManager.RobotSides;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -43,6 +47,8 @@ public class TeleopDrive extends CLCommand {
 
     EndEffector endEffector;
 
+    GamePositionManager gpManager;
+
     public static enum ArmSide { kFront, kBack }
 
     public ArmSide armSide;
@@ -56,8 +62,14 @@ public class TeleopDrive extends CLCommand {
     /** Controller inputs for mantis wheel speeds. (0 = left, 1 = right) */
     private double[] mantisWheelInput = {0, 0};
 
-    public TeleopDrive(BasicDriveTrain _driveTrain, PivotArm _pivotArm, Climber _climber, 
-            Elevator _elevator, EndEffector _endEffector) {
+    GamePositions targetedPosition;
+    
+    RobotSides targetedSide;
+
+    GPeiceTarget targetedGPeice = GPeiceTarget.kHatch; // Default targetedGPeice to Hatch
+
+    public TeleopDrive(BasicDriveTrain _driveTrain, GamePositionManager _gpManager,
+         PivotArm _pivotArm, Climber _climber, Elevator _elevator, EndEffector _endEffector) {
         driveTrain = _driveTrain;
 
         pivotArm = _pivotArm;
@@ -67,6 +79,8 @@ public class TeleopDrive extends CLCommand {
         elevator = _elevator;
 
         endEffector = _endEffector;
+
+        gpManager = _gpManager;
 
         autoLevelCommand = new RobotAutoLevel(climber, driveTrain);
 
@@ -138,13 +152,14 @@ public class TeleopDrive extends CLCommand {
     }
 
     private void pivotArmElevatorControl() {
-        // Manual elevator jog override
+        // Manual elevator jog override //
         double elevatorControl = MathExtra.applyDeadband(
-            TORCControls.GetInput(ControllerInput.A_ElevatorJog), 0.2);
+            -TORCControls.GetInput(ControllerInput.A_ElevatorJog), 0.2);
         if (elevatorControl != 0) {
             elevator.jogPosition((int)(elevatorControl * ELEVATOR_JOG_MULTIPLIER));
         }
-        // Manual pivot jog override
+
+        // Manual pivot jog override //
         double pivotArmControl = MathExtra.applyDeadband(
             TORCControls.GetInput(ControllerInput.A_PivotJogLeft) - 
             TORCControls.GetInput(ControllerInput.A_PivotJogRight), 0.2);
@@ -152,54 +167,57 @@ public class TeleopDrive extends CLCommand {
             pivotArm.jogPosition((int)(pivotArmControl * PIVOTARM_JOG_MULTIPLIER));
         }
 
-        // Arm position control
+        // Arm position control //
+
+        // Retracted-up position
         if (TORCControls.GetInput(ControllerInput.B_PivotUp, InputState.Pressed) >= 1) {
+            // TODO: Change to GamePosition (with wrist position)?
             pivotArm.setPosition(PivotArmPositions.Up);
             elevator.setPosition(ElevatorPositions.Retracted);
         }
 
+        // Invert gamepeice target
+        if (TORCControls.GetInput(ControllerInput.B_ToggleGPeice, InputState.Pressed) >= 1) {
+            // In case targetedGPeice is not set
+            if (targetedGPeice == null) {
+                targetedGPeice = GPeiceTarget.kCargo;
+            }
+            switch (targetedGPeice) {
+                case kCargo:
+                    targetedGPeice = GPeiceTarget.kHatch;
+                    break;
+                case kHatch:
+                    targetedGPeice = GPeiceTarget.kCargo;
+                    break;
+            }
+        }
+
+        // Select targetedPosition
+        if (TORCControls.GetInput(ControllerInput.B_PivotRocket1, InputState.Pressed) >= 1) {
+            targetedPosition = GamePositions.RocketLevel1;
+        }
+        else if (TORCControls.GetInput(ControllerInput.B_PivotRocket2, InputState.Pressed) >= 1) {
+            targetedPosition = GamePositions.RocketLevel2;
+        }
+        else if (TORCControls.GetInput(ControllerInput.B_PivotRocket3, InputState.Pressed) >= 1) {
+            targetedPosition = GamePositions.RocketLevel3;
+        }
+
+        // Flip side selected
         if (TORCControls.GetInput(ControllerInput.B_PivotFlipSelection) >= 1) {
-            /*
-            if (TORCControls.GetInput(ControllerInput.B_PivotHorizontal, InputState.Pressed) >= 1) {
-                pivotArm.setPosition(PivotArmPositions.HorizontalF);
-                //elevator.setPosition(ElevatorPositions.Retracted);
-            }
-            */
-            if (TORCControls.GetInput(ControllerInput.B_PivotRocket1, InputState.Pressed) >= 1) {
-                pivotArm.setPosition(PivotArmPositions.Level1F);
-                elevator.setPosition(ElevatorPositions.Level1);
-            }
-            
-            else if (TORCControls.GetInput(ControllerInput.B_PivotRocket2, InputState.Pressed) >= 1) {
-                pivotArm.setPosition(PivotArmPositions.Level2F);
-                elevator.setPosition(ElevatorPositions.Level2);
-            }
-            else if (TORCControls.GetInput(ControllerInput.B_PivotRocket3, InputState.Pressed) >= 1) {
-                pivotArm.setPosition(PivotArmPositions.Level3F);
-                elevator.setPosition(ElevatorPositions.Level3);
-            }
+            targetedSide = RobotSides.kFront;
         }
-        else {
-            /*
-            if (TORCControls.GetInput(ControllerInput.B_PivotHorizontal, InputState.Pressed) >= 1) {
-                pivotArm.setPosition(PivotArmPositions.HorizontalR);
-                //elevator.setPosition(ElevatorPositions.Retracted);
-            }
-            */
-            if (TORCControls.GetInput(ControllerInput.B_PivotRocket1, InputState.Pressed) >= 1) {
-                pivotArm.setPosition(PivotArmPositions.Level1R);
-                elevator.setPosition(ElevatorPositions.Level1);
-            }
-            
-            else if (TORCControls.GetInput(ControllerInput.B_PivotRocket2, InputState.Pressed) >= 1) {
-                pivotArm.setPosition(PivotArmPositions.Level2R);
-                elevator.setPosition(ElevatorPositions.Level2);
-            }
-            else if (TORCControls.GetInput(ControllerInput.B_PivotRocket3, InputState.Pressed) >= 1) {
-                pivotArm.setPosition(PivotArmPositions.Level3R);
-                elevator.setPosition(ElevatorPositions.Level3);
-            }
+
+        // If position is selected, set via GamePositionsManager
+        if (targetedPosition != null) {
+            System.out.printf("Setting GamePosition:\ntargetedPosition: %s\ntargetedSide: %s\ntargetedGPeice: %s\n",
+                targetedPosition.toString(), targetedSide.toString(), targetedGPeice.toString());
+            gpManager.setPosition(targetedPosition, targetedSide, targetedGPeice);
         }
+
+        targetedPosition = null;
+        targetedSide = RobotSides.kRear;
+
     }
 
     private void endEffectorControl() {

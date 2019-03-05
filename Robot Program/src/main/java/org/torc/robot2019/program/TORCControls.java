@@ -44,6 +44,8 @@ public class TORCControls {
         B_PivotRocket2(2, operatorController, InputType.Button), // B button
         /**PivotArm 3rd Rocket position*/
         B_PivotRocket3(4, operatorController, InputType.Button), // Y button
+        /**Game Peice target toggle*/
+        B_ToggleGPeice(8, operatorController, InputType.Button), // Start button
 
         A_PivotJogLeft(2, operatorController, InputType.Axis), // Left Trigger
         A_PivotJogRight(3, operatorController, InputType.Axis), // Right Trigger
