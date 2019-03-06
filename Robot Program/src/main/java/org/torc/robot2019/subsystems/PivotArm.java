@@ -159,6 +159,7 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
 
   @Override
   public void Periodic() {
+    SmartDashboard.putNumber("ArmRawEncoder", m_armPivot.getSensorCollection().getPulseWidthPosition());
     SmartDashboard.putNumber("ArmCorrectedEncoder", getEncoder());
     SmartDashboard.putNumber("ArmPositionError", m_armPivot.getClosedLoopTarget() - getEncoder());
     SmartDashboard.putNumber("ArmTargetPosition", targetPosition);
