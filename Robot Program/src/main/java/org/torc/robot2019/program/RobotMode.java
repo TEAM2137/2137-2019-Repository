@@ -3,6 +3,7 @@ package org.torc.robot2019.program;
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.CANifier.GeneralPin;
 
+import org.torc.robot2019.commands.CameraManager;
 import org.torc.robot2019.program.KMap.KNumeric;
 import org.torc.robot2019.subsystems.BasicDriveTrain;
 import org.torc.robot2019.subsystems.Climber;
@@ -62,6 +63,13 @@ public class RobotMode {
 
 		RobotMap.S_GPManager = new GamePositionManager(RobotMap.S_PivotArm, RobotMap.S_Elevator, 
 			RobotMap.S_EndEffector);
+
+		RobotMap.C_CameraCommand = new CameraManager((int) KMap.GetKNumeric(KNumeric.INT_FRONT_CAMERA_ID), 
+			(int) KMap.GetKNumeric(KNumeric.INT_BACK_CAMERA_ID), 
+			640, 480);
+		RobotMap.C_CameraCommand.setRunWhenDisabled(true);
+		RobotMap.C_CameraCommand.start();
+
 	}
 	
 	/**

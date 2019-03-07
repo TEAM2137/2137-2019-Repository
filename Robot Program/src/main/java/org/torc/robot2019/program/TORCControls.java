@@ -18,6 +18,13 @@ public class TORCControls {
 		/**Right Drivetrain Control Axis*/
         A_DriveRight(4, driverController, InputType.Axis), // Right stick X axis
 
+        /** Camera controls */
+
+        A_FrontCamera(1, driverController, InputType.Button),
+        //A button
+        A_BackCamera(2, driverController, InputType.Button),
+        //B button
+        
         /**Mantis-Arm Pivot*/
         A_MantisArm(1, climberController, InputType.Axis), // Left stick Y axis
 

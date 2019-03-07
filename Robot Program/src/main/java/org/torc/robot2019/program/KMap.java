@@ -35,6 +35,9 @@ public class KMap {
         INT_ELEVATOR_ENDSTOP_ID(0, 0),
         // CANifier
         INT_CANIFIER_ID(3, 3),
+        // CAMERA
+        INT_FRONT_CAMERA_ID(0, 0),
+        INT_BACK_CAMERA_ID(1, 1),
 
         // Elevator
         INT_ELEVATOR_MAX_POSITION(14900, 14900),

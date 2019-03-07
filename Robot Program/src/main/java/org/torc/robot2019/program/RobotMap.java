@@ -3,6 +3,7 @@ package org.torc.robot2019.program;
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
+import org.torc.robot2019.commands.CameraManager;
 import org.torc.robot2019.subsystems.BasicDriveTrain;
 import org.torc.robot2019.subsystems.Climber;
 import org.torc.robot2019.subsystems.Elevator;
@@ -39,5 +40,7 @@ public class RobotMap {
 	public static EndEffector S_EndEffector;
 
 	public static GamePositionManager S_GPManager;
+
+	public static CameraManager C_CameraCommand;
 	
 }
