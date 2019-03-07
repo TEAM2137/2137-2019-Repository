@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
+import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.robot.InheritedPeriodic;
 import org.torc.robot2019.robot.Robot;
 import org.torc.robot2019.tools.MathExtra;
@@ -37,8 +38,10 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
 
         leftS[0] = new VictorSPX(_leftS0ID);
         rightS[0] = new VictorSPX(_rightS0ID);
-        leftS[1] = new VictorSPX(_leftS1ID);
-        rightS[1] = new VictorSPX(_rightS1ID);
+        if (KMap.GetRobotType() == KMap.RobotType.Practice) {
+            leftS[1] = new VictorSPX(_leftS1ID);
+            rightS[1] = new VictorSPX(_rightS1ID);
+        }
 
         MotorControllers.TalonSRXConfig(leftM);
         MotorControllers.TalonSRXConfig(rightM);
@@ -77,8 +80,10 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
 
         leftS[0].set(ControlMode.PercentOutput, -_leftSpd);
         rightS[0].set(ControlMode.PercentOutput, _rightSpd);
-        leftS[1].set(ControlMode.PercentOutput, -_leftSpd);
-        rightS[1].set(ControlMode.PercentOutput, _rightSpd);
+        if (KMap.GetRobotType() == KMap.RobotType.Practice) {
+            leftS[1].set(ControlMode.PercentOutput, -_leftSpd);
+            rightS[1].set(ControlMode.PercentOutput, _rightSpd);
+        }
     }
 
     public void setVelSpeed(double _leftSpd, double _rightSpd) {
