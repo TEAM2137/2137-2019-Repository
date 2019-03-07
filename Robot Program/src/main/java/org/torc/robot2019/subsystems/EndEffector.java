@@ -279,7 +279,6 @@ class EndEffector_Home extends CLCommand {
 	// Called repeatedly when this Command is scheduled to run
 	@Override
 	protected void execute() {
-		System.out.println("Running homing command!");
 		switch (homingState) {
 			case firstMoveDown:
 				endEffectorSubsystem.setWristPercSpeedUnchecked(-firstMoveDownPerc);

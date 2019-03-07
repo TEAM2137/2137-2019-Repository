@@ -3,7 +3,9 @@ package org.torc.robot2019.program;
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
+import org.torc.robot2019.subsystems.ElevatorArmManager;
 import org.torc.robot2019.subsystems.BasicDriveTrain;
+import org.torc.robot2019.subsystems.Cameras;
 import org.torc.robot2019.subsystems.Climber;
 import org.torc.robot2019.subsystems.Elevator;
 import org.torc.robot2019.subsystems.EndEffector;
@@ -21,6 +23,8 @@ import edu.wpi.first.wpilibj.AnalogInput;
  * floating around.
  */
 public class RobotMap {
+
+	public static Cameras S_Cameras;
 	
 	public static Pneumatics S_Pneumatics;
 
@@ -32,12 +36,14 @@ public class RobotMap {
 
 	public static Elevator S_Elevator;
 
-	public static VisionManager VManager;
+	//public static VisionManager VManager;
 
 	public static CANifier Canifier;
 
 	public static EndEffector S_EndEffector;
 
 	public static GamePositionManager S_GPManager;
+
+	public static ElevatorArmManager S_ElevatorArmManager;
 	
 }

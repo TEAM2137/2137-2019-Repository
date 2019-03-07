@@ -12,6 +12,7 @@ public class DisabledMode {
 		// Garuntee that arm doesn't have a set target upon next enable
 		RobotMap.S_PivotArm.setPercSpeed(0);
 		RobotMap.S_Elevator.deHomeElevator(); // Dehome elevator
+		RobotMap.S_EndEffector.deHomeEndEffector(); // Dehome endeffector
 	}
 	
 	public static void Periodic() {

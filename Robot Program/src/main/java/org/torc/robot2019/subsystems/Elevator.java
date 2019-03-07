@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import org.torc.robot2019.program.KMap;
+import org.torc.robot2019.program.RobotMap;
 import org.torc.robot2019.program.KMap.KNumeric;
 import org.torc.robot2019.robot.InheritedPeriodic;
 import org.torc.robot2019.robot.Robot;
@@ -149,6 +150,10 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 		elevatorTargetPosition = MathExtra.clamp(_position, 0, ELEVATOR_MAX_POSITION);
 		elevatorM.set(ControlMode.Position, elevatorTargetPosition);
 	}
+
+	public int getTargetPosition() {
+		return elevatorTargetPosition;
+	}
 	
 	protected void zeroEncoder() {
 		elevatorM.setSelectedSensorPosition(0);
@@ -176,9 +181,8 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 		* If error is too big, set elevatorTargetPosition to encoder count so jogging is 
 		* instantanious
 		*/
-		int jogErrorThing = Math.abs(elevatorTargetPosition - getEncoder());
-		System.out.println("jogErrorThing: " + jogErrorThing);
-		if (jogErrorThing > JOG_ERROR_CUTOFF) {
+		int jogError = Math.abs(elevatorTargetPosition - getEncoder());
+		if (jogError > JOG_ERROR_CUTOFF) {
 			elevatorTargetPosition = getEncoder();
 		}
 		setPosition(elevatorTargetPosition += positionInc);
@@ -188,35 +192,14 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 		System.out.println("Cannot move Elevator; has not homed!!");
 	}
 
-	private double getMaxArmExtension() {
-		int inchConversion = (int)KMap.GetKNumeric(KNumeric.INT_ELEVATOR_TICKS_PER_INCH);
-
-		double distanceAllowedInches = 
-		KMap.GetKNumeric(KNumeric.DBL_ROBOT_MAX_EXTEND_OUTSIDE_OF_FRAME_INCHES) - 
-		(
-			KMap.GetKNumeric(KNumeric.DBL_ELEVATOR_MINIMUM_DISTANCE_FROM_FRAME_EDGE_INCHES)
-			+ 
-			KMap.GetKNumeric(KNumeric.DBL_GRABBER_LENGTH_INCHES));
-		
-		int distanceAllowed = (int)(distanceAllowedInches * inchConversion);
-
-		SmartDashboard.putNumber("ElevatorDistanceAllowedInches", distanceAllowedInches);
-		SmartDashboard.putNumber("ElevatorDistanceAllowed", distanceAllowed);
-
-		double otherAngle = 90 - PivotArm.PositionToAngle(pivotArm.getEncoder());
-
-		SmartDashboard.putNumber("otherAngle", otherAngle);
-
-		double angleTan = Math.tan(Math.toRadians(otherAngle));
-		double verticalDistance = angleTan * distanceAllowed;
-		double maxExtension = Math.sqrt(Math.pow(distanceAllowed, 2) + Math.pow(verticalDistance, 2));
-		return maxExtension;
-	}
-
 	@Override
 	protected void initDefaultCommand() {
 	}
 	
+	private int previousElevTarget = 0;
+
+	private boolean lastLimited = false;
+
 	@Override
 	public void Periodic() {
 		// Check if homer has homed
@@ -229,7 +212,6 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 		}
 
 		// Check to maintain elevator is within bounds
-		/*
 		if (hasBeenHomed &&
 			(elevatorM.getControlMode() == ControlMode.Position ||
 			elevatorM.getControlMode() == ControlMode.MotionMagic)) {
@@ -237,23 +219,17 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 			SmartDashboard.putBoolean("CorrectingElevatorOnAngle", true);
 
 			int elevatorTarget = elevatorTargetPosition;
-			int elevatorMax = (int)getMaxArmExtension();
+			int elevatorMax = ElevatorArmManager.GetMaxArmExtension(PivotArm.PositionToAngle(pivotArm.getEncoder()) - 90);
 
 			SmartDashboard.putNumber("CalculatedElevatorMax", elevatorMax);
 
 			if (elevatorTarget > elevatorMax) {
-				SmartDashboard.putBoolean("LimitingElevator", true);
-				//setPosition(elevatorMax);
+				elevatorM.set(ControlMode.Position, MathExtra.clamp(elevatorMax, 0, ELEVATOR_MAX_POSITION));
 			}
 			else {
-				SmartDashboard.putBoolean("LimitingElevator", false);
-				//setPosition(elevatorTarget);
+				setPosition(elevatorTargetPosition);
 			}
 		}
-		else {
-			SmartDashboard.putBoolean("CorrectingElevatorOnAngle", false);
-		}
-		*/
 
 		// Print Encoders
 		printEncoder();
@@ -294,7 +270,6 @@ class Elevator_Home extends CLCommand {
 	// Called repeatedly when this Command is scheduled to run
 	@Override
 	protected void execute() {
-		System.out.println("Running homing command!");
 		switch (homingState) {
 			case firstMoveDown:
 				elevSubsystem.setPercSpeedUnchecked(-firstMoveDownPerc);

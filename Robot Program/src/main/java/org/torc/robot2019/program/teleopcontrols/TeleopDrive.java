@@ -3,6 +3,7 @@ package org.torc.robot2019.program.teleopcontrols;
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.CANifier.GeneralPin;
 
+import org.torc.robot2019.subsystems.ElevatorArmManager;
 import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.program.RobotMap;
 import org.torc.robot2019.program.TORCControls;
@@ -16,6 +17,7 @@ import org.torc.robot2019.subsystems.EndEffector;
 import org.torc.robot2019.subsystems.Elevator.ElevatorPositions;
 import org.torc.robot2019.subsystems.EndEffector.SolenoidStates;
 import org.torc.robot2019.subsystems.PivotArm;
+import org.torc.robot2019.subsystems.Cameras.CameraSelect;
 import org.torc.robot2019.subsystems.PivotArm.PivotArmPositions;
 import org.torc.robot2019.tools.CLCommand;
 import org.torc.robot2019.subsystems.GamePositionManager;
@@ -49,6 +51,8 @@ public class TeleopDrive extends CLCommand {
 
     GamePositionManager gpManager;
 
+    ElevatorArmManager elevArmManager;
+
     public static enum ArmSide { kFront, kBack }
 
     public ArmSide armSide;
@@ -69,7 +73,13 @@ public class TeleopDrive extends CLCommand {
     GPeiceTarget targetedGPeice = GPeiceTarget.kHatch; // Default targetedGPeice to Hatch
 
     public TeleopDrive(BasicDriveTrain _driveTrain, GamePositionManager _gpManager,
-         PivotArm _pivotArm, Climber _climber, Elevator _elevator, EndEffector _endEffector) {
+         PivotArm _pivotArm, Climber _climber, Elevator _elevator, EndEffector _endEffector, 
+         ElevatorArmManager _elevArmManager) {
+             ///
+             ///
+             /// HI GABE, PLEASE INCLUDE THE ELEVARMMANGER IN THE CONSTRUCTOR OF THIS, 
+             /// AND KEEP ON WORKING. THANKS. LOVE, ME
+             ///
         driveTrain = _driveTrain;
 
         pivotArm = _pivotArm;
@@ -81,6 +91,8 @@ public class TeleopDrive extends CLCommand {
         endEffector = _endEffector;
 
         gpManager = _gpManager;
+
+        elevArmManager = _elevArmManager;
 
         autoLevelCommand = new RobotAutoLevel(climber, driveTrain);
 
@@ -130,6 +142,13 @@ public class TeleopDrive extends CLCommand {
             // Drive the robot
             haloDrive(driveInput[0], -driveInput[1], false);
         }
+        // Camera select
+        if (driveInput[0] + driveInput[1] >= 0) {
+            RobotMap.S_Cameras.setSelectedCamera(CameraSelect.kFront);
+        }
+        else {
+            RobotMap.S_Cameras.setSelectedCamera(CameraSelect.kRear);
+        }
     }
 
     private void climbControl() {
@@ -157,6 +176,7 @@ public class TeleopDrive extends CLCommand {
             -TORCControls.GetInput(ControllerInput.A_ElevatorJog), 0.2);
         if (elevatorControl != 0) {
             elevator.jogPosition((int)(elevatorControl * ELEVATOR_JOG_MULTIPLIER));
+            //elevArmManager.jogElevator((int)(elevatorControl * ELEVATOR_JOG_MULTIPLIER));
         }
 
         // Manual pivot jog override //
@@ -165,6 +185,7 @@ public class TeleopDrive extends CLCommand {
             TORCControls.GetInput(ControllerInput.A_PivotJogRight), 0.2);
         if (pivotArmControl != 0) {
             pivotArm.jogPosition((int)(pivotArmControl * PIVOTARM_JOG_MULTIPLIER));
+            //elevArmManager.jogPivotArm((int)(pivotArmControl * PIVOTARM_JOG_MULTIPLIER));
         }
 
         // Arm position control //

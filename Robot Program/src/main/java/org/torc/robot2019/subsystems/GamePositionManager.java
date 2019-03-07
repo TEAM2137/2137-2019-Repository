@@ -1,5 +1,6 @@
 package org.torc.robot2019.subsystems;
 
+import org.torc.robot2019.subsystems.ElevatorArmManager;
 import org.torc.robot2019.subsystems.Elevator;
 import org.torc.robot2019.subsystems.EndEffector;
 import org.torc.robot2019.subsystems.PivotArm;
@@ -9,20 +10,20 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 public class GamePositionManager extends Subsystem {
 
     public static enum GamePositions {
-        // Values are in CARGO position
-        RocketLevel1(new GPInternal(3072, 0, 0), // Front HatchPanel
+        // Pivot, elevator, wrist
+        RocketLevel1(new GPInternal(1024, 0, 2050), // Front HatchPanel
                      new GPInternal(0, 0, 0),    // Front Cargo
-                     new GPInternal(1024, 0, 0), // Rear HatchPanel
+                     new GPInternal(3072, 0, 0), // Rear HatchPanel
                      new GPInternal(0, 0, 0)),     // Rear Cargo
 
-        RocketLevel2(new GPInternal(2872, 5000, 0),
+        RocketLevel2(new GPInternal(2002, 3971, 5435),
                      new GPInternal(0, 0, 0), 
-                     new GPInternal(1224, 5000, 0),
+                     new GPInternal(2872, 5000, 0),
                      new GPInternal(0, 0, 0)),
 
-        RocketLevel3(new GPInternal(2672, 14900, 0),
+        RocketLevel3(new GPInternal(1424, 14900, 0),
                      new GPInternal(0, 0, 0), 
-                     new GPInternal(1424, 14900, 0),
+                     new GPInternal(2672, 14900, 0),
                      new GPInternal(0, 0, 0)),
         ;
 
@@ -51,11 +52,14 @@ public class GamePositionManager extends Subsystem {
     private PivotArm pivotArm;
     private Elevator elevator;
     private EndEffector endEffector;
+    private ElevatorArmManager elevArmManager;
 
-    public GamePositionManager(PivotArm _pivotArm, Elevator _elevator, EndEffector _endEffector) {
+    public GamePositionManager(PivotArm _pivotArm, Elevator _elevator, EndEffector _endEffector, 
+            ElevatorArmManager _elevArmManager) {
         pivotArm = _pivotArm;
         elevator = _elevator;
         endEffector = _endEffector;
+        elevArmManager = _elevArmManager;
     }
 
     public void setPosition(GamePositions _gamePosition, RobotSides _robotSide, GPeiceTarget _GPeiceTarget) {
@@ -89,8 +93,11 @@ public class GamePositionManager extends Subsystem {
         }
 
         // Finally, set target positions on all 3 subsystems
+        /*
         pivotArm.setPosition(targetGPInternal.getPivotArm());
         elevator.setPosition(targetGPInternal.getElevator());
+        */
+        elevArmManager.setPosition(targetGPInternal.getPivotArm(), targetGPInternal.getElevator());
         endEffector.setPosition(targetGPInternal.getWrist());
     }
 
