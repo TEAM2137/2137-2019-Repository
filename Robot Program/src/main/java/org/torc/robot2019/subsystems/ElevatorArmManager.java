@@ -34,6 +34,7 @@ public class ElevatorArmManager extends Subsystem implements InheritedPeriodic  
 
     pivotArm = _pivotArm;
     elevator = _elevator;
+
   }
 
   public void setPosition(int _pivotArmPosition, int _elevatorPosition) {
@@ -63,6 +64,7 @@ public class ElevatorArmManager extends Subsystem implements InheritedPeriodic  
       elevator.setPosition(_elevatorPosition);
     }
   }
+
   public void setPivotArmPosition(int _pivotArmPosition) {
     setPosition(_pivotArmPosition, elevator.getEncoder());
   }
@@ -103,8 +105,10 @@ public class ElevatorArmManager extends Subsystem implements InheritedPeriodic  
 }
 class ElevatorArmIndMove extends CLCommand{
 
-  private static final int ELEVATOR_TARGET_RANGE = 5;
-  private static final int PIVOT_ARM_TARGET_RANGE = 5;
+  private static final int ELEVATOR_TARGET_RANGE = 
+    (int)KMap.GetKNumeric(KNumeric.INT_ELEVATOR_RANGE_WITHIN_TARGET);
+  private static final int PIVOT_ARM_TARGET_RANGE = 
+    (int)KMap.GetKNumeric(KNumeric.INT_PIVOT_ARM_RANGE_WITHIN_TARGET);;
 
   private PivotArm pivotArm;
   private Elevator elevator;

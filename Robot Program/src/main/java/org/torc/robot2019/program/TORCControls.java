@@ -36,6 +36,10 @@ public class TORCControls {
         B_PivotFlipSelection(270, operatorController, InputType.POV), // Left POV
         /**PivotArm Up position*/
         B_PivotUp(90, operatorController, InputType.POV), // Right POV
+        /**Cargo Pickup position */
+        B_PickupCG(180, operatorController, InputType.POV), // Down POV
+        /**Hatch Panel Pickup position */
+        B_PickupHP(0, operatorController, InputType.POV), // Up POV
         /**PivotArm shuttle position*/
         B_PivotShuttle(3, operatorController, InputType.Button), // X button
         /**PivotArm 1st Rocket position*/

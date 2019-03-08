@@ -76,7 +76,7 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 		elevatorM.configContinuousCurrentLimit(5);
 
 		elevatorM.config_kF(0, 0);
-		elevatorM.config_kP(0, 10);
+		elevatorM.config_kP(0, KMap.GetKNumeric(KNumeric.DBL_ELEVATOR_KP));
 		elevatorM.config_kI(0, 0);
 		elevatorM.config_kD(0, 0);
 		elevatorM.config_IntegralZone(0, 0);
@@ -153,6 +153,11 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 
 	public int getTargetPosition() {
 		return elevatorTargetPosition;
+	}
+
+	public boolean isAtTarget() {
+		return MathExtra.InRange(getEncoder(), elevatorTargetPosition, 
+			KMap.GetKNumeric(KNumeric.INT_ELEVATOR_RANGE_WITHIN_TARGET));
 	}
 	
 	protected void zeroEncoder() {

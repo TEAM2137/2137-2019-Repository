@@ -85,10 +85,10 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
     m_armPivot.configPeakOutputReverse(maxOutputReverse, 0);
 
     m_armPivot.config_kF(0, 0);
-    m_armPivot.config_kP(0, 8);
-    m_armPivot.config_kI(0, 0.01);
-    m_armPivot.config_kD(0, 300);
-    m_armPivot.config_IntegralZone(0, 40);
+    m_armPivot.config_kP(0, KMap.GetKNumeric(KNumeric.DBL_PIVOT_ARM_KP));
+    m_armPivot.config_kI(0, KMap.GetKNumeric(KNumeric.DBL_PIVOT_ARM_KI));
+    m_armPivot.config_kD(0, KMap.GetKNumeric(KNumeric.DBL_PIVOT_ARM_KD));
+    m_armPivot.config_IntegralZone(0, (int)KMap.GetKNumeric(KNumeric.INT_PIVOT_ARM_KIZONE));
 
     m_armPivot.configAllowableClosedloopError(0, 0);
 
@@ -148,6 +148,11 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
   public int getTargetPosition() {
     return targetPosition;
   }
+
+  public boolean isAtTarget() {
+		return MathExtra.InRange(getEncoder(), targetPosition, 
+			KMap.GetKNumeric(KNumeric.INT_PIVOT_ARM_RANGE_WITHIN_TARGET));
+	}
 
   public int getEncoder() {
     return m_armPivot.getSelectedSensorPosition();

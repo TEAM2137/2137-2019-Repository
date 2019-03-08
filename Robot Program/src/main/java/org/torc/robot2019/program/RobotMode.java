@@ -12,7 +12,7 @@ import org.torc.robot2019.subsystems.Elevator;
 import org.torc.robot2019.subsystems.EndEffector;
 import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.subsystems.Pneumatics;
-import org.torc.robot2019.subsystems.GamePositionManager;
+import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
 import org.torc.robot2019.vision.VisionManager;
 
 import edu.wpi.first.cameraserver.CameraServer;
@@ -67,8 +67,8 @@ public class RobotMode {
 
 		RobotMap.S_ElevatorArmManager = new ElevatorArmManager(RobotMap.S_PivotArm, RobotMap.S_Elevator);
 
-		RobotMap.S_GPManager = new GamePositionManager(RobotMap.S_PivotArm, RobotMap.S_Elevator, 
-		RobotMap.S_EndEffector, RobotMap.S_ElevatorArmManager);
+		RobotMap.S_GPManager = new GamePositionManager(
+			RobotMap.S_EndEffector, RobotMap.S_ElevatorArmManager);
 	}
 	
 	/**

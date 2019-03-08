@@ -42,4 +42,8 @@ public class MathExtra {
 		t = clamp(t, -1, 1);
 		return (int) ((1 - t) * var1 + t * var2);
 	}
+
+	public static boolean InRange(double _value, double _target, double _range) {
+		return (_value > (_target - _range) && _value < (_target + _range));
+	}
 }

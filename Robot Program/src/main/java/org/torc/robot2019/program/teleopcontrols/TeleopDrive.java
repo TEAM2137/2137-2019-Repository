@@ -4,6 +4,7 @@ import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.CANifier.GeneralPin;
 
 import org.torc.robot2019.subsystems.ElevatorArmManager;
+import org.torc.robot2019.commands.GPPickup;
 import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.program.RobotMap;
 import org.torc.robot2019.program.TORCControls;
@@ -20,14 +21,13 @@ import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.subsystems.Cameras.CameraSelect;
 import org.torc.robot2019.subsystems.PivotArm.PivotArmPositions;
 import org.torc.robot2019.tools.CLCommand;
-import org.torc.robot2019.subsystems.GamePositionManager;
+import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
 import org.torc.robot2019.tools.MathExtra;
-import org.torc.robot2019.subsystems.GamePositionManager.GPeiceTarget;
-import org.torc.robot2019.subsystems.GamePositionManager.GamePositions;
-import org.torc.robot2019.subsystems.GamePositionManager.RobotSides;
+import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.GPeiceTarget;
+import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.GamePositions;
+import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.RobotSides;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TeleopDrive extends CLCommand {
 
@@ -36,7 +36,7 @@ public class TeleopDrive extends CLCommand {
     final double SPEED_TURN_SENSITIVITY = KMap.GetKNumeric(KNumeric.DBL_SPEED_TURN_SENSITIVITY);
     
     final double ELEVATOR_JOG_MULTIPLIER = KMap.GetKNumeric(KNumeric.DBL_ELEVATOR_JOG_CONTROL_MULTIPLIER);
-    final double PIVOTARM_JOG_MULTIPLIER = KMap.GetKNumeric(KNumeric.DBL_PIVOTARM_JOG_CONTROL_MULTIPLIER);
+    final double PIVOTARM_JOG_MULTIPLIER = KMap.GetKNumeric(KNumeric.DBL_PIVOT_ARM_JOG_CONTROL_MULTIPLIER);
     final double WRIST_JOG_MULTIPLIER = KMap.GetKNumeric(KNumeric.DBL_WRIST_JOG_CONTROL_MULTIPLIER);
 
     BasicDriveTrain driveTrain;
@@ -72,14 +72,12 @@ public class TeleopDrive extends CLCommand {
 
     GPeiceTarget targetedGPeice = GPeiceTarget.kHatch; // Default targetedGPeice to Hatch
 
+    GPPickup pickupCommand;
+
     public TeleopDrive(BasicDriveTrain _driveTrain, GamePositionManager _gpManager,
          PivotArm _pivotArm, Climber _climber, Elevator _elevator, EndEffector _endEffector, 
          ElevatorArmManager _elevArmManager) {
-             ///
-             ///
-             /// HI GABE, PLEASE INCLUDE THE ELEVARMMANGER IN THE CONSTRUCTOR OF THIS, 
-             /// AND KEEP ON WORKING. THANKS. LOVE, ME
-             ///
+
         driveTrain = _driveTrain;
 
         pivotArm = _pivotArm;
@@ -175,6 +173,7 @@ public class TeleopDrive extends CLCommand {
         double elevatorControl = MathExtra.applyDeadband(
             -TORCControls.GetInput(ControllerInput.A_ElevatorJog), 0.2);
         if (elevatorControl != 0) {
+            pickupCommandInterrupt();
             elevator.jogPosition((int)(elevatorControl * ELEVATOR_JOG_MULTIPLIER));
             //elevArmManager.jogElevator((int)(elevatorControl * ELEVATOR_JOG_MULTIPLIER));
         }
@@ -184,8 +183,16 @@ public class TeleopDrive extends CLCommand {
             TORCControls.GetInput(ControllerInput.A_PivotJogLeft) - 
             TORCControls.GetInput(ControllerInput.A_PivotJogRight), 0.2);
         if (pivotArmControl != 0) {
+            pickupCommandInterrupt();
             pivotArm.jogPosition((int)(pivotArmControl * PIVOTARM_JOG_MULTIPLIER));
             //elevArmManager.jogPivotArm((int)(pivotArmControl * PIVOTARM_JOG_MULTIPLIER));
+        }
+
+        // CG Pickup command
+        if (TORCControls.GetInput(ControllerInput.B_PickupCG, InputState.Pressed) >= 1) {
+            pickupCommandInterrupt();
+            pickupCommand = new GPPickup(gpManager, pivotArm, elevator, endEffector);
+            pickupCommand.start();
         }
 
         // Arm position control //
@@ -292,7 +299,7 @@ public class TeleopDrive extends CLCommand {
 			leftMotorOutput = driverThrottle + Math.abs(driverThrottle) * driverWheel * SPEED_TURN_SENSITIVITY;
 		}
         // Set drivetrain speed to MotorOutput values
-        driveTrain.setVelSpeed(leftMotorOutput, rightMotorOutput);
+        driveTrain.setPercSpeed(leftMotorOutput, rightMotorOutput);
     }
     
     public ArmSide getPivotArmSide() {
@@ -303,6 +310,14 @@ public class TeleopDrive extends CLCommand {
         // Right side
         else {
             return ArmSide.kBack;
+        }
+    }
+
+    private void pickupCommandInterrupt() {
+        if (pickupCommand != null && pickupCommand.isRunning()) {
+            pickupCommand.setDirectInterrupt(true);
+            pickupCommand.cancel();
+            pickupCommand = null;
         }
     }
 }

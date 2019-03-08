@@ -77,10 +77,10 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 		endEffectorM.configClosedLoopPeakOutput(0, 0.75);
 
 		endEffectorM.config_kF(0, 0);
-		endEffectorM.config_kP(0, 2);
-		endEffectorM.config_kI(0, 0.01);
+		endEffectorM.config_kP(0, KMap.GetKNumeric(KNumeric.DBL_END_EFFECTOR_KP));
+		endEffectorM.config_kI(0, KMap.GetKNumeric(KNumeric.DBL_END_EFFECTOR_KI));
 		endEffectorM.config_kD(0, 0);
-		endEffectorM.config_IntegralZone(0, 50);
+		endEffectorM.config_IntegralZone(0, (int)KMap.GetKNumeric(KNumeric.INT_END_EFFECTOR_KIZONE));
 
 		rollerM = new VictorSPX(_rollerMID);
 
