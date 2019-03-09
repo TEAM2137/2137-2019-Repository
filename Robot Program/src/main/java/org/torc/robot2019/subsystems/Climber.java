@@ -54,7 +54,7 @@ public class Climber extends Subsystem {
 
 	public void setMantisPivotSpeed(double _speed) {
 		// Clamp Mantis arm to max speed
-		_speed = MathExtra.clamp(_speed, -MANTIS_ARM_MAX_PERC, MANTIS_ARM_MAX_PERC);
+		//_speed = MathExtra.clamp(_speed, -MANTIS_ARM_MAX_PERC, MANTIS_ARM_MAX_PERC);
 		pivotMantis.set(_speed);
 	}
 

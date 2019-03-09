@@ -27,7 +27,8 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
      * Used for when robot should be driving around,
      * with no need to use the pivot arm.
      */
-    Up(2048),
+    Up(1900),
+    Climbing(1400),
     // Rear-side positions
     PickupR(824),
     Level1R(1024),
@@ -109,6 +110,16 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
 
   public void setPosition(int _position) {
     targetPosition = MathExtra.clamp(_position, ARM_MIN_POSITION, ARM_MAX_POSITION);
+
+    /*
+    if (targetPosition < 2000) {
+      m_armPivot.config_kF(0, 0.15);
+    }
+    else {
+      m_armPivot.config_kF(0, -0.15);
+    }
+    */
+
     m_armPivot.set(ControlMode.Position, targetPosition);
   }
 
@@ -117,6 +128,7 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
   }
 
   public void setPosition(PivotArmPositions _position) {
+    /*
     switch (_position) {
       case Level1R:
         System.out.println("Pivot: Setting kF to 0.2");
@@ -130,6 +142,7 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
         m_armPivot.config_kF(0, 0);
         break;
     }
+    */
     setPosition(GetPivotArmPositionsValue(_position));
   }
 

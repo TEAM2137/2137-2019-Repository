@@ -14,6 +14,7 @@ import org.opencv.imgproc.Imgproc;
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoMode;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
@@ -36,10 +37,14 @@ public class Cameras extends Subsystem {
     new Thread(() -> {
       UsbCamera cameraF = new UsbCamera("CameraF", 0);
       UsbCamera cameraR = new UsbCamera("CameraR", 1);;
+      cameraF.setVideoMode(VideoMode.PixelFormat.kYUYV, 640, 360, 30);
+      cameraR.setVideoMode(VideoMode.PixelFormat.kYUYV, 640, 360, 30);
+      
       cameraF.setFPS(30);
       cameraR.setFPS(30);
-      cameraF.setResolution(160, 120);
+      cameraF.setResolution(640, 480);
       cameraR.setResolution(640, 480);
+      
 
       CameraServer.getInstance().startAutomaticCapture(cameraF);
       CameraServer.getInstance().startAutomaticCapture(cameraR);
@@ -48,7 +53,6 @@ public class Cameras extends Subsystem {
       CvSink cameraRSink = CameraServer.getInstance().getVideo(cameraR);
 
       CvSource outputStream = CameraServer.getInstance().putVideo("BWCam", 160, 120);
-      System.out.println("Stream FPS set result: " + outputStream.setFPS(30));
       
       Mat source = new Mat();
       //Mat temp = new Mat();

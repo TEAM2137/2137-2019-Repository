@@ -28,6 +28,7 @@ import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.Gam
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.RobotSides;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TeleopDrive extends CLCommand {
 
@@ -127,6 +128,12 @@ public class TeleopDrive extends CLCommand {
         driveInput[0] = TORCControls.GetInput(ControllerInput.A_DriveLeft);
         driveInput[1] = TORCControls.GetInput(ControllerInput.A_DriveRight);
         
+        if (TORCControls.GetInput(ControllerInput.B_DivideDriveTrain) >= 0.5) {
+            double multiplier = 0.5;//KMap.GetKNumeric(KNumeric.DBL_TELEOP_DRIVE_SLOW_MULTIPLIER);
+            driveInput[0] *= multiplier;
+            driveInput[1] *= multiplier;
+        }
+        
         mantisWheelInput[0] = TORCControls.GetInput(ControllerInput.A_MantisLeft);
         mantisWheelInput[1] = TORCControls.GetInput(ControllerInput.A_MantisRight);
 
@@ -134,19 +141,22 @@ public class TeleopDrive extends CLCommand {
 
         // Set drive mode based on if mantis wheels should move or not
         if (mantisWheelInput[0] > 0.2 || mantisWheelInput[1] > 0.2) {
-            RobotMap.S_DriveTrain.setVelSpeed(-mantisWheelInput[0], mantisWheelInput[1]);
+            RobotMap.S_DriveTrain.setPercSpeed(mantisWheelInput[0] * 0.5, mantisWheelInput[1] * 0.5);
         }
         else {
             // Drive the robot
             haloDrive(driveInput[0], -driveInput[1], false);
         }
         // Camera select
+        /*
         if (driveInput[0] + driveInput[1] >= 0) {
             RobotMap.S_Cameras.setSelectedCamera(CameraSelect.kFront);
         }
         else {
             RobotMap.S_Cameras.setSelectedCamera(CameraSelect.kRear);
         }
+        */
+        RobotMap.S_Cameras.setSelectedCamera(CameraSelect.kFront);
     }
 
     private void climbControl() {
@@ -191,8 +201,17 @@ public class TeleopDrive extends CLCommand {
         // CG Pickup command
         if (TORCControls.GetInput(ControllerInput.B_PickupCG, InputState.Pressed) >= 1) {
             pickupCommandInterrupt();
+            /*
             pickupCommand = new GPPickup(gpManager, pivotArm, elevator, endEffector);
             pickupCommand.start();
+            */
+            targetedPosition = GamePositions.CargoFloorPickup;
+            targetedGPeice = GPeiceTarget.kCargo;
+        }
+        else if (TORCControls.GetInput(ControllerInput.B_PickupHumanPlayer, InputState.Pressed) >= 1) {
+            pickupCommandInterrupt();
+            targetedPosition = GamePositions.CargoHumanPlayer;
+            //targetedGPeice = GPeiceTarget.kHatch;
         }
 
         // Arm position control //
@@ -202,6 +221,12 @@ public class TeleopDrive extends CLCommand {
             // TODO: Change to GamePosition (with wrist position)?
             pivotArm.setPosition(PivotArmPositions.Up);
             elevator.setPosition(ElevatorPositions.Retracted);
+        }
+        // Up-for-climing position
+        if (TORCControls.GetInput(ControllerInput.B_PivotClimbing, InputState.Pressed) >= 1) {
+            pivotArm.setPosition(PivotArmPositions.Climbing);
+            elevator.setPosition(ElevatorPositions.Retracted);
+            endEffector.setPosition(0);
         }
 
         // Invert gamepeice target
@@ -213,16 +238,20 @@ public class TeleopDrive extends CLCommand {
             switch (targetedGPeice) {
                 case kCargo:
                     targetedGPeice = GPeiceTarget.kHatch;
+                    SmartDashboard.putBoolean("HatchSelect", true);
+                    SmartDashboard.putBoolean("CargoSelect", false);
                     break;
                 case kHatch:
                     targetedGPeice = GPeiceTarget.kCargo;
+                    SmartDashboard.putBoolean("HatchSelect", false);
+                    SmartDashboard.putBoolean("CargoSelect", true);
                     break;
             }
         }
 
         // Select targetedPosition
         if (TORCControls.GetInput(ControllerInput.B_PivotRocket1, InputState.Pressed) >= 1) {
-            targetedPosition = GamePositions.RocketLevel1;
+            targetedPosition = GamePositions.RL1AndHatchPanelPickup;
         }
         else if (TORCControls.GetInput(ControllerInput.B_PivotRocket2, InputState.Pressed) >= 1) {
             targetedPosition = GamePositions.RocketLevel2;
@@ -230,37 +259,59 @@ public class TeleopDrive extends CLCommand {
         else if (TORCControls.GetInput(ControllerInput.B_PivotRocket3, InputState.Pressed) >= 1) {
             targetedPosition = GamePositions.RocketLevel3;
         }
+        else if (TORCControls.GetInput(ControllerInput.B_PivotShuttle, InputState.Pressed) >= 1) {
+            targetedPosition = GamePositions.CargoShuttle;
+        }
 
         // Flip side selected
         if (TORCControls.GetInput(ControllerInput.B_PivotFlipSelection) >= 1) {
-            targetedSide = RobotSides.kFront;
+            targetedSide = RobotSides.kRear;
         }
 
         // If position is selected, set via GamePositionsManager
         if (targetedPosition != null) {
-            System.out.printf("Setting GamePosition:\ntargetedPosition: %s\ntargetedSide: %s\ntargetedGPeice: %s\n",
-                targetedPosition.toString(), targetedSide.toString(), targetedGPeice.toString());
-            gpManager.setPosition(targetedPosition, targetedSide, targetedGPeice);
+            try {
+                System.out.printf("Setting GamePosition:\ntargetedPosition: %s\ntargetedSide: %s\ntargetedGPeice: %s\n",
+                    targetedPosition.toString(), targetedSide.toString(), targetedGPeice.toString());
+                gpManager.setPosition(targetedPosition, targetedSide, targetedGPeice);
+            }
+            catch (Exception e) {
+                System.err.println("TeleopDrive ElevArmSystem setPosition exception. Not setting position: ");
+                e.printStackTrace();
+            }
         }
 
         targetedPosition = null;
-        targetedSide = RobotSides.kRear;
+        // Default targeted side to front
+        targetedSide = RobotSides.kFront;
 
     }
 
     private void endEffectorControl() {
+        // Manual Wrist Control
         double endEffectorControl = MathExtra.applyDeadband(
             TORCControls.GetInput(ControllerInput.A_WristJog), 0.2);
-
         if (endEffectorControl != 0) {
             endEffector.jogPosition((int)(endEffectorControl * WRIST_JOG_MULTIPLIER));
         }
 
+        // Manual Solenoid control
         if (TORCControls.GetInput(ControllerInput.B_OpenWrist) >= 1) {
             endEffector.setSolenoid(SolenoidStates.Open);
         }
         else if (TORCControls.GetInput(ControllerInput.B_CloseWrist) >= 1) {
             endEffector.setSolenoid(SolenoidStates.Closed);
+        }
+
+        double rollerControl = TORCControls.GetInput(ControllerInput.B_RollersOuttake) - 
+            TORCControls.GetInput(ControllerInput.B_RollersInTake);
+        if (rollerControl != 0) {
+            endEffector.setRollerPercSpeed(rollerControl);
+        }
+        else {
+            if (pickupCommand == null || !pickupCommand.isRunning()) {
+                endEffector.setRollerPercSpeed(0);
+            }
         }
 
     }

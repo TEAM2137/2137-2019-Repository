@@ -33,13 +33,13 @@ public class TORCControls {
         A_ElevatorJog(1, operatorController, InputType.Axis),
 
         /**Flip PivotArm side-selction*/
-        B_PivotFlipSelection(270, operatorController, InputType.POV), // Left POV
+        B_PivotFlipSelection(7, operatorController, InputType.Button),//270, operatorController, InputType.POV), // Left POV
         /**PivotArm Up position*/
         B_PivotUp(90, operatorController, InputType.POV), // Right POV
         /**Cargo Pickup position */
         B_PickupCG(180, operatorController, InputType.POV), // Down POV
-        /**Hatch Panel Pickup position */
-        B_PickupHP(0, operatorController, InputType.POV), // Up POV
+        /**Human Player Pickup position */
+        B_PickupHumanPlayer(0, operatorController, InputType.POV), // Up POV
         /**PivotArm shuttle position*/
         B_PivotShuttle(3, operatorController, InputType.Button), // X button
         /**PivotArm 1st Rocket position*/
@@ -57,7 +57,14 @@ public class TORCControls {
         A_WristJog(5, operatorController, InputType.Axis), // Right stick Y
 
         B_OpenWrist(6, operatorController, InputType.Button), // Right bumper
-        B_CloseWrist(5, operatorController, InputType.Button), // Light bumper
+        B_CloseWrist(5, operatorController, InputType.Button), // Left bumper
+
+        B_RollersOuttake(5, driverController, InputType.Button), // Left bumper
+        B_RollersInTake(6, driverController, InputType.Button), // Right bumper
+
+        B_PivotClimbing(1, climberController, InputType.Button),
+
+        B_DivideDriveTrain(3, driverController, InputType.Axis),
         
         /**PivotArm Intake position*/
         //B_PivotHorizontal(1, driverController, InputType.Button), // A button

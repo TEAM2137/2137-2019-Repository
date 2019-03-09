@@ -17,6 +17,7 @@ import org.torc.robot2019.vision.VisionManager;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //import org.torc.robot2019.robot.subsystems.DriveTrain;
@@ -62,13 +63,14 @@ public class RobotMode {
 
 		RobotMap.Canifier = new CANifier((int)KMap.GetKNumeric(KNumeric.INT_CANIFIER_ID));
 		
-		RobotMap.S_EndEffector = new EndEffector(30, 31, 0, 0, 1, RobotMap.Canifier, GeneralPin.LIMR, 
+		RobotMap.S_EndEffector = new EndEffector(30, 31, 1, 0, 1, RobotMap.Canifier, GeneralPin.LIMR, 
 			GeneralPin.QUAD_B);
 
 		RobotMap.S_ElevatorArmManager = new ElevatorArmManager(RobotMap.S_PivotArm, RobotMap.S_Elevator);
 
 		RobotMap.S_GPManager = new GamePositionManager(
 			RobotMap.S_EndEffector, RobotMap.S_ElevatorArmManager);
+			
 	}
 	
 	/**

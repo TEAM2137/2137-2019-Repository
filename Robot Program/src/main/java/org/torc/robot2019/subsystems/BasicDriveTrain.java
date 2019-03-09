@@ -113,11 +113,15 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
                 rightS[1].set(ControlMode.PercentOutput, _rightSpd);
                 break;
             case Competition:
-                leftMSpark.set(_leftSpd);
-                rightMSpark.set(_rightSpd);
+                leftMSpark.set(-_leftSpd);
+                rightMSpark.set(-_rightSpd);
 
-                leftSSpark[0].set(_leftSpd);
-                rightSSpark[0].set(_rightSpd);
+                for (CANSparkMax s : leftSSpark) {
+                    s.set(-_leftSpd);
+                }
+                for (CANSparkMax s : rightSSpark) {
+                    s.set(-_rightSpd);
+                }
                 break;
         }
     }
@@ -241,14 +245,14 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
 
     @Override
     public void Periodic() {
-        SmartDashboard.putNumber("rightEncoder", getDriveEncoder(DriveSide.kRight));
-        SmartDashboard.putNumber("leftEncoder", getDriveEncoder(DriveSide.kLeft));
+        //SmartDashboard.putNumber("rightEncoder", getDriveEncoder(DriveSide.kRight));
+        //SmartDashboard.putNumber("leftEncoder", getDriveEncoder(DriveSide.kLeft));
 
-        int rVel = rightM.getSelectedSensorVelocity();
-        int lVel = leftM.getSelectedSensorVelocity();
+        //int rVel = rightM.getSelectedSensorVelocity();
+        //int lVel = leftM.getSelectedSensorVelocity();
 
-        SmartDashboard.putNumber("rightVelocity", rVel);
-        SmartDashboard.putNumber("leftVelocity", lVel);
+        //SmartDashboard.putNumber("rightVelocity", rVel);
+        //SmartDashboard.putNumber("leftVelocity", lVel);
 
         SmartDashboard.putNumberArray("GyroYPR", getGyroYPR());
     }

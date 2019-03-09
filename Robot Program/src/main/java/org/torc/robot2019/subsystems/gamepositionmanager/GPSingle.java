@@ -12,7 +12,7 @@ public class GPSingle {
      * @param _elevatorPosition
      * @param _wristPosition
      */
-    public GPSingle(int _pivotArmPosition, int _elevatorPosition, int _wristPosition) {
+    public GPSingle(int _elevatorPosition, int _pivotArmPosition, int _wristPosition) {
         pivotArmPosition = _pivotArmPosition;
         elevatorPosition = _elevatorPosition;
         wristPosition = _wristPosition;

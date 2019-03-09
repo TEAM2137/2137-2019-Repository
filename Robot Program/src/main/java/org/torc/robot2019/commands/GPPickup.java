@@ -3,7 +3,7 @@ package org.torc.robot2019.commands;
 import org.torc.robot2019.subsystems.Elevator;
 import org.torc.robot2019.subsystems.EndEffector;
 import org.torc.robot2019.subsystems.PivotArm;
-
+import org.torc.robot2019.subsystems.EndEffector.SolenoidStates;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.GPeiceTarget;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.GamePositions;
@@ -59,7 +59,7 @@ public class GPPickup extends CLCommand {
       // Initial state
       case MovingIntoPosition:
 
-        gPosManager.setPosition(GamePositions.CGPickup, RobotSides.kFront, GPeiceTarget.kCargo);
+        gPosManager.setPosition(GamePositions.CargoFloorPickup, RobotSides.kFront, GPeiceTarget.kCargo);
         currentState = PickupStates.WaitingForMove;
 
         break;
@@ -74,6 +74,8 @@ public class GPPickup extends CLCommand {
 
         // Start Rollers intake
         endEffector.setRollerPercSpeed(1);
+        // Open End Effector
+        endEffector.setSolenoid(SolenoidStates.Open);
 
         if (endEffector.getWristEndstop()) {
           ballSenseCounter++;
@@ -83,13 +85,17 @@ public class GPPickup extends CLCommand {
         }
 
         if (ballSenseCounter > BALL_SENSE_COUNTER_MAX) {
+          // Stop rollers
+          endEffector.setRollerPercSpeed(0);
+          // Close solenoid
+          endEffector.setSolenoid(SolenoidStates.Closed);
           currentState = PickupStates.MovingToFinalPosition;
         }
 
         break;
       case MovingToFinalPosition:
 
-        gPosManager.setPosition(GamePositions.Shuttle, RobotSides.kFront, GPeiceTarget.kCargo);
+        gPosManager.setPosition(GamePositions.CargoShuttle, RobotSides.kFront, GPeiceTarget.kCargo);
 
         break;
     }

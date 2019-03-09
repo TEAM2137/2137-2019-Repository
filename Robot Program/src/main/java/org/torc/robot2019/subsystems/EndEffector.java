@@ -95,7 +95,9 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 	
 	public void homeEndEffector() {
 		if (hasBeenHomed) {
-			deHomeEndEffector();
+			//deHomeEndEffector();
+			System.out.println("End effector already homed; Not re-homing...");
+			return;
 		}
 		endEffectorHomer = new EndEffector_Home(this);
 		endEffectorHomer.start();
@@ -105,6 +107,7 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 	 * Sets the end effector's state to "unHomed", requiring 
 	 * another homing to work again.
 	 */
+	/*
 	public void deHomeEndEffector() {
 		if (endEffectorHomer != null && endEffectorHomer.isRunning()) {
 			endEffectorHomer.cancel();
@@ -115,6 +118,7 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 		targetPosition = 0;
 		System.out.println("EndEffector De-Homed!!");
 	}
+	*/
 	
 	public boolean getHomed() {
 		return hasBeenHomed;
@@ -261,8 +265,8 @@ class EndEffector_Home extends CLCommand {
 	
 	HomingStates homingState = HomingStates.firstMoveDown;
 	
-	double firstMoveDownPerc = 0.5;
-	double secondMoveUpPerc = 0.5;
+	double firstMoveDownPerc = 0.85;
+	double secondMoveUpPerc = 0.85;
 	
 	public EndEffector_Home(EndEffector _endEffector) {
 		// Use requires() here to declare subsystem dependencies
