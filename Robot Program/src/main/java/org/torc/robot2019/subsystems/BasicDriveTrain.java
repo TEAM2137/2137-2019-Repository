@@ -113,6 +113,10 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
                 rightS[1].set(ControlMode.PercentOutput, _rightSpd);
                 break;
             case Competition:
+                //one second between 0 and full throttle
+                leftMSpark.setClosedLoopRampRate(1);
+                rightMSpark.setClosedLoopRampRate(1);
+                
                 leftMSpark.set(-_leftSpd);
                 rightMSpark.set(-_rightSpd);
 
