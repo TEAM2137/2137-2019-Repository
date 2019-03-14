@@ -138,7 +138,12 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 	}
 
 	public void setRollerPercSpeed(double _speed) {
-		rollerM.set(ControlMode.PercentOutput, _speed);
+		if (getBallSensor()){
+			rollerM.set(ControlMode.PercentOutput, _speed / 2);
+		} else {
+			rollerM.set(ControlMode.PercentOutput, _speed);
+		}
+
 	}
 
 	public void setPosition(EndEffectorPositions _position) {
