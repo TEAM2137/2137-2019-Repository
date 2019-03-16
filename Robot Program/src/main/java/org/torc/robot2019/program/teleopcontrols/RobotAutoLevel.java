@@ -45,7 +45,7 @@ public class RobotAutoLevel extends CLCommand {
 
     double currentAngle = driveTrain.getGyroYPR()[2];
 
-    double err = TARGET_ANGLE + currentAngle; // TODO: Correct this
+    double err = TARGET_ANGLE + currentAngle;
 
     // Add to error sum for Integral
     errSum += err;

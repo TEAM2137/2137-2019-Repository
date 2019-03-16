@@ -10,8 +10,8 @@ public class GamePositionManager extends Subsystem {
 
     public static enum GamePositions {
         // elevator, pivot, wrist
-         CargoFloorPickup(new GPSingle(0, 1057, 3821), // Cargo Only
-                     new GPSingle(0, 1057, 3821),
+         CargoFloorPickup(new GPSingle(0, 982, 3031), // Cargo Only
+                     new GPSingle(0, 982, 3031),
                      new GPSingle(0, 3019, 934),
                      new GPSingle(0, 3019, 934)),
 

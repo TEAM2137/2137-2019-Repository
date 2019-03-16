@@ -124,8 +124,7 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 		return hasBeenHomed;
 	}
 	
-	// TODO: Make this protected again when done
-	public void setWristPercSpeedUnchecked(double _speed) {
+	protected void setWristPercSpeedUnchecked(double _speed) {
 		endEffectorM.set(ControlMode.PercentOutput, _speed);
 	}
 
@@ -168,6 +167,11 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 	
 	protected void zeroEncoder() {
 		endEffectorM.setSelectedSensorPosition(0);
+	}
+
+	protected void maxEncoder() {
+		endEffectorM.setSelectedSensorPosition((int)KMap.GetKNumeric(
+			KNumeric.INT_END_EFFECTOR_WRIST_MAX_POSITION));
 	}
 	
 	public void printEncoder() {
@@ -237,7 +241,7 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 			endEffectorHomer.free();
 			endEffectorHomer = null;
 			hasBeenHomed = true;
-			setPosition(0);
+			setPosition(6000);
 		}
 
 		// Print Encoders
@@ -245,6 +249,7 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 		
 		SmartDashboard.putNumber("EndEffectorError", targetPosition - getEncoder());
 		SmartDashboard.putNumber("EndEffectorEncoder", getEncoder());
+		SmartDashboard.putNumber("EndEffectorTarget", targetPosition);
 		//System.out.println("ElevatorEncoder " + endEffectorM.getSelectedSensorPosition(0));
 		SmartDashboard.putBoolean("WristEndstop", getWristEndstop());
 		SmartDashboard.putBoolean("BallSensor", getBallSensor());
@@ -285,17 +290,17 @@ class EndEffector_Home extends CLCommand {
 	protected void execute() {
 		switch (homingState) {
 			case firstMoveDown:
-				endEffectorSubsystem.setWristPercSpeedUnchecked(-firstMoveDownPerc);
+				endEffectorSubsystem.setWristPercSpeedUnchecked(firstMoveDownPerc);
 				if (endEffectorSubsystem.getWristEndstop()) {
 					System.out.println("firstMoveDown Done!");
 					homingState = HomingStates.secondMoveUp;
 				}
 				break;
 			case secondMoveUp:
-				endEffectorSubsystem.setWristPercSpeedUnchecked(secondMoveUpPerc);
+				endEffectorSubsystem.setWristPercSpeedUnchecked(-secondMoveUpPerc);
 				if (!endEffectorSubsystem.getWristEndstop()) {
 					System.out.println("secondMoveUp Done!");
-					endEffectorSubsystem.zeroEncoder();
+					endEffectorSubsystem.maxEncoder();
 					endEffectorSubsystem.setWristPercSpeedUnchecked(0);
 					CLCommandDone = true;
 				}

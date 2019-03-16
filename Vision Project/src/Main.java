@@ -18,6 +18,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.VideoMode;
 import edu.wpi.cscore.VideoSource;
 import edu.wpi.first.cameraserver.CameraServer;
@@ -27,6 +28,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.vision.VisionPipeline;
 import edu.wpi.first.vision.VisionThread;
 
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 
@@ -175,12 +177,17 @@ public final class Main {
    */
   public static VideoSource startCamera(CameraConfig config) {
     System.out.println("Starting camera '" + config.name + "' on " + config.path);
+    /*
     VideoSource camera = CameraServer.getInstance().startAutomaticCapture(
-        config.name, config.path);
+        config.name, 0);//config.path);
+        */
+    VideoSource camera = CameraServer.getInstance().startAutomaticCapture();
 
     Gson gson = new GsonBuilder().create();
 
-    camera.setConfigJson(gson.toJson(config.config));
+    if (!devMode) {
+    	camera.setConfigJson(gson.toJson(config.config));
+    }
 
     return camera;
   }
@@ -215,27 +222,41 @@ public final class Main {
     		}
     	}
     }
+    
+    System.out.printf("OS Name: %s\n", System.getProperty("os.name"));
 
     // read configuration
     if (!readConfig()) {
       return;
     }
+    
+    System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
     // start NetworkTables
     
-    NetworkTableInstance ntinst = NetworkTableInstance.getDefault();
+    NetworkTableInstance ntinst;
+    
+    if (!devMode) {
+    	ntinst = NetworkTableInstance.getDefault();
+    }
+    else {
+	    ntinst = NetworkTableInstance.create();
+	    ntinst.startClient("localhost");
+    }
+    
     
     /*
     NetworkTableInstance ntinst = NetworkTableInstance.create();
     ntinst.startClient("Gabe-Thinkpad.local");
     */
-    
-    if (server) { // If server defined in config json
-      System.out.println("Setting up NetworkTables server");
-      ntinst.startServer();
-    } else { // If client defined in config json
-      System.out.println("Setting up NetworkTables client for team " + team);
-      ntinst.startClientTeam(team);
+    if (!devMode) {
+	    if (server) { // If server defined in config json
+	    	System.out.println("Setting up NetworkTables server");
+	    	ntinst.startServer();
+	    } else { // If client defined in config json
+	      System.out.println("Setting up NetworkTables client for team " + team);
+	      ntinst.startClientTeam(team);
+	    }
     }
     
     
@@ -262,6 +283,7 @@ public final class Main {
     System.out.println("WHAT IS UP PEEEEEEEEEEIIIIIIMMMMMMPPPPPSSSSS");
     
     // start cameras
+    /*
     List<VideoSource> cameras = new ArrayList<>();
     for (CameraConfig cameraConfig : cameraConfigs) {
       cameras.add(startCamera(cameraConfig));
@@ -279,14 +301,23 @@ public final class Main {
             		  RectFinder.addMatData(output); // Add data to the multithreaded Queue to be passed around
             	  }
               });
-      /* something like this for GRIP:
-      VisionThread visionThread = new VisionThread(cameras.get(0),
-              new GripPipeline(), pipeline -> {
-        ...
-      });
-       */
+      
       visionThread.start();
     }
+    */
+    
+    CameraCapture cap = new CameraCapture("0");
+	
+	CvSource outputStream = CameraServer.getInstance().putVideo("LaptopCam", 160, 120);
+	
+	cap.startCamera();
+	cap.addEvent((e) -> {
+		// Poop doo doo
+		if (!(e == CameraCaptureEvent.CameraCaptureEvents.NewFrame)) {
+			return;
+		}
+		outputStream.putFrame(cap.getCurrentFrame());
+	});
 
     // loop forever
     for (;;) {

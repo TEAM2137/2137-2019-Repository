@@ -31,7 +31,7 @@ public class RobotMode {
 	 */
 	public static void Init() {
 		
-		RobotMap.S_Cameras = new Cameras();
+		//RobotMap.S_Cameras = new Cameras();
 		
 		RobotMap.S_Pneumatics = new Pneumatics(
 			(int)KMap.GetKNumeric(KNumeric.INT_PNEUMATICS_PSI_SENSOR_ID));

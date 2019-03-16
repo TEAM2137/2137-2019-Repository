@@ -2,6 +2,7 @@ package org.torc.robot2019.program.teleopcontrols;
 
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.CANifier.GeneralPin;
+import com.revrobotics.CANSparkMax.IdleMode;
 
 import org.torc.robot2019.subsystems.ElevatorArmManager;
 import org.torc.robot2019.commands.GPPickup;
@@ -60,6 +61,8 @@ public class TeleopDrive extends CLCommand {
 
     RobotAutoLevel autoLevelCommand;
 
+    GenericHID driverController;
+
     GenericHID operatorController;
 
     /** Controller inputs for driveline speeds. (0 = left, 1 = right) */
@@ -74,6 +77,8 @@ public class TeleopDrive extends CLCommand {
     GPeiceTarget targetedGPeice = GPeiceTarget.kHatch; // Default targetedGPeice to Hatch
 
     GPPickup pickupCommand;
+
+    private double lastRollerControlVal = 0;
 
     public TeleopDrive(BasicDriveTrain _driveTrain, GamePositionManager _gpManager,
          PivotArm _pivotArm, Climber _climber, Elevator _elevator, EndEffector _endEffector, 
@@ -99,6 +104,8 @@ public class TeleopDrive extends CLCommand {
         requires(pivotArm);
 
         armSide = getPivotArmSide();
+
+        driverController = TORCControls.GetDriverController();
 
         operatorController = TORCControls.GetOperatorController();
     }
@@ -156,7 +163,7 @@ public class TeleopDrive extends CLCommand {
             RobotMap.S_Cameras.setSelectedCamera(CameraSelect.kRear);
         }
         */
-        RobotMap.S_Cameras.setSelectedCamera(CameraSelect.kFront);
+        //RobotMap.S_Cameras.setSelectedCamera(CameraSelect.kFront);
     }
 
     private void climbControl() {
@@ -169,6 +176,8 @@ public class TeleopDrive extends CLCommand {
         // Pogo sticks auto control
         if (TORCControls.GetInput(ControllerInput.B_PogoAuto) >= 1) {
             autoLevelCommand.setApplyPID(true);
+            // Set brake idle mode
+            driveTrain.setIdleMode(IdleMode.kBrake);
         }
         else {
             autoLevelCommand.setApplyPID(false);
@@ -199,14 +208,21 @@ public class TeleopDrive extends CLCommand {
         }
 
         // CG Pickup command
-        if (TORCControls.GetInput(ControllerInput.B_PickupCG, InputState.Pressed) >= 1) {
+        
+        if (driverController.getRawButton(1)) {//(TORCControls.GetInput(ControllerInput.B_PickupCG, InputState.Pressed) >= 1) {
             pickupCommandInterrupt();
-            /*
-            pickupCommand = new GPPickup(gpManager, pivotArm, elevator, endEffector);
+            
+            pickupCommand = new GPPickup(gpManager, pivotArm, elevator, endEffector, RobotSides.kFront);
             pickupCommand.start();
-            */
-            targetedPosition = GamePositions.CargoFloorPickup;
-            targetedGPeice = GPeiceTarget.kCargo;
+            
+            //targetedPosition = GamePositions.CargoFloorPickup;
+            //targetedGPeice = GPeiceTarget.kCargo;
+        }
+        else if (driverController.getRawButton(2)) {
+            pickupCommandInterrupt();
+            
+            pickupCommand = new GPPickup(gpManager, pivotArm, elevator, endEffector, RobotSides.kRear);
+            pickupCommand.start();
         }
         else if (TORCControls.GetInput(ControllerInput.B_PickupHumanPlayer, InputState.Pressed) >= 1) {
             pickupCommandInterrupt();
@@ -309,10 +325,14 @@ public class TeleopDrive extends CLCommand {
             endEffector.setRollerPercSpeed(rollerControl);
         }
         else {
-            if (pickupCommand == null || !pickupCommand.isRunning()) {
+            if ((pickupCommand == null || !pickupCommand.isRunning()) && 
+                lastRollerControlVal != 0) {
                 endEffector.setRollerPercSpeed(0);
+
             }
         }
+
+        lastRollerControlVal = rollerControl;
 
     }
 
@@ -370,5 +390,6 @@ public class TeleopDrive extends CLCommand {
             pickupCommand.cancel();
             pickupCommand = null;
         }
+        endEffector.setRollerPercSpeed(0);
     }
 }

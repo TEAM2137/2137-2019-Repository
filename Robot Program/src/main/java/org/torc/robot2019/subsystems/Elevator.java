@@ -220,7 +220,7 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 		if (hasBeenHomed &&
 			(elevatorM.getControlMode() == ControlMode.Position ||
 			elevatorM.getControlMode() == ControlMode.MotionMagic)) {
-
+				
 			SmartDashboard.putBoolean("CorrectingElevatorOnAngle", true);
 
 			int elevatorTarget = elevatorTargetPosition;

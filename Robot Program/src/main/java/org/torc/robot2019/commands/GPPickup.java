@@ -29,12 +29,14 @@ public class GPPickup extends CLCommand {
 
   private int ballSenseCounter = 0;
 
-  private static final int BALL_SENSE_COUNTER_MAX = 500 / 20;
+  private static final int BALL_SENSE_COUNTER_MAX = 500 / 10;
 
   private boolean directInterrupt = false;
 
+  private RobotSides robotSide;
+
   public GPPickup(GamePositionManager _gPosManager, PivotArm _pivotArm, Elevator _elevator, 
-    EndEffector _endEffector) {
+    EndEffector _endEffector, RobotSides _robotSide) {
     gPosManager = _gPosManager;
 
     pivotArm = _pivotArm;
@@ -42,6 +44,8 @@ public class GPPickup extends CLCommand {
     elevator = _elevator;
 
     endEffector = _endEffector;
+
+    robotSide = _robotSide;
   }
 
   @Override
@@ -58,12 +62,17 @@ public class GPPickup extends CLCommand {
     switch (currentState) {
       // Initial state
       case MovingIntoPosition:
+        System.out.println("GPPPickup: Starting to move into position...");
 
-        gPosManager.setPosition(GamePositions.CargoFloorPickup, RobotSides.kFront, GPeiceTarget.kCargo);
+        gPosManager.setPosition(GamePositions.CargoFloorPickup, robotSide, GPeiceTarget.kCargo);
         currentState = PickupStates.WaitingForMove;
 
         break;
       case WaitingForMove:
+        System.out.println("GPPPickup: Waiting for move...");
+
+        System.out.println("elevatorIsAtTarget: " + elevator.isAtTarget());
+        System.out.println("pivotArmIsAtTarget: " + pivotArm.isAtTarget());
 
         if (elevator.isAtTarget() && pivotArm.isAtTarget()) {
           currentState = PickupStates.WaitingForGP;
@@ -71,22 +80,26 @@ public class GPPickup extends CLCommand {
 
         break;
       case WaitingForGP:
+      System.out.println("GPPPickup: Waiting for GamePeice...");
 
         // Start Rollers intake
         endEffector.setRollerPercSpeed(1);
         // Open End Effector
         endEffector.setSolenoid(SolenoidStates.Open);
 
-        if (endEffector.getWristEndstop()) {
+        /*
+        if (endEffector.getBallSensor()) {
           ballSenseCounter++;
         }
         else {
           ballSenseCounter = 0;
         }
+        */
 
-        if (ballSenseCounter > BALL_SENSE_COUNTER_MAX) {
-          // Stop rollers
-          endEffector.setRollerPercSpeed(0);
+        //if (ballSenseCounter > BALL_SENSE_COUNTER_MAX) {
+        if (endEffector.getBallSensor()) {
+          // Keep ball in w/ Rollers
+          endEffector.setRollerPercSpeed(0.1);
           // Close solenoid
           endEffector.setSolenoid(SolenoidStates.Closed);
           currentState = PickupStates.MovingToFinalPosition;
@@ -95,7 +108,24 @@ public class GPPickup extends CLCommand {
         break;
       case MovingToFinalPosition:
 
-        gPosManager.setPosition(GamePositions.CargoShuttle, RobotSides.kFront, GPeiceTarget.kCargo);
+        System.out.println("GPPPickup: Moving to Final Position...");
+
+        RobotSides targetSide = robotSide;
+
+        // Invert target side from pickup side
+        switch (robotSide) {
+          case kFront:
+            targetSide = RobotSides.kRear;
+            break;
+          case kRear:
+            targetSide = RobotSides.kFront;
+            break;
+        }
+
+        gPosManager.setPosition(GamePositions.CargoShuttle, targetSide, GPeiceTarget.kCargo);
+
+        this.cancel();
+        setDirectInterrupt(true);
 
         break;
     }

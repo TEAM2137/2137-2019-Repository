@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-10">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-10"/>
+	<classpathentry kind="lib" path="C:/Users/Gabe/Desktop/java-MultiCameraServer/java-multiCameraServer/cameraserver.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Gabe/Documents/javalibs/cscore-java-2019.4.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Gabe/Documents/javalibs/ntcore-java-2019.4.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Gabe/Documents/javalibs/opencv-320.jar">
 		<attributes>
-			<attribute name="module" value="true"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Users/Gabe/Documents/javalibs"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/Gabe/Desktop/java-MultiCameraServer/java-multiCameraServer/cameraserver.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Gabe/Desktop/java-MultiCameraServer/java-multiCameraServer/cscore.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Public/frc2019/maven/edu/wpi/first/ntcore/ntcore-java/2019.1.1/ntcore-java-2019.1.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Gabe/Desktop/java-MultiCameraServer/java-multiCameraServer/opencv-344.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Gabe/Desktop/java-MultiCameraServer/java-multiCameraServer/wpiutil.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Gabe/Desktop/java-MultiCameraServer/java-multiCameraServer/gson-2.8.5.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Gabe/Desktop/java-MultiCameraServer/java-multiCameraServer/commons-lang3-3.8.1.jar" sourcepath="C:/Users/Gabe/Desktop/java-MultiCameraServer/java-multiCameraServer/commons-lang3-3.8.1-sources.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Gabe/Desktop/java-MultiCameraServer/java-multiCameraServer/fst-2.52-onejar.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Gabe/Documents/javalibs/ntcore-jni-2019.4.1-all.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Gabe/Documents/javalibs/cscore-jni-2019.4.1-all.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
