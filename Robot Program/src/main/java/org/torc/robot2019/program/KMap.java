@@ -29,7 +29,7 @@ public class KMap {
         INT_CLIMBER_MANTIS_PIVOT_MOTOR_ID(40, 40),
         INT_CLIMBER_POGO_MOTOR_ID(43, 43),
         // Pivot Arm
-        DBL_PIVOT_ARM_KP(6, 8),
+        DBL_PIVOT_ARM_KP(4, 8),
         DBL_PIVOT_ARM_KI(0, 0.005),
         DBL_PIVOT_ARM_KD(300, 300),
         INT_PIVOT_ARM_KIZONE(0, 40),

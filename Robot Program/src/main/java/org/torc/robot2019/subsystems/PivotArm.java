@@ -95,7 +95,7 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
     m_armPivot.config_kD(0, KMap.GetKNumeric(KNumeric.DBL_PIVOT_ARM_KD));
     m_armPivot.config_IntegralZone(0, (int)KMap.GetKNumeric(KNumeric.INT_PIVOT_ARM_KIZONE));
 
-    m_armPivot.configMotionCruiseVelocity(75);
+    m_armPivot.configMotionCruiseVelocity(100);
     m_armPivot.configMotionAcceleration(250);
 
     m_armPivot.configAllowableClosedloopError(0, 0);

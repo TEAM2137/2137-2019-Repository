@@ -33,7 +33,7 @@ public class GamePositionManager extends Subsystem {
 
 RL1AndHatchPanelPickup(new GPSingle(0, 1022, 2052),//new GPSingle(0, 1061, 2314), // Front HatchPanel
                      new GPSingle(0, 1248, 2861),    // Front Cargo
-                     new GPSingle(0, 2921, 2050), // Rear HatchPanel
+                     new GPSingle(0, 2951, 2050), // Rear HatchPanel
                      new GPSingle(0, 2801, 1895)),     // Rear Cargo
 
         RocketLevel2(new GPSingle(4335, 1916, 5305), // Front HatchPanel
