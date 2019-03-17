@@ -270,8 +270,8 @@ class EndEffector_Home extends CLCommand {
 	
 	HomingStates homingState = HomingStates.firstMoveDown;
 	
-	double firstMoveDownPerc = 0.85;
-	double secondMoveUpPerc = 0.85;
+	double firstMoveDownPerc = 0.3;
+	double secondMoveUpPerc = 0.3;
 	
 	public EndEffector_Home(EndEffector _endEffector) {
 		// Use requires() here to declare subsystem dependencies
@@ -292,14 +292,14 @@ class EndEffector_Home extends CLCommand {
 			case firstMoveDown:
 				endEffectorSubsystem.setWristPercSpeedUnchecked(firstMoveDownPerc);
 				if (endEffectorSubsystem.getWristEndstop()) {
-					System.out.println("firstMoveDown Done!");
+					System.out.println("EndEffector: firstMoveDown Done!");
 					homingState = HomingStates.secondMoveUp;
 				}
 				break;
 			case secondMoveUp:
 				endEffectorSubsystem.setWristPercSpeedUnchecked(-secondMoveUpPerc);
 				if (!endEffectorSubsystem.getWristEndstop()) {
-					System.out.println("secondMoveUp Done!");
+					System.out.println("EndEffector: secondMoveUp Done!");
 					endEffectorSubsystem.maxEncoder();
 					endEffectorSubsystem.setWristPercSpeedUnchecked(0);
 					CLCommandDone = true;

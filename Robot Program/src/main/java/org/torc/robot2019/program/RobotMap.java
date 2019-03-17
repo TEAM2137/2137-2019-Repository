@@ -20,7 +20,7 @@ import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
  */
 public class RobotMap {
 
-	//public static Cameras S_Cameras;
+	public static Cameras S_Cameras;
 	
 	public static Pneumatics S_Pneumatics;
 

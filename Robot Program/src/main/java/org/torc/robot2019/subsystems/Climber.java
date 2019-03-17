@@ -1,13 +1,12 @@
 package org.torc.robot2019.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.program.KMap.KNumeric;
-import org.torc.robot2019.tools.MathExtra;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 
@@ -22,16 +21,16 @@ public class Climber extends Subsystem {
 
 	/** Motor Controller for the Mantis arm */
 	private CANSparkMax rightMantis, leftMantis;
-	private CANSparkMax pivotMantis;
-	private CANSparkMax pogoStick;
+	private TalonSRX pivotMantis;
+	private TalonSRX pogoStick;
 
 	public Climber(int _leftManID, int _rightManID, int _pivotManID, int _pogoStickID) {
 		rightMantis = new CANSparkMax(_rightManID, MotorType.kBrushless);
 		leftMantis = new CANSparkMax(_leftManID, MotorType.kBrushless);
 
-		pivotMantis = new CANSparkMax(_pivotManID, MotorType.kBrushless);
+		pivotMantis = new TalonSRX(_pivotManID);
 
-		pogoStick = new CANSparkMax(_pogoStickID, MotorType.kBrushless);
+		pogoStick = new TalonSRX(_pogoStickID);
 	}
 
 	public void setMantisSpeed(double _speed) {
@@ -55,17 +54,17 @@ public class Climber extends Subsystem {
 	public void setMantisPivotSpeed(double _speed) {
 		// Clamp Mantis arm to max speed
 		//_speed = MathExtra.clamp(_speed, -MANTIS_ARM_MAX_PERC, MANTIS_ARM_MAX_PERC);
-		pivotMantis.set(_speed);
+		pivotMantis.set(ControlMode.PercentOutput, _speed);
 	}
 
 	public void setPogoStickSpeed(double _speed) {
 		if (_speed < 0) { 
-			pogoStick.setSecondaryCurrentLimit(2);
-			pogoStick.set(_speed);
+			pogoStick.configContinuousCurrentLimit(2);
+			pogoStick.set(ControlMode.PercentOutput, _speed);
 			// System.out.println("limited");
 		} else {
-			pogoStick.setSecondaryCurrentLimit(0);
-			pogoStick.set(_speed);
+			pogoStick.configContinuousCurrentLimit(0);
+			pogoStick.set(ControlMode.PercentOutput, _speed);
 			// System.out.println("not limited");
 		}
 	}

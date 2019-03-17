@@ -112,8 +112,8 @@ public class TeleopDrive extends CLCommand {
     // Called just before this Command runs the first time
     @Override
     protected void initialize() {
-
         autoLevelCommand.start();
+        writeTargetedGPeiceDashboard();
     }
 
     // Called repeatedly when this Command is scheduled to run
@@ -136,7 +136,7 @@ public class TeleopDrive extends CLCommand {
         driveInput[1] = TORCControls.GetInput(ControllerInput.A_DriveRight);
         
         if (TORCControls.GetInput(ControllerInput.B_DivideDriveTrain) >= 0.5) {
-            double multiplier = 0.5;//KMap.GetKNumeric(KNumeric.DBL_TELEOP_DRIVE_SLOW_MULTIPLIER);
+            double multiplier = 0.75;//KMap.GetKNumeric(KNumeric.DBL_TELEOP_DRIVE_SLOW_MULTIPLIER);
             driveInput[0] *= multiplier;
             driveInput[1] *= multiplier;
         }
@@ -148,7 +148,7 @@ public class TeleopDrive extends CLCommand {
 
         // Set drive mode based on if mantis wheels should move or not
         if (mantisWheelInput[0] > 0.2 || mantisWheelInput[1] > 0.2) {
-            RobotMap.S_DriveTrain.setPercSpeed(mantisWheelInput[0] * 0.5, mantisWheelInput[1] * 0.5);
+            RobotMap.S_DriveTrain.setPercSpeed(-mantisWheelInput[0] * 0.5, mantisWheelInput[1] * 0.5);
         }
         else {
             // Drive the robot
@@ -163,7 +163,7 @@ public class TeleopDrive extends CLCommand {
             RobotMap.S_Cameras.setSelectedCamera(CameraSelect.kRear);
         }
         */
-        //RobotMap.S_Cameras.setSelectedCamera(CameraSelect.kFront);
+        RobotMap.S_Cameras.setSelectedCamera(CameraSelect.kFront);
     }
 
     private void climbControl() {
@@ -225,7 +225,6 @@ public class TeleopDrive extends CLCommand {
             pickupCommand.start();
         }
         else if (TORCControls.GetInput(ControllerInput.B_PickupHumanPlayer, InputState.Pressed) >= 1) {
-            pickupCommandInterrupt();
             targetedPosition = GamePositions.CargoHumanPlayer;
             //targetedGPeice = GPeiceTarget.kHatch;
         }
@@ -254,13 +253,11 @@ public class TeleopDrive extends CLCommand {
             switch (targetedGPeice) {
                 case kCargo:
                     targetedGPeice = GPeiceTarget.kHatch;
-                    SmartDashboard.putBoolean("HatchSelect", true);
-                    SmartDashboard.putBoolean("CargoSelect", false);
+                    writeTargetedGPeiceDashboard();
                     break;
                 case kHatch:
                     targetedGPeice = GPeiceTarget.kCargo;
-                    SmartDashboard.putBoolean("HatchSelect", false);
-                    SmartDashboard.putBoolean("CargoSelect", true);
+                    writeTargetedGPeiceDashboard();
                     break;
             }
         }
@@ -287,6 +284,8 @@ public class TeleopDrive extends CLCommand {
         // If position is selected, set via GamePositionsManager
         if (targetedPosition != null) {
             try {
+                pickupCommandInterrupt(); // Inturrupt Pickup command
+
                 System.out.printf("Setting GamePosition:\ntargetedPosition: %s\ntargetedSide: %s\ntargetedGPeice: %s\n",
                     targetedPosition.toString(), targetedSide.toString(), targetedGPeice.toString());
                 gpManager.setPosition(targetedPosition, targetedSide, targetedGPeice);
@@ -322,6 +321,7 @@ public class TeleopDrive extends CLCommand {
         double rollerControl = TORCControls.GetInput(ControllerInput.B_RollersOuttake) - 
             TORCControls.GetInput(ControllerInput.B_RollersInTake);
         if (rollerControl != 0) {
+            pickupCommandInterrupt();
             endEffector.setRollerPercSpeed(rollerControl);
         }
         else {
@@ -391,5 +391,18 @@ public class TeleopDrive extends CLCommand {
             pickupCommand = null;
         }
         endEffector.setRollerPercSpeed(0);
+    }
+
+    private void writeTargetedGPeiceDashboard() {
+        switch (targetedGPeice) {
+            case kHatch:
+                SmartDashboard.putBoolean("HatchSelect", true);
+                SmartDashboard.putBoolean("CargoSelect", false);
+                break;
+            case kCargo:
+                SmartDashboard.putBoolean("HatchSelect", false);
+                SmartDashboard.putBoolean("CargoSelect", true);
+        }
+        
     }
 }
