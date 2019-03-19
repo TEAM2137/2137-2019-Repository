@@ -52,6 +52,10 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
     }
   }
 
+  public static enum PivotArmSides {
+    kFront, kRear;
+  }
+
   private static final double ARM_360_RESOLUTION_MULTIPLIER = 
     KMap.GetKNumeric(KNumeric.INT_PIVOT_ARM_360_DEGREE_RESOLUTION) / 360;
 
@@ -209,6 +213,18 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
   
     return feedForward;
   
+  }
+
+  /** Returns which side the PivotArm is currently facing
+   * (Note: changes at the top position).
+   */
+  public PivotArmSides getPivotArmSide() {
+    if (getEncoder() < (ARM_MAX_POSITION / 2)) {
+      return PivotArmSides.kFront;
+    }
+    else {
+      return PivotArmSides.kRear;
+    }
   }
 
   public static int AngleToPosition(double _angle) {

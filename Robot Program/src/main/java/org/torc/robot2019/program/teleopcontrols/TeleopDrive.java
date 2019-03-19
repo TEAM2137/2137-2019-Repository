@@ -17,10 +17,12 @@ import org.torc.robot2019.subsystems.Climber;
 import org.torc.robot2019.subsystems.Elevator;
 import org.torc.robot2019.subsystems.EndEffector;
 import org.torc.robot2019.subsystems.Elevator.ElevatorPositions;
+import org.torc.robot2019.subsystems.EndEffector.EndEffectorPositions;
 import org.torc.robot2019.subsystems.EndEffector.SolenoidStates;
 import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.subsystems.Cameras.CameraSelect;
 import org.torc.robot2019.subsystems.PivotArm.PivotArmPositions;
+import org.torc.robot2019.subsystems.PivotArm.PivotArmSides;
 import org.torc.robot2019.tools.CLCommand;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
 import org.torc.robot2019.tools.MathExtra;
@@ -56,8 +58,6 @@ public class TeleopDrive extends CLCommand {
     ElevatorArmManager elevArmManager;
 
     public static enum ArmSide { kFront, kBack }
-
-    public ArmSide armSide;
 
     RobotAutoLevel autoLevelCommand;
 
@@ -102,8 +102,6 @@ public class TeleopDrive extends CLCommand {
 
         requires(driveTrain);
         requires(pivotArm);
-
-        armSide = getPivotArmSide();
 
         driverController = TORCControls.GetDriverController();
 
@@ -236,6 +234,7 @@ public class TeleopDrive extends CLCommand {
             // TODO: Change to GamePosition (with wrist position)?
             pivotArm.setPosition(PivotArmPositions.Up);
             elevator.setPosition(ElevatorPositions.Retracted);
+            endEffector.setPosition(EndEffectorPositions.Travel);
         }
         // Up-for-climing position
         if (TORCControls.GetInput(ControllerInput.B_PivotClimbing, InputState.Pressed) >= 1) {
@@ -307,6 +306,10 @@ public class TeleopDrive extends CLCommand {
         double endEffectorControl = MathExtra.applyDeadband(
             TORCControls.GetInput(ControllerInput.A_WristJog), 0.2);
         if (endEffectorControl != 0) {
+            // Determine control position based on current pivotArm side
+            if (pivotArm.getPivotArmSide() == PivotArmSides.kRear) {
+                endEffectorControl *= -1;
+            }
             endEffector.jogPosition((int)(endEffectorControl * WRIST_JOG_MULTIPLIER));
         }
 
@@ -371,17 +374,6 @@ public class TeleopDrive extends CLCommand {
 		}
         // Set drivetrain speed to MotorOutput values
         driveTrain.setPercSpeed(leftMotorOutput, rightMotorOutput);
-    }
-    
-    public ArmSide getPivotArmSide() {
-        // Left side
-        if (PivotArm.PositionToAngle(pivotArm.getEncoder()) <= 180) {
-            return ArmSide.kFront;
-        }
-        // Right side
-        else {
-            return ArmSide.kBack;
-        }
     }
 
     private void pickupCommandInterrupt() {
