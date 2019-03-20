@@ -4,7 +4,6 @@ import com.ctre.phoenix.CANifier;
 
 import org.torc.robot2019.subsystems.ElevatorArmManager;
 import org.torc.robot2019.subsystems.BasicDriveTrain;
-import org.torc.robot2019.subsystems.Cameras;
 import org.torc.robot2019.subsystems.Climber;
 import org.torc.robot2019.subsystems.Elevator;
 import org.torc.robot2019.subsystems.EndEffector;
@@ -19,8 +18,6 @@ import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
  * floating around.
  */
 public class RobotMap {
-
-	public static Cameras S_Cameras;
 	
 	public static Pneumatics S_Pneumatics;
 

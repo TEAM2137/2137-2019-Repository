@@ -6,7 +6,6 @@ import com.ctre.phoenix.CANifier.GeneralPin;
 import org.torc.robot2019.subsystems.ElevatorArmManager;
 import org.torc.robot2019.program.KMap.KNumeric;
 import org.torc.robot2019.subsystems.BasicDriveTrain;
-import org.torc.robot2019.subsystems.Cameras;
 import org.torc.robot2019.subsystems.Climber;
 import org.torc.robot2019.subsystems.Elevator;
 import org.torc.robot2019.subsystems.EndEffector;
@@ -31,7 +30,7 @@ public class RobotMode {
 	 */
 	public static void Init() {
 		
-		RobotMap.S_Cameras = new Cameras();
+		//RobotMap.S_Cameras = new Cameras();
 		
 		RobotMap.S_Pneumatics = new Pneumatics(
 			(int)KMap.GetKNumeric(KNumeric.INT_PNEUMATICS_PSI_SENSOR_ID));

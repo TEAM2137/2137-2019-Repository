@@ -20,9 +20,10 @@ import org.torc.robot2019.subsystems.Elevator.ElevatorPositions;
 import org.torc.robot2019.subsystems.EndEffector.EndEffectorPositions;
 import org.torc.robot2019.subsystems.EndEffector.SolenoidStates;
 import org.torc.robot2019.subsystems.PivotArm;
-import org.torc.robot2019.subsystems.Cameras.CameraSelect;
+import org.torc.robot2019.subsystems.RPiCameras;
 import org.torc.robot2019.subsystems.PivotArm.PivotArmPositions;
 import org.torc.robot2019.subsystems.PivotArm.PivotArmSides;
+import org.torc.robot2019.subsystems.RPiCameras.CameraSelect;
 import org.torc.robot2019.tools.CLCommand;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
 import org.torc.robot2019.tools.MathExtra;
@@ -153,15 +154,13 @@ public class TeleopDrive extends CLCommand {
             haloDrive(driveInput[0], -driveInput[1], false);
         }
         // Camera select
-        /*
         if (driveInput[0] + driveInput[1] >= 0) {
-            RobotMap.S_Cameras.setSelectedCamera(CameraSelect.kFront);
+            RPiCameras.setSelectedCamera(CameraSelect.kFront);
         }
         else {
-            RobotMap.S_Cameras.setSelectedCamera(CameraSelect.kRear);
+            RPiCameras.setSelectedCamera(CameraSelect.kRear);
         }
-        */
-        RobotMap.S_Cameras.setSelectedCamera(CameraSelect.kFront);
+        //RobotMap.S_Cameras.setSelectedCamera(CameraSelect.kFront);
     }
 
     private void climbControl() {

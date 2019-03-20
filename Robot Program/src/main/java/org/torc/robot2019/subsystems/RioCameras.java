@@ -18,7 +18,7 @@ import edu.wpi.cscore.VideoMode;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
-public class Cameras extends Subsystem {
+public class RioCameras extends Subsystem {
 
   public static enum CameraSelect {
     kFront, kRear;
@@ -28,7 +28,7 @@ public class Cameras extends Subsystem {
 
   //private CameraSwitcher cSwitcherCommand;
   
-  public Cameras() {
+  public RioCameras() {
     /*
     cSwitcherCommand = new CameraSwitcher();
     cSwitcherCommand.start();
