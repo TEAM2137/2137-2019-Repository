@@ -328,7 +328,7 @@ public final class Main {
 	    
 	    cap.setPipelineEvent((frame) -> {
 			// Flip along vertical axis
-			Core.flip(frame, frame, 1);
+			//Core.flip(frame, frame, 1);
 			// Convert frame to greyscale
 			//Imgproc.cvtColor(frame, frame, Imgproc.COLOR_RGB2GRAY);
 			// Force resize frame to lower resolution

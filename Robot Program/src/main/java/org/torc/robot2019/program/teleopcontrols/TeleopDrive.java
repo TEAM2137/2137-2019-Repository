@@ -131,8 +131,8 @@ public class TeleopDrive extends CLCommand {
 
     private void drivelineMantisControl() {
         // Robot driving
-        driveInput[0] = TORCControls.GetInput(ControllerInput.A_DriveLeft);
-        driveInput[1] = TORCControls.GetInput(ControllerInput.A_DriveRight);
+        driveInput[0] = MathExtra.applyDeadband(TORCControls.GetInput(ControllerInput.A_DriveLeft), 0.2);
+        driveInput[1] = MathExtra.applyDeadband(TORCControls.GetInput(ControllerInput.A_DriveRight), 0.2);
         
         if (TORCControls.GetInput(ControllerInput.B_DivideDriveTrain) >= 0.5) {
             double multiplier = 0.75;//KMap.GetKNumeric(KNumeric.DBL_TELEOP_DRIVE_SLOW_MULTIPLIER);
@@ -303,10 +303,10 @@ public class TeleopDrive extends CLCommand {
     private void endEffectorControl() {
         // Manual Wrist Control
         double endEffectorControl = MathExtra.applyDeadband(
-            TORCControls.GetInput(ControllerInput.A_WristJog), 0.2);
+            -TORCControls.GetInput(ControllerInput.A_WristJog), 0.2);
         if (endEffectorControl != 0) {
             // Determine control position based on current pivotArm side
-            if (pivotArm.getPivotArmSide() == PivotArmSides.kRear) {
+            if (pivotArm.getPivotArmSide() == PivotArmSides.kFront) {
                 endEffectorControl *= -1;
             }
             endEffector.jogPosition((int)(endEffectorControl * WRIST_JOG_MULTIPLIER));
@@ -352,8 +352,8 @@ public class TeleopDrive extends CLCommand {
     
     public void haloDrive(double _wheel, double _throttle, boolean _squared) {
 		
-		double driverThrottle = MathExtra.clamp(MathExtra.applyDeadband(_throttle, 0.15), -1, 1);
-		double driverWheel = MathExtra.clamp(MathExtra.applyDeadband(_wheel, 0.15), -1, 1);
+		double driverThrottle = MathExtra.clamp(_throttle, -1, 1);
+		double driverWheel = MathExtra.clamp(_wheel, -1, 1);
 		
 		if (_squared) {
 			driverThrottle = (Math.pow(driverThrottle, 2) * (driverThrottle<0?-1:1));

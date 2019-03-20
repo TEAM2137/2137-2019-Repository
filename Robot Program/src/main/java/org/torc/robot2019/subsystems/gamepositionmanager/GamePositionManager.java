@@ -15,10 +15,10 @@ public class GamePositionManager extends Subsystem {
                      new GPSingle(0, 3019, 934),
                      new GPSingle(0, 3019, 934)),
 
-             CargoShuttle(new GPSingle(636, 1694, 4771), // Cargo Only
-                     new GPSingle(636, 1694, 4771),
-                     new GPSingle(636, 2382, 0),
-                     new GPSingle(636, 2382, 0)),
+             CargoShuttle(new GPSingle(2114, 1694, 4771), // Cargo Only
+                     new GPSingle(2114, 1694, 4771),
+                     new GPSingle(2866, 2382, 0),
+                     new GPSingle(2866, 2382, 0)),
    /*                 
    HumanPlayerPickup(new GPSingle(0, 1079, 2668), // Front only
                      new GPSingle(0, 1541, 3000),
@@ -31,14 +31,14 @@ public class GamePositionManager extends Subsystem {
                      new GPSingle(0, 2890, 4291),
                      new GPSingle(0, 2890, 4291)),
 
-RL1AndHatchPanelPickup(new GPSingle(0, 1047, 2473),//new GPSingle(0, 1061, 2314), // Front HatchPanel
+RL1AndHatchPanelPickup(new GPSingle(0, 1080, 2473),//new GPSingle(0, 1061, 2314), // Front HatchPanel
                      new GPSingle(0, 1248, 2861),    // Front Cargo
                      new GPSingle(0, 2936, 2050), // Rear HatchPanel
                      new GPSingle(0, 2801, 1895)),     // Rear Cargo
 
         RocketLevel2(new GPSingle(4335, 1916, 5305), // Front HatchPanel
                      new GPSingle(3859, 1990, 4787), // Front Cargo
-                     new GPSingle(4147, 2297, 0), // Rear HatchPanel
+                     new GPSingle(4716, 2297, 0), // Rear HatchPanel
                      new GPSingle(3253, 2144, 384)), // Rear Cargo
 
         RocketLevel3(new GPSingle(17193, 1953, 5301), // Front HatchPanel

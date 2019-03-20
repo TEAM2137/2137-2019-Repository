@@ -25,7 +25,7 @@ public class RPiCameras extends Subsystem {
 
   private static NetworkTable NtTable = NtInstance.getTable("dataTable");
 
-  private static NetworkTableEntry NtCameraSelect = NtTable.getEntry("CameraSelect");
+  private static NetworkTableEntry NtCameraSelect = NtTable.getEntry("SelectedCamera");
 
   public static void setSelectedCamera(CameraSelect _cameraSelect) {
     switch(_cameraSelect) {
