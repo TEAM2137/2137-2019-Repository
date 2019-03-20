@@ -14,24 +14,25 @@ import org.opencv.videoio.Videoio;
 public class CameraCapture {
 	
 	private Runnable FrameGrabber = new Runnable() {
-		
 		@Override
 		public void run() {
 			// effectively grab and process a single frame
-			if (currentFrame != null) {
-				currentFrame.release();
+			if (!captureFrames) {
+				return;
 			}
-			currentFrame = grabFrame();
-			updateEventList(CameraCaptureEvent.CameraCaptureEvents.NewFrame);
+			Mat frame = grabFrame();
+			updateNewFrameEventList(frame);
+			frame.release();
 		}
 	};
 	
-	List<CameraCaptureEvent> ccEventList;
+	List<CCNewFrameEvent> ccNewFrameEventList = new ArrayList<CCNewFrameEvent>();
+	CCPipelineEvent ccPipelineEvent;
+	CCSetupParametersEvent ccSetupParametersEvent;
+	
 	
 	private VideoCapture capture;
 	private ScheduledExecutorService timer;
-	
-	private Mat currentFrame;
 	
 	private final String cameraDir;
 	
@@ -39,9 +40,9 @@ public class CameraCapture {
 	
 	private boolean isWindows = false;
 	
+	private boolean captureFrames = false;
+	
 	public CameraCapture(String _cameraDir) {
-		ccEventList = new ArrayList<CameraCaptureEvent>();
-		
 		isWindows = System.getProperty("os.name").toLowerCase().contains("windows");
 		
 		cameraDir = _cameraDir;
@@ -81,29 +82,21 @@ public class CameraCapture {
 			}
 		}
 		else {
-			this.capture.open(cameraDir);
+			this.capture.open(cameraDir);			
 		}
 		
 		// is the video stream available?
 		if (this.capture.isOpened()) {
-			
 			System.out.println("Video stream available");
-			//capture.set(Videoio.CAP_PROP_FPS, 10);
-			System.out.println("FPS: " + capture.get(Videoio.CAP_PROP_FPS));
+			// Set setupParameters
+			updateSetupParametersEvent(capture);
+			captureFrames = true;
 			startTimer();
 		}
 		else {
-			System.out.println("Loading connectionerror.png");
+			System.out.println("Error with camera connection");
 		}
-			
-	}
-	
-	public void addEvent(CameraCaptureEvent _event) {
-		ccEventList.add(_event);
-	}
-	
-	public boolean removeEvent(CameraCaptureEvent _event) {
-		return ccEventList.remove(_event);
+		
 	}
 	
 	public void setFPS(int _fps) {
@@ -115,8 +108,12 @@ public class CameraCapture {
 		startTimer();
 	}
 	
-	public Mat getCurrentFrame() {
-		return currentFrame;
+	public void setCapturingFrames(boolean _value) {
+		captureFrames = _value;
+	}
+	
+	public boolean getCapturingFrames() {
+		return captureFrames;
 	}
 	
 	private void startTimer() {
@@ -127,12 +124,6 @@ public class CameraCapture {
 		this.timer = Executors.newSingleThreadScheduledExecutor();
 		// Default FPS to 30
 		this.timer.scheduleAtFixedRate(FrameGrabber, 0, (long)(1000/FPS), TimeUnit.MILLISECONDS);
-	}
-	
-	private void updateEventList(CameraCaptureEvent.CameraCaptureEvents _eventType) {
-		for (CameraCaptureEvent e : ccEventList) {
-			e.onEvent(_eventType);
-		}
 	}
 	
 	private boolean checkIfCapturing() {
@@ -151,12 +142,9 @@ public class CameraCapture {
 				
 				// if the frame is not empty, process it
 				if (!frame.empty()) {
-					//Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2GRAY);
-					
-					// Flip along vertical axis
-					Core.flip(frame, frame, 1);
-					Imgproc.cvtColor(frame, frame, Imgproc.COLOR_RGB2GRAY);
-					Imgproc.resize(frame, frame, new Size(160, 120));
+					// Run camera processing pipeline.
+					updatePipelineEvent(frame);
+					//System.out.println("Target FPS: " + capture.get(Videoio.FRAM));
 				}
 				
 			}
@@ -191,12 +179,58 @@ public class CameraCapture {
 			System.out.println("Camera released");
 		}
 	}
+	
+	/** Event Functions **/
+	
+	public void addNewFrameEvent(CCNewFrameEvent _event) {
+		ccNewFrameEventList.add(_event);
+	}
+	
+	public boolean removeNewFrameEvent(CCNewFrameEvent _event) {
+		return ccNewFrameEventList.remove(_event);
+	}
+	
+	private void updateNewFrameEventList(Mat _frame) {
+		for (CCNewFrameEvent e : ccNewFrameEventList) {
+			e.onEvent(_frame);
+		}
+	}
+	
+	public void setPipelineEvent(CCPipelineEvent _event) {
+		ccPipelineEvent = _event;
+	}
+	
+	private void updatePipelineEvent(Mat _frame) {
+		if (ccPipelineEvent == null) {
+			return;
+		}
+		ccPipelineEvent.onEvent(_frame);
+	}
+	
+	public void setSetupParametersEvent(CCSetupParametersEvent _event) {
+		ccSetupParametersEvent = _event;
+	}
+	
+	private void updateSetupParametersEvent(VideoCapture _capture) {
+		if (ccSetupParametersEvent == null) {
+			return;
+		}
+		ccSetupParametersEvent.onEvent(_capture);
+	}
 }
 
 @FunctionalInterface
-interface CameraCaptureEvent {
-	enum CameraCaptureEvents {
-		NewFrame
-	}
-	void onEvent(CameraCaptureEvents e);
+interface CCNewFrameEvent {
+	void onEvent(Mat _newFrame);
 }
+
+@FunctionalInterface
+interface CCPipelineEvent {
+	void onEvent(Mat _unprocessedFrame);
+}
+
+@FunctionalInterface
+interface CCSetupParametersEvent {
+	void onEvent(VideoCapture _capture);
+}
+

@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-10"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-10">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/Gabe/Desktop/java-MultiCameraServer/java-multiCameraServer/cameraserver.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Gabe/Documents/javalibs/cscore-java-2019.4.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Gabe/Documents/javalibs/ntcore-java-2019.4.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Gabe/Documents/javalibs/opencv-320.jar">
+	<classpathentry kind="lib" path="C:/Users/Public/frc2019/maven/edu/wpi/first/thirdparty/frc2019/opencv/opencv-java/3.4.4-4/opencv-java-3.4.4-4.jar">
 		<attributes>
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Users/Gabe/Documents/javalibs"/>
 		</attributes>

@@ -22,6 +22,7 @@ import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.VideoMode;
 import edu.wpi.cscore.VideoSource;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -31,6 +32,9 @@ import edu.wpi.first.vision.VisionThread;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Size;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.videoio.Videoio;
 
 /*
    JSON format:
@@ -267,6 +271,7 @@ public final class Main {
     NetworkTableEntry rectList = table.getEntry("RectList");
     NetworkTableEntry byteArrLength = table.getEntry("ByteArrLength");
     NetworkTableEntry cameraResolution = table.getEntry("VisionResolution");
+    NetworkTableEntry selectedCamera = table.getEntry("SelectedCamera");
     
     // Start Seperate procesing threads
     RectFinder = new T_RectFinder();
@@ -305,19 +310,69 @@ public final class Main {
       visionThread.start();
     }
     */
+    CameraCapture[] cameraArray = new CameraCapture[2];
     
-    CameraCapture cap = new CameraCapture("0");
-	
-	CvSource outputStream = CameraServer.getInstance().putVideo("LaptopCam", 160, 120);
-	
-	cap.startCamera();
-	cap.addEvent((e) -> {
-		// Poop doo doo
-		if (!(e == CameraCaptureEvent.CameraCaptureEvents.NewFrame)) {
-			return;
+    CvSource outputStream = CameraServer.getInstance().putVideo("RobotCamera", 160, 120);
+    
+    for (CameraConfig cameraConfig : cameraConfigs) {
+    
+	    CameraCapture cap = new CameraCapture(cameraConfig.path);
+	    
+	    int fps = cameraConfig.config.get("fps").getAsInt();
+	    
+	    cap.setSetupParametersEvent((capture) -> {
+	    	capture.set(Videoio.CAP_PROP_FPS, fps);
+	    	capture.set(Videoio.CAP_PROP_FRAME_WIDTH, cameraConfig.config.get("width").getAsInt());
+	    	capture.set(Videoio.CAP_PROP_FRAME_HEIGHT, cameraConfig.config.get("height").getAsInt());
+	    });
+	    
+	    cap.setPipelineEvent((frame) -> {
+			// Flip along vertical axis
+			Core.flip(frame, frame, 1);
+			// Convert frame to greyscale
+			//Imgproc.cvtColor(frame, frame, Imgproc.COLOR_RGB2GRAY);
+			// Force resize frame to lower resolution
+			//Imgproc.resize(frame, frame, new Size(160, 120));
+	    });		
+		
+		cap.startCamera();
+		
+		//cap.setCapturingFrames(false);
+		
+		cap.setFPS(fps);
+		
+		// Send captured frames to CameraServer
+		cap.addNewFrameEvent((e) -> {
+			outputStream.putFrame(e);
+		});
+		
+		if (cameraConfig.name.toLowerCase().contains("front")) {
+			cameraArray[0] = cap;
 		}
-		outputStream.putFrame(cap.getCurrentFrame());
-	});
+		else {
+			cameraArray[1] = cap;
+		}
+    }
+    // On value change
+    selectedCamera.addListener(event -> {
+    	
+    	String ntValue = event.value.getString();
+    	
+    	System.out.println("updatedNTValue!: " + ntValue);
+    	
+    	if (ntValue.toLowerCase().contains("rear")) {
+    		cameraArray[1].setCapturingFrames(true);
+    		cameraArray[0].setCapturingFrames(false);
+    	}
+    	else {
+    		cameraArray[0].setCapturingFrames(true);
+    		cameraArray[1].setCapturingFrames(false);
+    	}
+    }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
+    
+    selectedCamera.setString("front");
+    cameraArray[0].setCapturingFrames(true);
+	cameraArray[1].setCapturingFrames(false);
 
     // loop forever
     for (;;) {
