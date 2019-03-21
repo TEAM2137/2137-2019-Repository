@@ -21,16 +21,16 @@ public class Climber extends Subsystem {
 
 	/** Motor Controller for the Mantis arm */
 	private CANSparkMax rightMantis, leftMantis;
-	private TalonSRX pivotMantis;
-	private TalonSRX pogoStick;
+	private CANSparkMax pivotMantis;
+	private CANSparkMax pogoStick;
 
 	public Climber(int _leftManID, int _rightManID, int _pivotManID, int _pogoStickID) {
 		rightMantis = new CANSparkMax(_rightManID, MotorType.kBrushless);
 		leftMantis = new CANSparkMax(_leftManID, MotorType.kBrushless);
 
-		pivotMantis = new TalonSRX(_pivotManID);
+		pivotMantis = new CANSparkMax(_pivotManID, MotorType.kBrushless);
 
-		pogoStick = new TalonSRX(_pogoStickID);
+		pogoStick = new CANSparkMax(_pogoStickID, MotorType.kBrushless);
 	}
 
 	public void setMantisSpeed(double _speed) {
@@ -54,17 +54,17 @@ public class Climber extends Subsystem {
 	public void setMantisPivotSpeed(double _speed) {
 		// Clamp Mantis arm to max speed
 		//_speed = MathExtra.clamp(_speed, -MANTIS_ARM_MAX_PERC, MANTIS_ARM_MAX_PERC);
-		pivotMantis.set(ControlMode.PercentOutput, _speed);
+		pivotMantis.set(_speed);
 	}
 
 	public void setPogoStickSpeed(double _speed) {
 		if (_speed < 0) { 
-			pogoStick.configContinuousCurrentLimit(2);
-			pogoStick.set(ControlMode.PercentOutput, _speed);
+			pogoStick.setSmartCurrentLimit(2);
+			pogoStick.set(_speed);
 			// System.out.println("limited");
 		} else {
-			pogoStick.configContinuousCurrentLimit(0);
-			pogoStick.set(ControlMode.PercentOutput, _speed);
+			pogoStick.setSmartCurrentLimit(0);
+			pogoStick.set(_speed);
 			// System.out.println("not limited");
 		}
 	}

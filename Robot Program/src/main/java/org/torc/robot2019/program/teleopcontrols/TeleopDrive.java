@@ -154,10 +154,11 @@ public class TeleopDrive extends CLCommand {
             haloDrive(driveInput[0], -driveInput[1], false);
         }
         // Camera select
-        if (driveInput[0] + driveInput[1] >= 0) {
+        double driveInputSum = driveInput[0] + driveInput[1];
+        if (driveInputSum >= 0.2) {
             RPiCameras.setSelectedCamera(CameraSelect.kFront);
         }
-        else {
+        else if (driveInputSum <= -0.2) {
             RPiCameras.setSelectedCamera(CameraSelect.kRear);
         }
         //RobotMap.S_Cameras.setSelectedCamera(CameraSelect.kFront);
