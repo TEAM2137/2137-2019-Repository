@@ -12,8 +12,8 @@ public class GamePositionManager extends Subsystem {
         // elevator, pivot, wrist
          CargoFloorPickup(new GPSingle(0, 982, 3031), // Cargo Only
                      new GPSingle(0, 982, 3031),
-                     new GPSingle(0, 3019, 934),
-                     new GPSingle(0, 3019, 934)),
+                     new GPSingle(0, 3018, 1455),
+                     new GPSingle(0, 3018, 1455)),
 
              CargoShuttle(new GPSingle(2114, 1694, 4771), // Cargo Only
                      new GPSingle(2114, 1694, 4771),

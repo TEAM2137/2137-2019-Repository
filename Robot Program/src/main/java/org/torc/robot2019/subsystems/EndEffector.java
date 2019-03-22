@@ -75,7 +75,7 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 
 		endEffectorM.configContinuousCurrentLimit(2);
 		
-		endEffectorM.configClosedLoopPeakOutput(0, 0.75);
+		endEffectorM.configClosedLoopPeakOutput(0, 1);
 
 		endEffectorM.config_kF(0, 0);
 		endEffectorM.config_kP(0, KMap.GetKNumeric(KNumeric.DBL_END_EFFECTOR_KP));

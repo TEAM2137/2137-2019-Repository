@@ -87,6 +87,14 @@ public class ElevatorArmManager extends Subsystem implements InheritedPeriodic  
     return GetMaxArmExtension(PivotArm.PositionToAngle(pivotArm.getEncoder()) - 90);
   }
 
+  public Elevator getElevator() {
+    return elevator;
+  }
+
+  public PivotArm getPivotArm() {
+    return pivotArm;
+  }
+
   @Override
   protected void initDefaultCommand() {
   }

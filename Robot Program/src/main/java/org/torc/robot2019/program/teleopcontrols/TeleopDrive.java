@@ -44,42 +44,47 @@ public class TeleopDrive extends CLCommand {
     final double PIVOTARM_JOG_MULTIPLIER = KMap.GetKNumeric(KNumeric.DBL_PIVOT_ARM_JOG_CONTROL_MULTIPLIER);
     final double WRIST_JOG_MULTIPLIER = KMap.GetKNumeric(KNumeric.DBL_WRIST_JOG_CONTROL_MULTIPLIER);
 
-    BasicDriveTrain driveTrain;
+    private BasicDriveTrain driveTrain;
 
-    PivotArm pivotArm;
+    private PivotArm pivotArm;
 
-    Climber climber;
+    private Climber climber;
 
-    Elevator elevator;
+    private Elevator elevator;
 
-    EndEffector endEffector;
+    private EndEffector endEffector;
 
-    GamePositionManager gpManager;
+    private GamePositionManager gpManager;
 
-    ElevatorArmManager elevArmManager;
+    private ElevatorArmManager elevArmManager;
 
     public static enum ArmSide { kFront, kBack }
 
-    RobotAutoLevel autoLevelCommand;
+    private RobotAutoLevel autoLevelCommand;
 
-    GenericHID driverController;
+    private GenericHID driverController;
 
-    GenericHID operatorController;
+    private GenericHID operatorController;
 
     /** Controller inputs for driveline speeds. (0 = left, 1 = right) */
     private double[] driveInput = {0, 0};
     /** Controller inputs for mantis wheel speeds. (0 = left, 1 = right) */
     private double[] mantisWheelInput = {0, 0};
 
-    GamePositions targetedPosition;
+    private GamePositions targetedPosition;
     
-    RobotSides targetedSide;
+    private RobotSides targetedSide;
 
-    GPeiceTarget targetedGPeice = GPeiceTarget.kHatch; // Default targetedGPeice to Hatch
+    private GPeiceTarget targetedGPeice = GPeiceTarget.kHatch; // Default targetedGPeice to Hatch
 
-    GPPickup pickupCommand;
+    private GPPickup pickupCommand;
 
     private double lastRollerControlVal = 0;
+
+    private int cameraTimerFront = 0;
+    private int cameraTimerRear = 0;
+
+    private final int cameraTimerMax = 500 / 20;
 
     public TeleopDrive(BasicDriveTrain _driveTrain, GamePositionManager _gpManager,
          PivotArm _pivotArm, Climber _climber, Elevator _elevator, EndEffector _endEffector, 
@@ -155,13 +160,40 @@ public class TeleopDrive extends CLCommand {
         }
         // Camera select
         double driveInputSum = driveInput[0] + driveInput[1];
-        if (driveInputSum >= 0.2) {
+        // Driving forward
+        
+        if (driveInputSum < 0) {
+            cameraTimerFront++;
+        }
+        else {
+            cameraTimerFront = 0;
+        }
+        // Driving reverse
+        if (driveInputSum > 0) {
+            cameraTimerRear++;
+        }
+        else {
+            cameraTimerRear = 0;
+        }
+
+        if (cameraTimerFront >= cameraTimerMax) {
+            cameraTimerFront = 0;
             RPiCameras.setSelectedCamera(CameraSelect.kFront);
         }
-        else if (driveInputSum <= -0.2) {
+        else if (cameraTimerRear >= cameraTimerMax) {
+            cameraTimerRear = 0;
             RPiCameras.setSelectedCamera(CameraSelect.kRear);
         }
-        //RobotMap.S_Cameras.setSelectedCamera(CameraSelect.kFront);
+        
+
+        /*
+        if (driveInputSum > 0) {
+            RPiCameras.setSelectedCamera(CameraSelect.kFront);
+        }
+        else if (driveInputSum < 0) {
+            RPiCameras.setSelectedCamera(CameraSelect.kRear);
+        }
+        */
     }
 
     private void climbControl() {
