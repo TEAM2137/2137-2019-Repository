@@ -1,15 +1,15 @@
 package org.torc.robot2019.program;
 
-import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.CANifier;
 
+import org.torc.robot2019.subsystems.ElevatorArmManager;
 import org.torc.robot2019.subsystems.BasicDriveTrain;
 import org.torc.robot2019.subsystems.Climber;
 import org.torc.robot2019.subsystems.Elevator;
+import org.torc.robot2019.subsystems.EndEffector;
 import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.subsystems.Pneumatics;
-import org.torc.robot2019.vision.VisionManager;
-
-import edu.wpi.first.wpilibj.AnalogInput;
+import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
 
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into
@@ -29,6 +29,14 @@ public class RobotMap {
 
 	public static Elevator S_Elevator;
 
-	public static VisionManager VManager;
+	//public static VisionManager VManager;
+
+	public static CANifier Canifier;
+
+	public static EndEffector S_EndEffector;
+
+	public static GamePositionManager S_GPManager;
+
+	public static ElevatorArmManager S_ElevatorArmManager;
 	
 }

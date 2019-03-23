@@ -1,6 +1,7 @@
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2019.3.2"
+    id "edu.wpi.first.GradleRIO" version "2019.4.1"
+    //id "jaci.gradle.EmbeddedTools" version "2018.12.18"
 }
 
 def ROBOT_MAIN_CLASS = "org.torc.robot2019.robot.Main"

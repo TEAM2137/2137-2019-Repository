@@ -1,13 +1,12 @@
 package org.torc.robot2019.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.program.KMap.KNumeric;
-import org.torc.robot2019.tools.MathExtra;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 
@@ -54,17 +53,17 @@ public class Climber extends Subsystem {
 
 	public void setMantisPivotSpeed(double _speed) {
 		// Clamp Mantis arm to max speed
-		_speed = MathExtra.clamp(_speed, -MANTIS_ARM_MAX_PERC, MANTIS_ARM_MAX_PERC);
+		//_speed = MathExtra.clamp(_speed, -MANTIS_ARM_MAX_PERC, MANTIS_ARM_MAX_PERC);
 		pivotMantis.set(_speed);
 	}
 
 	public void setPogoStickSpeed(double _speed) {
 		if (_speed < 0) { 
-			pogoStick.setSecondaryCurrentLimit(2);
+			//pogoStick.setSmartCurrentLimit(2);
 			pogoStick.set(_speed);
 			// System.out.println("limited");
 		} else {
-			pogoStick.setSecondaryCurrentLimit(0);
+			//pogoStick.setSmartCurrentLimit(0);
 			pogoStick.set(_speed);
 			// System.out.println("not limited");
 		}

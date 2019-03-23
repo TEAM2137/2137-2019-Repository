@@ -5,7 +5,11 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.robot.InheritedPeriodic;
 import org.torc.robot2019.robot.Robot;
 import org.torc.robot2019.tools.MathExtra;
@@ -18,10 +22,11 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
 
     public static enum DriveSide { kRight, kLeft };
 
-    private TalonSRX leftM, rightM;
+    // Comp bot controllers //
+    private CANSparkMax leftMSpark, rightMSpark;
 
-    private VictorSPX[] leftS = new VictorSPX[2];
-    private VictorSPX[] rightS = new VictorSPX[2];
+    private CANSparkMax[] leftSSpark; 
+    private CANSparkMax[] rightSSpark;
 
     private PigeonIMU gyro;
 
@@ -32,98 +37,65 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
         // "Subscribe" to inherited Periodic
         Robot.AddToPeriodic(this);
 
-        leftM = new TalonSRX(_leftMID);
-        rightM = new TalonSRX(_rightMID);
+        leftMSpark = new CANSparkMax(_leftMID, MotorType.kBrushless);
+        rightMSpark = new CANSparkMax(_rightMID, MotorType.kBrushless);
 
-        leftS[0] = new VictorSPX(_leftS0ID);
-        rightS[0] = new VictorSPX(_rightS0ID);
-        leftS[1] = new VictorSPX(_leftS1ID);
-        rightS[1] = new VictorSPX(_rightS1ID);
+        leftSSpark = new CANSparkMax[1];
+        rightSSpark = new CANSparkMax[1];
 
-        MotorControllers.TalonSRXConfig(leftM);
-        MotorControllers.TalonSRXConfig(rightM);
+        leftSSpark[0] = new CANSparkMax(_leftS0ID, MotorType.kBrushless);
+        rightSSpark[0] = new CANSparkMax(_rightS0ID, MotorType.kBrushless);
 
-        // Configure masters to use quad encoders
-        leftM.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
-        rightM.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
+        leftMSpark.setIdleMode(IdleMode.kCoast);
+        rightMSpark.setIdleMode(IdleMode.kCoast);
 
+        leftMSpark.setOpenLoopRampRate(0.2);
+        rightMSpark.setOpenLoopRampRate(0.2);
+
+        for (CANSparkMax s : leftSSpark) {
+            s.setIdleMode(IdleMode.kCoast);
+            s.setOpenLoopRampRate(0.2);
+        }
+
+        for (CANSparkMax s : rightSSpark) {
+            s.setIdleMode(IdleMode.kCoast);
+            s.setOpenLoopRampRate(0.2);
+        }
+        
         gyro = new PigeonIMU(_pigeonID);
-
-        // Invert left so it goes forwards with right (same phase)
-        leftM.setSensorPhase(true);
-
-        leftM.config_kF(0, 2.2);
-        rightM.config_kF(0, 2.2);
-
-        leftM.config_kP(0, 3);
-        rightM.config_kP(0, 3);
-
-        leftM.config_kI(0, 0.01);
-        rightM.config_kI(0, 0.01);
-
-        leftM.config_IntegralZone(0, 50);
-        rightM.config_IntegralZone(0, 50);
-
-        leftM.configClosedloopRamp(0.25);
-        rightM.configClosedloopRamp(0.25);
-
-        leftM.configContinuousCurrentLimit(40);
-        rightM.configContinuousCurrentLimit(40);
+        
     }
 
     public void setPercSpeed(double _leftSpd, double _rightSpd) {
-        leftM.set(ControlMode.PercentOutput, -_leftSpd);
-        rightM.set(ControlMode.PercentOutput, _rightSpd);
+        leftMSpark.set(-_leftSpd);
+        rightMSpark.set(-_rightSpd);
 
-        leftS[0].set(ControlMode.PercentOutput, -_leftSpd);
-        rightS[0].set(ControlMode.PercentOutput, _rightSpd);
-        leftS[1].set(ControlMode.PercentOutput, -_leftSpd);
-        rightS[1].set(ControlMode.PercentOutput, _rightSpd);
+        for (CANSparkMax s : leftSSpark) {
+            s.set(-_leftSpd);
+        }
+        for (CANSparkMax s : rightSSpark) {
+            s.set(-_rightSpd);
+        }
     }
 
     public void setVelSpeed(double _leftSpd, double _rightSpd) {
-        // If switching from a different mode, set slave followers.
-        checkSlavesToFollow();
-
-        _leftSpd = -MathExtra.clamp(_leftSpd, -1, 1) * VELOCITY_MAXIMUM;
-        _rightSpd = MathExtra.clamp(_rightSpd, -1, 1) * VELOCITY_MAXIMUM;
-
-        leftM.set(ControlMode.Velocity, _leftSpd);
-        rightM.set(ControlMode.Velocity, _rightSpd);
+        System.out.println("setVelSpeed: Sparks not implemented yet!");
     }
 
     public void setVelTarget(double _leftTarget, double _rightTarget) {
-        // If switching from a different mode, set slave followers.
-        checkSlavesToFollow();
-
-        leftM.set(ControlMode.Velocity, _leftTarget);
-        rightM.set(ControlMode.Velocity, _rightTarget);
+        System.out.println("setVelTarget: Sparks not implemented yet!");
     }
 
     public int getDriveEncoder(DriveSide _driveSide) {
         int retVal = 0;
-
-        switch (_driveSide) {
-            case kRight:
-                retVal = rightM.getSelectedSensorPosition(0);
-                break;
-            case kLeft: 
-                retVal = leftM.getSelectedSensorPosition(0);
-                break;
-        }
+        
+        System.out.println("getDriveEncoder: Sparks not implemented yet!");
 
         return retVal;
     }
 
     public void resetDriveEncoder(DriveSide _driveSide) {
-        switch (_driveSide) {
-            case kRight:
-                rightM.getSensorCollection().setQuadraturePosition(0, 0);
-                break;
-            case kLeft:
-                leftM.getSensorCollection().setQuadraturePosition(0, 0);
-            break;
-        }
+        System.out.println("resetDriveEncoder: Sparks not implemented yet!");
     }
 
     public void resetGyro() {
@@ -140,21 +112,25 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
         return ypr;
     }
 
+    public void setIdleMode(IdleMode _idleMode) {
+        leftMSpark.setIdleMode(_idleMode);
+        rightMSpark.setIdleMode(_idleMode);
+
+        for (CANSparkMax s : leftSSpark) {
+            s.setIdleMode(_idleMode);
+        }
+
+        for (CANSparkMax s : rightSSpark) {
+            s.setIdleMode(_idleMode);
+        }
+    }
+
     /** 
      * Checks the drivetrain's slave motor controllers, and garuntees that
      * they are set to follow mode in relation to the masters.
      */
     private void checkSlavesToFollow() {
-        for (VictorSPX v : leftS) {
-            if (v.getControlMode() != ControlMode.Follower) {
-                v.follow(leftM);
-            }
-        }
-        for (VictorSPX v : rightS) {
-            if (v.getControlMode() != ControlMode.Follower) {
-                v.follow(rightM);
-            }
-        }
+        System.out.println("checkSlavesToFollow: Sparks not implemented yet!");
     }
 
     @Override
@@ -164,14 +140,14 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
 
     @Override
     public void Periodic() {
-        SmartDashboard.putNumber("rightEncoder", getDriveEncoder(DriveSide.kRight));
-        SmartDashboard.putNumber("leftEncoder", getDriveEncoder(DriveSide.kLeft));
+        //SmartDashboard.putNumber("rightEncoder", getDriveEncoder(DriveSide.kRight));
+        //SmartDashboard.putNumber("leftEncoder", getDriveEncoder(DriveSide.kLeft));
 
-        int rVel = rightM.getSelectedSensorVelocity();
-        int lVel = leftM.getSelectedSensorVelocity();
+        //int rVel = rightM.getSelectedSensorVelocity();
+        //int lVel = leftM.getSelectedSensorVelocity();
 
-        SmartDashboard.putNumber("rightVelocity", rVel);
-        SmartDashboard.putNumber("leftVelocity", lVel);
+        //SmartDashboard.putNumber("rightVelocity", rVel);
+        //SmartDashboard.putNumber("leftVelocity", lVel);
 
         SmartDashboard.putNumberArray("GyroYPR", getGyroYPR());
     }

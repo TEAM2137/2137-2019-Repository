@@ -1,14 +1,22 @@
 package org.torc.robot2019.program;
 
+import com.ctre.phoenix.CANifier;
+import com.ctre.phoenix.CANifier.GeneralPin;
+
+import org.torc.robot2019.subsystems.ElevatorArmManager;
 import org.torc.robot2019.program.KMap.KNumeric;
 import org.torc.robot2019.subsystems.BasicDriveTrain;
 import org.torc.robot2019.subsystems.Climber;
 import org.torc.robot2019.subsystems.Elevator;
+import org.torc.robot2019.subsystems.EndEffector;
 import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.subsystems.Pneumatics;
+import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
 import org.torc.robot2019.vision.VisionManager;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //import org.torc.robot2019.robot.subsystems.DriveTrain;
@@ -21,6 +29,8 @@ public class RobotMode {
 	 * should go here.
 	 */
 	public static void Init() {
+		
+		//RobotMap.S_Cameras = new Cameras();
 		
 		RobotMap.S_Pneumatics = new Pneumatics(
 			(int)KMap.GetKNumeric(KNumeric.INT_PNEUMATICS_PSI_SENSOR_ID));
@@ -48,7 +58,18 @@ public class RobotMode {
 			(int)KMap.GetKNumeric(KNumeric.INT_ELEVATOR_ENDSTOP_ID),
 			RobotMap.S_PivotArm);
 
-		RobotMap.VManager = new VisionManager(NetworkTableInstance.getDefault());
+		//RobotMap.VManager = new VisionManager(NetworkTableInstance.getDefault());
+
+		RobotMap.Canifier = new CANifier((int)KMap.GetKNumeric(KNumeric.INT_CANIFIER_ID));
+		
+		RobotMap.S_EndEffector = new EndEffector(30, 31, 2, 0, 1, RobotMap.Canifier, GeneralPin.LIMR, 
+			GeneralPin.QUAD_B);
+
+		RobotMap.S_ElevatorArmManager = new ElevatorArmManager(RobotMap.S_PivotArm, RobotMap.S_Elevator);
+
+		RobotMap.S_GPManager = new GamePositionManager(
+			RobotMap.S_EndEffector, RobotMap.S_ElevatorArmManager);
+			
 	}
 	
 	/**
@@ -60,6 +81,6 @@ public class RobotMode {
 		SmartDashboard.putNumber("PSI", RobotMap.S_Pneumatics.getPSI());
 
 		SmartDashboard.putNumber("GyroFusedHeading", RobotMap.S_DriveTrain.getGyroAngle());
-		
+
 	}
 }
