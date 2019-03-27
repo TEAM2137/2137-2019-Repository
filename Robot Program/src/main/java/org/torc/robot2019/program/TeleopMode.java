@@ -16,7 +16,7 @@ public class TeleopMode {
 		// Home elevator
 		RobotMap.S_Elevator.homeElevator();
 		// Home Wrist
-		RobotMap.S_EndEffector.homeEndEffector();
+		// RobotMap.S_EndEffector.homeEndEffector();
 		// Keep Pivot arm at init position
 		RobotMap.S_PivotArm.setPosition(RobotMap.S_PivotArm.getEncoder());
 		// Initialize Teleop Drive Command
