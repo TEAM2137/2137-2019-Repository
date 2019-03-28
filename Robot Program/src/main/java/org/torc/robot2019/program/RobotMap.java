@@ -10,6 +10,7 @@ import org.torc.robot2019.subsystems.EndEffector;
 import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.subsystems.Pneumatics;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
+import org.torc.robot2019.vision.VisionManager;
 
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into
@@ -29,7 +30,7 @@ public class RobotMap {
 
 	public static Elevator S_Elevator;
 
-	//public static VisionManager VManager;
+	public static VisionManager VManager;
 
 	public static CANifier Canifier;
 

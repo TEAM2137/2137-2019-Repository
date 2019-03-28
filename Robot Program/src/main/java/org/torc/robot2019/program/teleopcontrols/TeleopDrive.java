@@ -2,10 +2,12 @@ package org.torc.robot2019.program.teleopcontrols;
 
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.CANifier.GeneralPin;
+import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import org.torc.robot2019.subsystems.ElevatorArmManager;
 import org.torc.robot2019.commands.GPPickup;
+import org.torc.robot2019.commands.VisionGetTargetOffset;
 import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.program.RobotMap;
 import org.torc.robot2019.program.TORCControls;
@@ -27,6 +29,7 @@ import org.torc.robot2019.subsystems.RPiCameras.CameraSelect;
 import org.torc.robot2019.tools.CLCommand;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
 import org.torc.robot2019.tools.MathExtra;
+import org.torc.robot2019.vision.VisionManager;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.GPeiceTarget;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.GamePositions;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.RobotSides;
@@ -62,6 +65,8 @@ public class TeleopDrive extends CLCommand {
 
     private RobotAutoLevel autoLevelCommand;
 
+    private VisionGetTargetOffset visionCorrectionCommand;
+
     private GenericHID driverController;
 
     private GenericHID operatorController;
@@ -88,7 +93,7 @@ public class TeleopDrive extends CLCommand {
 
     public TeleopDrive(BasicDriveTrain _driveTrain, GamePositionManager _gpManager,
          PivotArm _pivotArm, Climber _climber, Elevator _elevator, EndEffector _endEffector, 
-         ElevatorArmManager _elevArmManager) {
+         ElevatorArmManager _elevArmManager, VisionManager _visionManager) {
 
         driveTrain = _driveTrain;
 
@@ -106,6 +111,8 @@ public class TeleopDrive extends CLCommand {
 
         autoLevelCommand = new RobotAutoLevel(climber, driveTrain);
 
+        visionCorrectionCommand = new VisionGetTargetOffset(driveTrain, _visionManager);
+
         requires(driveTrain);
         requires(pivotArm);
 
@@ -117,6 +124,7 @@ public class TeleopDrive extends CLCommand {
     @Override
     protected void initialize() {
         autoLevelCommand.start();
+        visionCorrectionCommand.start();
         writeTargetedGPeiceDashboard();
     }
 
@@ -156,7 +164,15 @@ public class TeleopDrive extends CLCommand {
         }
         else {
             // Drive the robot
-            haloDrive(driveInput[0], -driveInput[1], false);
+
+            // If visionCorrection is Enabled
+            if (TORCControls.GetInput(ControllerInput.B_EnableVisionCorrection) >= 1) {
+                double targetOffset = visionCorrectionCommand.getOffset();
+                driveTrain.setPercSpeed(driveInput[0] + targetOffset, driveInput[0] - targetOffset);                
+            }
+            else {
+                haloDrive(driveInput[0], -driveInput[1], false);
+            }
         }
         // Camera select
         double driveInputSum = driveInput[0] + driveInput[1];

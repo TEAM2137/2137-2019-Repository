@@ -15,7 +15,7 @@ import org.torc.robot2019.vision.HatchTarget;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class LookAtTarget extends CLCommand {
+public class VisionGetTargetOffset extends CLCommand {
 
 	private static final double CAMERA_FOV_DEG = 70;
 	
@@ -27,8 +27,6 @@ public class LookAtTarget extends CLCommand {
 	private double pGain;// = 0.0025;//0.24;//0.045;
 	private double iGain;// = 0;
 	private double dGain;// = 0;//1.5;//0.68;
-
-	private PigeonIMU gyro;
 
 	private double gyroBase = 0;
 
@@ -44,7 +42,7 @@ public class LookAtTarget extends CLCommand {
 
 	private double currentOffset = 0;
 	
-	public LookAtTarget(BasicDriveTrain _driveTrain, VisionManager _visionManager, PigeonIMU _gyro) {
+	public VisionGetTargetOffset(BasicDriveTrain _driveTrain, VisionManager _visionManager) {
 		driveTrain = _driveTrain;
 
 		visionManager = _visionManager;
@@ -54,8 +52,6 @@ public class LookAtTarget extends CLCommand {
 		pGain = SmartDashboard.getNumber("kP", 0);
 		iGain = SmartDashboard.getNumber("kI", 0);
 		dGain = SmartDashboard.getNumber("kD", 0);
-
-		gyro = _gyro;
 
 		Dimension vRes = visionManager.getVisionResolution();
 
@@ -67,7 +63,7 @@ public class LookAtTarget extends CLCommand {
 	// Called just before this Command runs the first time
 	@Override
 	protected void initialize() {
-		gyroBase = gyro.getFusedHeading();
+		gyroBase = driveTrain.getGyroAngle();
 		
 		dLastPos = gyroBase;
 	}
@@ -106,7 +102,7 @@ public class LookAtTarget extends CLCommand {
 			targetedTarget = foundTargets.get(0);
 		}
 
-		double currentAngle = gyro.getFusedHeading();
+		double currentAngle = driveTrain.getGyroAngle();
 
 		double angleTarget = currentAngle + getRelativeTargetAngle(targetedTarget);
 		SmartDashboard.putNumber("AngleTarget", angleTarget);
@@ -161,8 +157,6 @@ public class LookAtTarget extends CLCommand {
 	// Called once after isFinished returns true
 	@Override
 	protected void end() {
-		System.out.println("Finished Looking at Target!");
-		driveTrain.setPercSpeed(0, 0);
 	}
 
 	// Called when another command which requires one or more of the same

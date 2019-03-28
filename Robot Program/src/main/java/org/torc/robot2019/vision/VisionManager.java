@@ -15,7 +15,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionManager {
-
     private static FSTConfiguration FSTConf = FSTConfiguration.createDefaultConfiguration();
 
     static final byte[] DEFAULT_STREAM_VAL = {0x00}; // Default value when there's not a valid byte array from the N.T.

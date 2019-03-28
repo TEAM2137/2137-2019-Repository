@@ -58,7 +58,7 @@ public class RobotMode {
 			(int)KMap.GetKNumeric(KNumeric.INT_ELEVATOR_ENDSTOP_ID),
 			RobotMap.S_PivotArm);
 
-		//RobotMap.VManager = new VisionManager(NetworkTableInstance.getDefault());
+		RobotMap.VManager = new VisionManager(NetworkTableInstance.getDefault());
 
 		RobotMap.Canifier = new CANifier((int)KMap.GetKNumeric(KNumeric.INT_CANIFIER_ID));
 		

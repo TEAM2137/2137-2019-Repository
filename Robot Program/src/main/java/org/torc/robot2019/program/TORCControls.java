@@ -65,6 +65,8 @@ public class TORCControls {
         B_PivotClimbing(1, climberController, InputType.Button),
 
         B_DivideDriveTrain(3, driverController, InputType.Axis),
+        /**Vision auto-correction enable*/
+        B_EnableVisionCorrection(10, driverController, InputType.Button), // Right Stick
         
         /**PivotArm Intake position*/
         //B_PivotHorizontal(1, driverController, InputType.Button), // A button
