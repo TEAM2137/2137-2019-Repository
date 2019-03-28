@@ -51,7 +51,7 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 	public final static int END_EFFECTOR_MIN_POSITION = 
 		(int)KMap.GetKNumeric(KNumeric.INT_END_EFFECTOR_WRIST_MIN_POSITION);
 	
-	private int targetPosition = 0;
+	private int targetPosition = 2048;
 	
 	// private boolean hasBeenHomed = false;
 	
@@ -80,11 +80,14 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 		
 		endEffectorM.configClosedLoopPeakOutput(0, 1);
 
-		endEffectorM.config_kF(0, 0);
-		endEffectorM.config_kP(0, KMap.GetKNumeric(KNumeric.DBL_END_EFFECTOR_KP));
-		endEffectorM.config_kI(0, KMap.GetKNumeric(KNumeric.DBL_END_EFFECTOR_KI));
+		endEffectorM.config_kF(0, 5.6);
+		endEffectorM.config_kP(0, 8);//KMap.GetKNumeric(KNumeric.DBL_END_EFFECTOR_KP));
+		endEffectorM.config_kI(0, 0);//KMap.GetKNumeric(KNumeric.DBL_END_EFFECTOR_KI));
 		endEffectorM.config_kD(0, 0);
-		endEffectorM.config_IntegralZone(0, (int)KMap.GetKNumeric(KNumeric.INT_END_EFFECTOR_KIZONE));
+		endEffectorM.config_IntegralZone(0, 0);//(int)KMap.GetKNumeric(KNumeric.INT_END_EFFECTOR_KIZONE));
+
+		endEffectorM.configMotionCruiseVelocity(200);
+		endEffectorM.configMotionAcceleration(200);
 
 		rollerM = new VictorSPX(_rollerMID);
 
@@ -101,6 +104,8 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 		absolutePosition += KMap.GetKNumeric(KNumeric.INT_END_EFFECTOR_ENCODER_OFFSET);
 		absolutePosition &= 0xFFF;// Mask out overflows, keep bottom 12 bits
 		endEffectorM.setSelectedSensorPosition(absolutePosition, 0, 10);
+
+		SmartDashboard.putNumber("EEDesiredPos", 2048);
 	}
 	
 	// public void homeEndEffector() {
@@ -160,7 +165,7 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 		// 	return;
 		// }
 		targetPosition = MathExtra.clamp(_position, END_EFFECTOR_MIN_POSITION, END_EFFECTOR_MAX_POSITION);
-		endEffectorM.set(ControlMode.Position, targetPosition);
+		endEffectorM.set(ControlMode.MotionMagic, targetPosition);
 	}
 
 	public void jogPosition(int positionInc) {
@@ -259,6 +264,9 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 		
 		SmartDashboard.putNumber("EndEffectorVel", endEffectorM.getSelectedSensorVelocity(0));
 		//System.out.println("ElevatorVel " + endEffectorM.getSelectedSensorVelocity(0));
+		
+		// setPosition((int)SmartDashboard.getNumber("EEDesiredPos", 2048));
+		
 	}
 	
 }
