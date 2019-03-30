@@ -33,7 +33,7 @@ public class TORCControls {
         A_ElevatorJog(1, operatorController, InputType.Axis),
 
         /**Flip PivotArm side-selction*/
-        B_PivotFlipSelection(7, operatorController, InputType.Button),//270, operatorController, InputType.POV), // Left POV
+        B_PivotFlipSelection(7, operatorController, InputType.Button),//270, operatorController, InputType.POV), // Left POV // Back Button
         /**PivotArm Up position*/
         B_PivotUp(90, operatorController, InputType.POV), // Right POV
         /**Cargo Pickup position */
