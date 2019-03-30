@@ -6,8 +6,10 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANPIDController;
 
 import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.robot.InheritedPeriodic;
@@ -30,7 +32,14 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
 
     private PigeonIMU gyro;
 
-    public final double VELOCITY_MAXIMUM = 480;
+    public final double VELOCITY_MAXIMUM = 5700;
+
+    private final double VELOCITY_P = 0.00001;
+    private final double VELOCITY_I = 0;
+    private final double VELOCITY_D = 0;
+    private final double VELOCITY_IZONE = 0;
+
+    private CANPIDController leftVelController, rightVelController;
 
     public BasicDriveTrain(int _leftMID, int _rightMID, int _leftS0ID, int _rightS0ID,
         int _leftS1ID, int _rightS1ID, int _pigeonID) {
@@ -52,11 +61,26 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
         leftMSpark.setOpenLoopRampRate(0.2);
         rightMSpark.setOpenLoopRampRate(0.2);
 
+        leftVelController = leftMSpark.getPIDController();
+        rightVelController = rightMSpark.getPIDController();
+
+        leftVelController.setFF(0);
+        rightVelController.setFF(0);
+        leftVelController.setP(VELOCITY_P);
+        rightVelController.setP(VELOCITY_P);
+        leftVelController.setI(VELOCITY_I);
+        rightVelController.setI(VELOCITY_I);
+        leftVelController.setD(VELOCITY_D);
+        rightVelController.setD(VELOCITY_D);
+        leftVelController.setIZone(VELOCITY_IZONE);
+        rightVelController.setIZone(VELOCITY_IZONE);
+        leftVelController.setOutputRange(-1, 1);
+        rightVelController.setOutputRange(-1, 1);
+
         for (CANSparkMax s : leftSSpark) {
             s.setIdleMode(IdleMode.kCoast);
             s.setOpenLoopRampRate(0.2);
         }
-
         for (CANSparkMax s : rightSSpark) {
             s.setIdleMode(IdleMode.kCoast);
             s.setOpenLoopRampRate(0.2);
@@ -79,7 +103,29 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
     }
 
     public void setVelSpeed(double _leftSpd, double _rightSpd) {
-        System.out.println("setVelSpeed: Sparks not implemented yet!");
+        // double leftFF = 1 / VELOCITY_MAXIMUM;
+        // double rightFF = 1 / VELOCITY_MAXIMUM;
+
+        double leftFF = 1;
+        double rightFF = 1;
+
+        leftVelController.setFF(leftFF);
+        rightVelController.setFF(rightFF);
+        
+        // leftVelController.setReference(-_leftSpd, ControlType.kVelocity);
+        // rightVelController.setReference(-_rightSpd, ControlType.kVelocity);
+
+        leftVelController.setReference(0.5, ControlType.kVelocity);
+        rightVelController.setReference(0.5, ControlType.kVelocity);
+
+        for (CANSparkMax s : leftSSpark) {
+            s.follow(leftMSpark);
+        }
+        for (CANSparkMax s : rightSSpark) {
+            s.follow(rightMSpark);
+        }
+        
+        // System.out.println("setVelSpeed: Sparks not implemented yet!");
     }
 
     public void setVelTarget(double _leftTarget, double _rightTarget) {
@@ -150,5 +196,7 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
         //SmartDashboard.putNumber("leftVelocity", lVel);
 
         SmartDashboard.putNumberArray("GyroYPR", getGyroYPR());
+        SmartDashboard.putNumber("LeftVelocity", leftMSpark.getEncoder().getVelocity());
+        SmartDashboard.putNumber("RightVelocity", rightMSpark.getEncoder().getVelocity());
     }
 }

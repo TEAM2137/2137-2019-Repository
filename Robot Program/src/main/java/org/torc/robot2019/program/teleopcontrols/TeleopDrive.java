@@ -405,7 +405,7 @@ public class TeleopDrive extends CLCommand {
 			leftMotorOutput = driverThrottle + Math.abs(driverThrottle) * driverWheel * SPEED_TURN_SENSITIVITY;
 		}
         // Set drivetrain speed to MotorOutput values
-        driveTrain.setPercSpeed(leftMotorOutput, rightMotorOutput);
+        driveTrain.setVelSpeed(leftMotorOutput, rightMotorOutput);
     }
 
     private void pickupCommandInterrupt() {
