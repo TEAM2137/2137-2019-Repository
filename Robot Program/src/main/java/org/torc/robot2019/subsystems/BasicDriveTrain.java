@@ -34,7 +34,8 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
 
     public final double VELOCITY_MAXIMUM = 5700;
 
-    private final double VELOCITY_P = 0.00001;
+    private final double VELOCITY_FF = 0.0001639344;
+    private final double VELOCITY_P = 0.0001;
     private final double VELOCITY_I = 0;
     private final double VELOCITY_D = 0;
     private final double VELOCITY_IZONE = 0;
@@ -103,20 +104,29 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
     }
 
     public void setVelSpeed(double _leftSpd, double _rightSpd) {
-        // double leftFF = 1 / VELOCITY_MAXIMUM;
-        // double rightFF = 1 / VELOCITY_MAXIMUM;
+        double leftFF = VELOCITY_FF;
+        double rightFF = VELOCITY_FF;
 
-        double leftFF = 1;
-        double rightFF = 1;
+        double leftSpeed = -_leftSpd;
+        double rightSpeed = _rightSpd;
+
+        // double leftSpeed = 0.5;
+        // double rightSpeed = 0.5;
+
+        double leftTargetInRPM = leftSpeed * VELOCITY_MAXIMUM;
+        double rightTargetInRPM = rightSpeed * VELOCITY_MAXIMUM; 
+
+        // double leftFF = 1;
+        // double rightFF = 1;
 
         leftVelController.setFF(leftFF);
         rightVelController.setFF(rightFF);
         
-        // leftVelController.setReference(-_leftSpd, ControlType.kVelocity);
-        // rightVelController.setReference(-_rightSpd, ControlType.kVelocity);
+        // leftVelController.setReference(-leftSpeed, ControlType.kVelocity);
+        // rightVelController.setReference(-rightSpeed, ControlType.kVelocity);
 
-        leftVelController.setReference(0.5, ControlType.kVelocity);
-        rightVelController.setReference(0.5, ControlType.kVelocity);
+        leftVelController.setReference(leftTargetInRPM, ControlType.kVelocity);
+        rightVelController.setReference(rightTargetInRPM, ControlType.kVelocity);
 
         for (CANSparkMax s : leftSSpark) {
             s.follow(leftMSpark);
@@ -125,6 +135,13 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
             s.follow(rightMSpark);
         }
         
+        SmartDashboard.putNumber("LeftTarget", leftTargetInRPM);
+        SmartDashboard.putNumber("RightTarget", rightTargetInRPM);
+        SmartDashboard.putNumber("LeftError", leftTargetInRPM - leftMSpark.getEncoder().getVelocity());
+        SmartDashboard.putNumber("RightError", rightTargetInRPM - rightMSpark.getEncoder().getVelocity());
+
+        System.out.println(leftFF);
+
         // System.out.println("setVelSpeed: Sparks not implemented yet!");
     }
 
