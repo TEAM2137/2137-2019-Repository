@@ -388,8 +388,8 @@ public class TeleopDrive extends CLCommand {
 		double driverThrottle = MathExtra.clamp(_throttle, -1, 1);
         double driverWheel = MathExtra.clamp(_wheel, -1, 1);
         
-        SmartDashboard.putNumber("Turn", driverThrottle);
-        SmartDashboard.putNumber("Power", driverWheel);
+        SmartDashboard.putNumber("Power", driverThrottle);
+        SmartDashboard.putNumber("Turn", driverWheel);
 		
 		if (_squared) {
 			driverThrottle = (Math.pow(driverThrottle, 2) * (driverThrottle<0?-1:1));
