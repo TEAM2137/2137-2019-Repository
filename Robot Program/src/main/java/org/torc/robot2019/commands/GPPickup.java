@@ -75,13 +75,13 @@ public class GPPickup extends CLCommand {
         // Start Rollers intake
         endEffector.setRollerPercSpeed(1);
         // Open End Effector
-        endEffector.setSolenoid(SolenoidStates.Open);
+        // endEffector.setSolenoid(SolenoidStates.Open);
         
         if (endEffector.getBallSensor()) {
           // Keep ball in w/ Rollers
           endEffector.setRollerPercSpeed(0.1);
           // Close solenoid
-          endEffector.setSolenoid(SolenoidStates.Closed);
+          // endEffector.setSolenoid(SolenoidStates.Closed);
           currentState = PickupStates.MovingToFinalPosition;
         }
 
