@@ -261,7 +261,9 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 		//System.out.println("ElevatorEncoder " + endEffectorM.getSelectedSensorPosition(0));
 		// SmartDashboard.putBoolean("WristEndstop", getWristEndstop());
 		SmartDashboard.putBoolean("BallSensor", getBallSensor());
-		
+		SmartDashboard.putBoolean("BallSensor1", !canifier.getGeneralInput(ballSensorPin1));
+		SmartDashboard.putBoolean("BallSensor2", !canifier.getGeneralInput(ballSensorPin2));
+
 		SmartDashboard.putNumber("EndEffectorVel", endEffectorM.getSelectedSensorVelocity(0));
 		//System.out.println("ElevatorVel " + endEffectorM.getSelectedSensorVelocity(0));
 		
