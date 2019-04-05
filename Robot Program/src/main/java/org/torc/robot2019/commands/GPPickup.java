@@ -50,7 +50,7 @@ public class GPPickup extends CLCommand {
 
   @Override
   protected void initialize() {
-
+      currentState = PickupStates.MovingIntoPosition;
   }
 
   @Override
@@ -73,13 +73,13 @@ public class GPPickup extends CLCommand {
         System.out.println("GPPPickup: Waiting for GamePeice...");
 
         // Start Rollers intake
-        endEffector.setRollerPercSpeed(1);
+        endEffector.setRollerPercSpeed(-1);
         // Open End Effector
         // endEffector.setSolenoid(SolenoidStates.Open);
         
         if (endEffector.getBallSensor()) {
           // Keep ball in w/ Rollers
-          endEffector.setRollerPercSpeed(0.1);
+          endEffector.setRollerPercSpeed(-0.1);
           // Close solenoid
           // endEffector.setSolenoid(SolenoidStates.Closed);
           currentState = PickupStates.MovingToFinalPosition;

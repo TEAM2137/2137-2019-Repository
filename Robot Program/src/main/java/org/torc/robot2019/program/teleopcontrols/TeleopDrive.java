@@ -272,7 +272,7 @@ public class TeleopDrive extends CLCommand {
         if (TORCControls.GetInput(ControllerInput.B_PivotClimbing, InputState.Pressed) >= 1) {
             pivotArm.setPosition(PivotArmPositions.Climbing);
             elevator.setPosition(ElevatorPositions.Retracted);
-            endEffector.setPosition(0);
+            endEffector.setPosition(EndEffectorPositions.Climbing);
         }
 
         // Invert gamepeice target
@@ -336,7 +336,7 @@ public class TeleopDrive extends CLCommand {
     private void endEffectorControl() {
         // Manual Wrist Control
         double endEffectorControl = MathExtra.applyDeadband(
-            -TORCControls.GetInput(ControllerInput.A_WristJog), 0.2);
+            TORCControls.GetInput(ControllerInput.A_WristJog), 0.2);
         if (endEffectorControl != 0) {
             // Determine control position based on current pivotArm side
             if (pivotArm.getPivotArmSide() == PivotArmSides.kFront) {
