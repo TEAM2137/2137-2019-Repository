@@ -62,7 +62,9 @@ public class TORCControls {
         B_RollersOuttake(5, driverController, InputType.Button), // Left bumper
         B_RollersInTake(6, driverController, InputType.Button), // Right bumper
 
-        B_PivotClimbing(1, climberController, InputType.Button),
+        B_PivotClimbing(1, climberController, InputType.Button),  // A Button
+        B_PivotTravel(4, climberController, InputType.Button), // Y Button
+
 
         B_DivideDriveTrain(3, driverController, InputType.Axis),
         

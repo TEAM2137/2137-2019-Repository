@@ -262,7 +262,8 @@ public class TeleopDrive extends CLCommand {
         // Arm position control //
 
         // Retracted-up position
-        if (TORCControls.GetInput(ControllerInput.B_PivotUp, InputState.Pressed) >= 1) {
+        if (TORCControls.GetInput(ControllerInput.B_PivotUp, InputState.Pressed) >= 1 || 
+                TORCControls.GetInput(ControllerInput.B_PivotTravel, InputState.Pressed) >= 1) {
             // TODO: Change to GamePosition (with wrist position)?
             pivotArm.setPosition(PivotArmPositions.Up);
             elevator.setPosition(ElevatorPositions.Retracted);
@@ -358,13 +359,13 @@ public class TeleopDrive extends CLCommand {
         if (rollerControl != 0) {
             pickupCommandInterrupt();
             endEffector.setRollerPercSpeed(rollerControl);
-        }
-        else {
-            if ((pickupCommand == null || !pickupCommand.isRunning()) && 
-                lastRollerControlVal != 0) {
-                endEffector.setRollerPercSpeed(0);
+        } else {
+            // if ((pickupCommand == null || !pickupCommand.isRunning()) && 
+            //     lastRollerControlVal != 0) {
+            //     endEffector.setRollerPercSpeed(0);
 
-            }
+            // }
+            endEffector.setRollerPercSpeed(endEffector.getBallSensor() ? -0.2 : 0);
         }
 
         lastRollerControlVal = rollerControl;

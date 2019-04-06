@@ -70,16 +70,17 @@ public class GPPickup extends CLCommand {
 
         break;
       case WaitingForGP:
+
         System.out.println("GPPPickup: Waiting for GamePeice...");
 
         // Start Rollers intake
         endEffector.setRollerPercSpeed(-1);
-        // Open End Effector
-        // endEffector.setSolenoid(SolenoidStates.Open);
+        // Retract Hatch Intake
+        endEffector.setSolenoid(SolenoidStates.Closed);
         
         if (endEffector.getBallSensor()) {
           // Keep ball in w/ Rollers
-          endEffector.setRollerPercSpeed(-0.1);
+          endEffector.setRollerPercSpeed(-0.2);
           // Close solenoid
           // endEffector.setSolenoid(SolenoidStates.Closed);
           currentState = PickupStates.MovingToFinalPosition;

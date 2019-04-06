@@ -87,7 +87,7 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 		endEffectorM.config_kD(0, 0);
 		endEffectorM.config_IntegralZone(0, 0);//(int)KMap.GetKNumeric(KNumeric.INT_END_EFFECTOR_KIZONE));
 
-		endEffectorM.configMotionCruiseVelocity(100);
+		endEffectorM.configMotionCruiseVelocity(200);
 		endEffectorM.configMotionAcceleration(100);
 
 		rollerM = new VictorSPX(_rollerMID);
@@ -253,7 +253,9 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 
 		// Print Encoders
 		printEncoder();
+
 		
+
 		SmartDashboard.putNumber("EndEffectorError", targetPosition - getEncoder());
 		SmartDashboard.putNumber("EndEffectorEncoder", getEncoder());
 		SmartDashboard.putNumber("EndEffectorRawEncoder", endEffectorM.getSensorCollection().getPulseWidthPosition());
