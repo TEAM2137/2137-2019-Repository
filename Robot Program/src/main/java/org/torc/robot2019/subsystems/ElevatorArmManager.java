@@ -80,7 +80,10 @@ public class ElevatorArmManager extends Subsystem implements InheritedPeriodic  
   }
 
   public static int GetMaxArmExtension(double _angle) {
-		double maxInInches =  Math.sqrt(900 + Math.pow(Math.tan(_angle * Math.PI / 180) * 30, 2)) - 15; //changed to eneble the arm to extend furthur, was 29
+    double maxInInches =  Math.sqrt(900 + Math.pow(Math.tan(_angle * Math.PI / 180) * 30, 2)) - 
+    (KMap.GetKNumeric(KNumeric.DBL_ELEVATOR_MINIMUM_DISTANCE_FROM_FRAME_EDGE_INCHES) +
+     KMap.GetKNumeric(KNumeric.DBL_GRABBER_LENGTH_INCHES));
+
 		return (int)(maxInInches * KMap.GetKNumeric(KNumeric.INT_ELEVATOR_TICKS_PER_INCH));
   }
   public int GetMaxArmExtension() {
