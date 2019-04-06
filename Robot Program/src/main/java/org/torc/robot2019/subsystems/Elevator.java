@@ -52,7 +52,10 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 		(int)KMap.GetKNumeric(KNumeric.INT_ELEVATOR_MAX_POSITION);
 
 	public final static int JOG_ERROR_CUTOFF = 
-	  	(int)KMap.GetKNumeric(KNumeric.INT_ELEVATOR_JOG_ERROR_CUTOFF);
+		  (int)KMap.GetKNumeric(KNumeric.INT_ELEVATOR_JOG_ERROR_CUTOFF);
+		  
+	public final static int FRAME_INCHES_LIMIT =
+	  (int)KMap.GetKNumeric(KNumeric.DBL_ROBOT_MAX_EXTEND_OUTSIDE_OF_FRAME_INCHES);
 	
 	private boolean maxLimitTripped = false;
 	private boolean minLimitTripped = false;
@@ -229,7 +232,7 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 			SmartDashboard.putNumber("CalculatedElevatorMax", elevatorMax);
 
 			if (elevatorTarget > elevatorMax) {
-				elevatorM.set(ControlMode.Position, MathExtra.clamp(elevatorMax, 0, ELEVATOR_MAX_POSITION));
+				elevatorM.set(ControlMode.Position, MathExtra.clamp(elevatorMax, FRAME_INCHES_LIMIT, ELEVATOR_MAX_POSITION));
 			}
 			else {
 				setPosition(elevatorTargetPosition);
