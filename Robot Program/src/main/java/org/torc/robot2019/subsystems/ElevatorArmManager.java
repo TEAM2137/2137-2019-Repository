@@ -80,7 +80,7 @@ public class ElevatorArmManager extends Subsystem implements InheritedPeriodic  
   }
 
   public static int GetMaxArmExtension(double _angle) {
-		double maxInInches =  Math.sqrt(900 + Math.pow(Math.tan(_angle * Math.PI / 180) * 30, 2)) - 29;
+		double maxInInches =  Math.sqrt(900 + Math.pow(Math.tan(_angle * Math.PI / 180) * 30, 2)) - 22;
 		return (int)(maxInInches * KMap.GetKNumeric(KNumeric.INT_ELEVATOR_TICKS_PER_INCH));
   }
   public int GetMaxArmExtension() {
