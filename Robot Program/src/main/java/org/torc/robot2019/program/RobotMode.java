@@ -11,6 +11,7 @@ import org.torc.robot2019.subsystems.Elevator;
 import org.torc.robot2019.subsystems.EndEffector;
 import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.subsystems.Pneumatics;
+import org.torc.robot2019.subsystems.RioCameras;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
 import org.torc.robot2019.vision.VisionManager;
 
@@ -30,7 +31,8 @@ public class RobotMode {
 	 */
 	public static void Init() {
 		
-		//RobotMap.S_Cameras = new Cameras();
+		// Init Cameras
+		RioCameras.GetInstance();
 		
 		RobotMap.S_Pneumatics = new Pneumatics(
 			(int)KMap.GetKNumeric(KNumeric.INT_PNEUMATICS_PSI_SENSOR_ID));

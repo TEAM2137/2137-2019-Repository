@@ -27,7 +27,7 @@ public class RPiCameras extends Subsystem {
 
   private static NetworkTableEntry NtCameraSelect = NtTable.getEntry("SelectedCamera");
 
-  public static void setSelectedCamera(CameraSelect _cameraSelect) {
+  public static void SetSelectedCamera(CameraSelect _cameraSelect) {
     switch(_cameraSelect) {
       case kFront:
         NtCameraSelect.setString("front");
@@ -38,7 +38,7 @@ public class RPiCameras extends Subsystem {
     }
   }
 
-  public static CameraSelect getSelectedCamera() {
+  public static CameraSelect GetSelectedCamera() {
     if (NtCameraSelect.getString("front").toLowerCase().contains("rear")) {
       return CameraSelect.kRear;
     }

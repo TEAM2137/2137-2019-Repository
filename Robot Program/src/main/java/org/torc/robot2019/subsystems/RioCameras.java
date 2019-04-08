@@ -26,9 +26,11 @@ public class RioCameras extends Subsystem {
 
   private CameraSelect selectedCamera = CameraSelect.kFront;
 
+  private static RioCameras SingleInstance;
+
   //private CameraSwitcher cSwitcherCommand;
   
-  public RioCameras() {
+  private RioCameras() {
     /*
     cSwitcherCommand = new CameraSwitcher();
     cSwitcherCommand.start();
@@ -76,6 +78,13 @@ public class RioCameras extends Subsystem {
       }
     }).start();
 
+  }
+
+  public static RioCameras GetInstance() {
+    if (SingleInstance == null) {
+      SingleInstance = new RioCameras();
+    }
+    return SingleInstance;
   }
 
   public CameraSelect getSelectedCamera() {

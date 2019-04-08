@@ -20,10 +20,10 @@ import org.torc.robot2019.subsystems.Elevator.ElevatorPositions;
 import org.torc.robot2019.subsystems.EndEffector.EndEffectorPositions;
 import org.torc.robot2019.subsystems.EndEffector.SolenoidStates;
 import org.torc.robot2019.subsystems.PivotArm;
-import org.torc.robot2019.subsystems.RPiCameras;
+import org.torc.robot2019.subsystems.RioCameras;
 import org.torc.robot2019.subsystems.PivotArm.PivotArmPositions;
 import org.torc.robot2019.subsystems.PivotArm.PivotArmSides;
-import org.torc.robot2019.subsystems.RPiCameras.CameraSelect;
+import org.torc.robot2019.subsystems.RioCameras.CameraSelect;
 import org.torc.robot2019.tools.CLCommand;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
 import org.torc.robot2019.tools.MathExtra;
@@ -140,7 +140,7 @@ public class TeleopDrive extends CLCommand {
         driveInput[1] = MathExtra.applyDeadband(TORCControls.GetInput(ControllerInput.A_DriveRight), 0.2);
         
         if (TORCControls.GetInput(ControllerInput.B_DivideDriveTrain) >= 0.5) {
-            double multiplier = 0.75;//KMap.GetKNumeric(KNumeric.DBL_TELEOP_DRIVE_SLOW_MULTIPLIER);
+            double multiplier = 0.50;//KMap.GetKNumeric(KNumeric.DBL_TELEOP_DRIVE_SLOW_MULTIPLIER);
             driveInput[0] *= multiplier;
             driveInput[1] *= multiplier;
         }
@@ -178,11 +178,11 @@ public class TeleopDrive extends CLCommand {
 
         if (cameraTimerFront >= cameraTimerMax) {
             cameraTimerFront = 0;
-            RPiCameras.setSelectedCamera(CameraSelect.kFront);
+            RioCameras.GetInstance().setSelectedCamera(CameraSelect.kFront);
         }
         else if (cameraTimerRear >= cameraTimerMax) {
             cameraTimerRear = 0;
-            RPiCameras.setSelectedCamera(CameraSelect.kRear);
+            RioCameras.GetInstance().setSelectedCamera(CameraSelect.kRear);
         }
         
 
