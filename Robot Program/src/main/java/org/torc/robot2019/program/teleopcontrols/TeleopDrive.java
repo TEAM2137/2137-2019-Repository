@@ -384,10 +384,13 @@ public class TeleopDrive extends CLCommand {
     protected void interrupted() {
     }
     
-    public void haloDrive(double _wheel, double _throttle, boolean _squared) {
+    public void haloDrive(double _throttle, double _wheel, boolean _squared) {
 		
 		double driverThrottle = MathExtra.clamp(_throttle, -1, 1);
-		double driverWheel = MathExtra.clamp(_wheel, -1, 1);
+        double driverWheel = MathExtra.clamp(_wheel, -1, 1);
+        
+        SmartDashboard.putNumber("Power", driverThrottle);
+        SmartDashboard.putNumber("Turn", driverWheel);
 		
 		if (_squared) {
 			driverThrottle = (Math.pow(driverThrottle, 2) * (driverThrottle<0?-1:1));
@@ -399,14 +402,14 @@ public class TeleopDrive extends CLCommand {
 
 		// Halo Driver Control Algorithm
 		if (Math.abs(driverThrottle) < QUICK_TURN_CONSTANT) {
-			rightMotorOutput = driverThrottle - driverWheel * QUICK_TURN_SENSITIVITY;
-			leftMotorOutput = driverThrottle + driverWheel * QUICK_TURN_SENSITIVITY;
+			rightMotorOutput = driverThrottle - (driverWheel * QUICK_TURN_SENSITIVITY);
+			leftMotorOutput = driverThrottle + (driverWheel * QUICK_TURN_SENSITIVITY);
 		} else {
-			rightMotorOutput = driverThrottle - Math.abs(driverThrottle) * driverWheel * SPEED_TURN_SENSITIVITY;
-			leftMotorOutput = driverThrottle + Math.abs(driverThrottle) * driverWheel * SPEED_TURN_SENSITIVITY;
+			rightMotorOutput = driverThrottle - (Math.abs(driverThrottle) * driverWheel * SPEED_TURN_SENSITIVITY);
+			leftMotorOutput = driverThrottle + (Math.abs(driverThrottle) * driverWheel * SPEED_TURN_SENSITIVITY);
 		}
         // Set drivetrain speed to MotorOutput values
-        driveTrain.setPercSpeed(leftMotorOutput, rightMotorOutput);
+        driveTrain.setVelSpeed(leftMotorOutput, rightMotorOutput);
     }
 
     private void pickupCommandInterrupt() {
@@ -415,7 +418,7 @@ public class TeleopDrive extends CLCommand {
             pickupCommand.cancel();
             pickupCommand = null;
         }
-        endEffector.setRollerPercSpeed(0);
+        // endEffector.setRollerPercSpeed(0);
     }
 
     private void writeTargetedGPeiceDashboard() {
