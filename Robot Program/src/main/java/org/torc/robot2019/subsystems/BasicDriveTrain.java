@@ -62,6 +62,9 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
         leftMSpark.setClosedLoopRampRate(0.6);
         rightMSpark.setClosedLoopRampRate(0.6);
 
+        leftMSpark.setOpenLoopRampRate(0.2);
+        rightMSpark.setOpenLoopRampRate(0.2);
+
         leftVelController = leftMSpark.getPIDController();
         rightVelController = rightMSpark.getPIDController();
 
@@ -78,7 +81,6 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
         leftVelController.setOutputRange(-1, 1);
         rightVelController.setOutputRange(-1, 1);
 
-        /*
         for (CANSparkMax s : leftSSpark) {
             s.setIdleMode(IdleMode.kCoast);
             s.setOpenLoopRampRate(0.2);
@@ -87,7 +89,6 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
             s.setIdleMode(IdleMode.kCoast);
             s.setOpenLoopRampRate(0.2);
         }
-        */
         
         gyro = new PigeonIMU(_pigeonID);
         
@@ -95,13 +96,13 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
 
     public void setPercSpeed(double _leftSpd, double _rightSpd) {
         leftMSpark.set(-_leftSpd);
-        rightMSpark.set(-_rightSpd);
+        rightMSpark.set(_rightSpd);
 
         for (CANSparkMax s : leftSSpark) {
             s.set(-_leftSpd);
         }
         for (CANSparkMax s : rightSSpark) {
-            s.set(-_rightSpd);
+            s.set(_rightSpd);
         }
     }
 

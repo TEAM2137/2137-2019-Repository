@@ -15,10 +15,10 @@ public class GamePositionManager extends Subsystem {
                      new GPSingle(0, 3034, 2443),
                      new GPSingle(0, 3034, 2443)),
 
-        CargoShuttle(new GPSingle(5334, 1694, 993), // Cargo Only
-                     new GPSingle(5334, 1694, 993),
-                     new GPSingle(4315, 2224, 3125),
-                     new GPSingle(4315, 2224, 3125)),
+        CargoShuttle(new GPSingle(506, 1965, 1095), // Cargo Only
+                     new GPSingle(506, 1965, 1095),
+                     new GPSingle(217, 1978, 2993),
+                     new GPSingle(217, 1978, 2993)),
 
    /*                 
    HumanPlayerPickup(new GPSingle(0, 1079, 2668), // Front only

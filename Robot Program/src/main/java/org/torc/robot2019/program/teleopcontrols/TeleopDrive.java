@@ -358,7 +358,7 @@ public class TeleopDrive extends CLCommand {
             TORCControls.GetInput(ControllerInput.B_RollersInTake);
         if (rollerControl != 0) {
             pickupCommandInterrupt();
-            endEffector.setRollerPercSpeed(rollerControl);
+            endEffector.setRollerPercSpeed(rollerControl * 0.6);
         } else {
             // if ((pickupCommand == null || !pickupCommand.isRunning()) && 
             //     lastRollerControlVal != 0) {
@@ -409,7 +409,8 @@ public class TeleopDrive extends CLCommand {
 			leftMotorOutput = driverThrottle + (Math.abs(driverThrottle) * driverWheel * SPEED_TURN_SENSITIVITY);
 		}
         // Set drivetrain speed to MotorOutput values
-        driveTrain.setVelSpeed(leftMotorOutput, rightMotorOutput);
+        //driveTrain.setVelSpeed(leftMotorOutput, rightMotorOutput);
+        driveTrain.setPercSpeed(leftMotorOutput, rightMotorOutput);
     }
 
     private void pickupCommandInterrupt() {
