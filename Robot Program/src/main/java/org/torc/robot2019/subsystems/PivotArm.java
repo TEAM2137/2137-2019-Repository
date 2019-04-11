@@ -29,7 +29,7 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
      * with no need to use the pivot arm.
      */
     Up(1900),
-    Climbing(1400),
+    Climbing(1550),
     // Rear-side positions
     PickupR(824),
     Level1R(1024),

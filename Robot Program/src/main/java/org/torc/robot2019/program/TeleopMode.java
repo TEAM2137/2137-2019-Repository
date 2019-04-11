@@ -13,12 +13,15 @@ public class TeleopMode {
 	public static void Init() {
 		System.out.println("Teleop Mode Enabled!!");
 		System.out.println("RobotType: " + KMap.GetRobotType().toString());
+
 		// Home elevator
 		RobotMap.S_Elevator.homeElevator();
-		// Home Wrist
-		// RobotMap.S_EndEffector.homeEndEffector();
+		
 		// Keep Pivot arm at init position
 		RobotMap.S_PivotArm.setPosition(RobotMap.S_PivotArm.getEncoder());
+		// Keep End Effector at init position
+		RobotMap.S_EndEffector.setPosition(RobotMap.S_EndEffector.getEncoder());
+
 		// Initialize Teleop Drive Command
 		driveCommand = new TeleopDrive(RobotMap.S_DriveTrain, RobotMap.S_GPManager, 
 			RobotMap.S_PivotArm, RobotMap.S_Climber, RobotMap.S_Elevator, RobotMap.S_EndEffector,

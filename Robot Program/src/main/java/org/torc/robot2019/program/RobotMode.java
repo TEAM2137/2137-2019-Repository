@@ -5,13 +5,17 @@ import com.ctre.phoenix.CANifier.GeneralPin;
 
 import org.torc.robot2019.subsystems.ElevatorArmManager;
 import org.torc.robot2019.program.KMap.KNumeric;
+import org.torc.robot2019.program.TORCControls.ControllerInput;
+import org.torc.robot2019.program.TORCControls.InputState;
 import org.torc.robot2019.subsystems.BasicDriveTrain;
 import org.torc.robot2019.subsystems.Climber;
 import org.torc.robot2019.subsystems.Elevator;
 import org.torc.robot2019.subsystems.EndEffector;
 import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.subsystems.Pneumatics;
+import org.torc.robot2019.subsystems.RPiCameras;
 import org.torc.robot2019.subsystems.RioCameras;
+import org.torc.robot2019.subsystems.RPiCameras.CameraSelect;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
 import org.torc.robot2019.vision.VisionManager;
 
@@ -79,7 +83,16 @@ public class RobotMode {
 	 * functions that need to be constantly updated
 	 */
 	public static void Periodic() {
-		
+
+		// Control Camera Selection (w/ Driver controller)
+		if (TORCControls.GetInput(ControllerInput.B_SelectCameraFront, InputState.Pressed) >= 1) {
+			RPiCameras.GetInstance().setSelectedCamera(CameraSelect.kFront);
+		}
+		else if (TORCControls.GetInput(ControllerInput.B_SelectCameraRear, InputState.Pressed) >= 1) {
+			RPiCameras.GetInstance().setSelectedCamera(CameraSelect.kRear);
+		}
+
+		// Variables
 		SmartDashboard.putNumber("PSI", RobotMap.S_Pneumatics.getPSI());
 
 		SmartDashboard.putNumber("GyroFusedHeading", RobotMap.S_DriveTrain.getGyroAngle());

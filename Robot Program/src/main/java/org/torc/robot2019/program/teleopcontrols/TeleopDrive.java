@@ -20,10 +20,11 @@ import org.torc.robot2019.subsystems.Elevator.ElevatorPositions;
 import org.torc.robot2019.subsystems.EndEffector.EndEffectorPositions;
 import org.torc.robot2019.subsystems.EndEffector.SolenoidStates;
 import org.torc.robot2019.subsystems.PivotArm;
+import org.torc.robot2019.subsystems.RPiCameras;
 import org.torc.robot2019.subsystems.RioCameras;
 import org.torc.robot2019.subsystems.PivotArm.PivotArmPositions;
 import org.torc.robot2019.subsystems.PivotArm.PivotArmSides;
-import org.torc.robot2019.subsystems.RioCameras.CameraSelect;
+import org.torc.robot2019.subsystems.RPiCameras.CameraSelect;
 import org.torc.robot2019.tools.CLCommand;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
 import org.torc.robot2019.tools.MathExtra;
@@ -81,10 +82,10 @@ public class TeleopDrive extends CLCommand {
 
     private double lastRollerControlVal = 0;
 
-    private int cameraTimerFront = 0;
-    private int cameraTimerRear = 0;
+    //private int cameraTimerFront = 0;
+    //private int cameraTimerRear = 0;
 
-    private final int cameraTimerMax = 500 / 20;
+    //private final int cameraTimerMax = 500 / 20;
 
     public TeleopDrive(BasicDriveTrain _driveTrain, GamePositionManager _gpManager,
          PivotArm _pivotArm, Climber _climber, Elevator _elevator, EndEffector _endEffector, 
@@ -162,6 +163,7 @@ public class TeleopDrive extends CLCommand {
         double driveInputSum = driveInput[0] + driveInput[1];
         // Driving forward
         
+        /*
         if (driveInputSum < 0) {
             cameraTimerFront++;
         }
@@ -178,20 +180,11 @@ public class TeleopDrive extends CLCommand {
 
         if (cameraTimerFront >= cameraTimerMax) {
             cameraTimerFront = 0;
-            RioCameras.GetInstance().setSelectedCamera(CameraSelect.kFront);
+            RPiCameras.GetInstance().setSelectedCamera(CameraSelect.kFront);
         }
         else if (cameraTimerRear >= cameraTimerMax) {
             cameraTimerRear = 0;
-            RioCameras.GetInstance().setSelectedCamera(CameraSelect.kRear);
-        }
-        
-
-        /*
-        if (driveInputSum > 0) {
-            RPiCameras.setSelectedCamera(CameraSelect.kFront);
-        }
-        else if (driveInputSum < 0) {
-            RPiCameras.setSelectedCamera(CameraSelect.kRear);
+            RPiCameras.GetInstance().setSelectedCamera(CameraSelect.kRear);
         }
         */
     }
@@ -358,13 +351,8 @@ public class TeleopDrive extends CLCommand {
             TORCControls.GetInput(ControllerInput.B_RollersInTake);
         if (rollerControl != 0) {
             pickupCommandInterrupt();
-            endEffector.setRollerPercSpeed(rollerControl * 0.6);
+            endEffector.setRollerPercSpeed(rollerControl * 0.75);
         } else {
-            // if ((pickupCommand == null || !pickupCommand.isRunning()) && 
-            //     lastRollerControlVal != 0) {
-            //     endEffector.setRollerPercSpeed(0);
-
-            // }
             endEffector.setRollerPercSpeed(endEffector.getBallSensor() ? -0.2 : 0);
         }
 

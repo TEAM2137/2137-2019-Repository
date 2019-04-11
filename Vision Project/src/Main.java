@@ -343,7 +343,9 @@ public final class Main {
 		
 		// Send captured frames to CameraServer
 		cap.addNewFrameEvent((e) -> {
-			outputStream.putFrame(e);
+			if (!e.empty()) {
+				outputStream.putFrame(e);
+			}
 		});
 		
 		if (cameraConfig.name.toLowerCase().contains("front")) {
