@@ -13,9 +13,8 @@ import org.torc.robot2019.subsystems.Elevator;
 import org.torc.robot2019.subsystems.EndEffector;
 import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.subsystems.Pneumatics;
-import org.torc.robot2019.subsystems.RPiCameras;
 import org.torc.robot2019.subsystems.RioCameras;
-import org.torc.robot2019.subsystems.RPiCameras.CameraSelect;
+import org.torc.robot2019.subsystems.RioCameras.CameraSelect;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
 import org.torc.robot2019.vision.VisionManager;
 
@@ -69,7 +68,7 @@ public class RobotMode {
 		RobotMap.Canifier = new CANifier((int)KMap.GetKNumeric(KNumeric.INT_CANIFIER_ID));
 		
 		RobotMap.S_EndEffector = new EndEffector(30, 31, 2, 0, 1, RobotMap.Canifier, GeneralPin.LIMF, 
-			GeneralPin.LIMR);
+			GeneralPin.LIMR, GeneralPin.QUAD_A);
 
 		RobotMap.S_ElevatorArmManager = new ElevatorArmManager(RobotMap.S_PivotArm, RobotMap.S_Elevator);
 
@@ -85,12 +84,14 @@ public class RobotMode {
 	public static void Periodic() {
 
 		// Control Camera Selection (w/ Driver controller)
+		/*
 		if (TORCControls.GetInput(ControllerInput.B_SelectCameraFront, InputState.Pressed) >= 1) {
-			RPiCameras.GetInstance().setSelectedCamera(CameraSelect.kFront);
+			RioCameras.GetInstance().setSelectedCamera(CameraSelect.kFront);
 		}
 		else if (TORCControls.GetInput(ControllerInput.B_SelectCameraRear, InputState.Pressed) >= 1) {
-			RPiCameras.GetInstance().setSelectedCamera(CameraSelect.kRear);
+			RioCameras.GetInstance().setSelectedCamera(CameraSelect.kRear);
 		}
+		*/
 
 		// Variables
 		SmartDashboard.putNumber("PSI", RobotMap.S_Pneumatics.getPSI());

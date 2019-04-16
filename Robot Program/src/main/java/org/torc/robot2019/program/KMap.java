@@ -129,8 +129,6 @@ public class KMap {
 		return GetInstance().CurrentRobotType;
     }
     
-    // The following is dirty, dirty code. Right now I can't figure out how to make it
-    // cleaner, so this is what you get right now.
     public static double GetKNumeric(KNumeric _constant) {
         RobotType CurrentRobotType = GetRobotType();
 

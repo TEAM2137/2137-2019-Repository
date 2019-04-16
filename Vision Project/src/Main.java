@@ -32,6 +32,7 @@ import edu.wpi.first.vision.VisionThread;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Rect;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.Videoio;
@@ -312,7 +313,7 @@ public final class Main {
     */
     CameraCapture[] cameraArray = new CameraCapture[2];
     
-    CvSource outputStream = CameraServer.getInstance().putVideo("RobotCamera", 160, 120);
+    CvSource outputStream = CameraServer.getInstance().putVideo("RobotCamera", 640, 360);
     
     for (CameraConfig cameraConfig : cameraConfigs) {
     
@@ -344,7 +345,9 @@ public final class Main {
 		// Send captured frames to CameraServer
 		cap.addNewFrameEvent((e) -> {
 			if (!e.empty()) {
+				//Mat square = GetSquareImage(e, 156);
 				outputStream.putFrame(e);
+				//square.release();
 			}
 		});
 		

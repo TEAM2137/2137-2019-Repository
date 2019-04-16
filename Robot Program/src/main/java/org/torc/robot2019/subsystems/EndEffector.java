@@ -61,13 +61,16 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 	private GeneralPin ballSensorPin1;
 	private GeneralPin ballSensorPin2;
 
+	private GeneralPin hatchPanelSensorPin;
+
 	private Solenoid pistonOpenS;
 	private Solenoid pistonClosedS;
 
 	private SolenoidStates solenoidState = SolenoidStates.Open;
 	
 	public EndEffector(int _endEffectorMID, int _rollerMID, int _PCMID, int _pistonOpenSID, 
-		int _pistonClosedSID, CANifier _canifier, GeneralPin _ballSensorPin1, GeneralPin _ballSensorPin2) {
+		int _pistonClosedSID, CANifier _canifier, GeneralPin _ballSensorPin1, GeneralPin _ballSensorPin2,
+		GeneralPin _hatchPanelSensorPin) {
 		// Add to periodic list
 		Robot.AddToPeriodic(this);
 		
@@ -86,7 +89,7 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 		endEffectorM.config_IntegralZone(0, 0);//(int)KMap.GetKNumeric(KNumeric.INT_END_EFFECTOR_KIZONE));
 
 		endEffectorM.configMotionCruiseVelocity(200);
-		endEffectorM.configMotionAcceleration(100);
+		endEffectorM.configMotionAcceleration(200);
 
 		rollerM = new VictorSPX(_rollerMID);
 
@@ -99,6 +102,8 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 		ballSensorPin1 = _ballSensorPin1;
 		ballSensorPin2 = _ballSensorPin2;
 
+		hatchPanelSensorPin = _hatchPanelSensorPin;
+
 		int absolutePosition = endEffectorM.getSensorCollection().getPulseWidthPosition();
 		absolutePosition += KMap.GetKNumeric(KNumeric.INT_END_EFFECTOR_ENCODER_OFFSET);
 		absolutePosition &= 0xFFF;// Mask out overflows, keep bottom 12 bits
@@ -107,46 +112,11 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 		SmartDashboard.putNumber("EEDesiredPos", 2048);
 	}
 	
-	// public void homeEndEffector() {
-	// 	if (hasBeenHomed) {
-	// 		//deHomeEndEffector();
-	// 		System.out.println("End effector already homed; Not re-homing...");
-	// 		return;
-	// 	}
-	// 	// endEffectorHomer = new EndEffector_Home(this);
-	// 	// endEffectorHomer.start();
-	// }
-	
-	/**
-	 * Sets the end effector's state to "unHomed", requiring 
-	 * another homing to work again.
-	 */
-	/*
-	public void deHomeEndEffector() {
-		if (endEffectorHomer != null && endEffectorHomer.isRunning()) {
-			endEffectorHomer.cancel();
-			endEffectorHomer.free();
-			endEffectorHomer = null;
-		}
-		hasBeenHomed = false;
-		targetPosition = 0;
-		System.out.println("EndEffector De-Homed!!");
-	}
-	*/
-	
-	// public boolean getHomed() {
-	// 	return hasBeenHomed;
-	// }
-	
 	protected void setWristPercSpeedUnchecked(double _speed) {
 		endEffectorM.set(ControlMode.PercentOutput, _speed);
 	}
 
 	public void setWristPercSpeed(double _speed) {
-		// if (endEffectorHomer != null && endEffectorHomer.isRunning()) {
-		// 	System.out.println("EndEffector currently homing, cannot move!");
-		// 	return;
-		// }
 		setWristPercSpeedUnchecked(_speed);
 	}
 
@@ -177,6 +147,10 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 
 	public boolean getBallSensor() {
 		return !canifier.getGeneralInput(ballSensorPin1) || !canifier.getGeneralInput(ballSensorPin2);
+	}
+
+	public boolean getHatchPanelSensor() {
+		return canifier.getGeneralInput(hatchPanelSensorPin);
 	}
 
 	public void setSolenoid(SolenoidStates _state) {
@@ -212,10 +186,6 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 	public SolenoidStates getSolenoid() {
 		return solenoidState;
 	}
-	
-	// private static void hasNotHomedAlert() {
-	// 	System.out.println("Cannot move EndEffector; has not homed!!");
-	// }
 
 	@Override
 	protected void initDefaultCommand() {
@@ -234,8 +204,8 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 		SmartDashboard.putNumber("EndEffectorTarget", targetPosition);
 
 		SmartDashboard.putBoolean("BallSensor", getBallSensor());
-		SmartDashboard.putBoolean("BallSensor1", !canifier.getGeneralInput(ballSensorPin1));
-		SmartDashboard.putBoolean("BallSensor2", !canifier.getGeneralInput(ballSensorPin2));
+
+		SmartDashboard.putBoolean("HatchPanelSensor", getHatchPanelSensor());
 
 		SmartDashboard.putNumber("EndEffectorVel", endEffectorM.getSelectedSensorVelocity(0));
 

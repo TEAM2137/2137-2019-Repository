@@ -5,6 +5,7 @@ import com.ctre.phoenix.CANifier.GeneralPin;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import org.torc.robot2019.subsystems.ElevatorArmManager;
+import org.torc.robot2019.commands.ControllerRumble;
 import org.torc.robot2019.commands.GPPickup;
 import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.program.RobotMap;
@@ -82,6 +83,8 @@ public class TeleopDrive extends CLCommand {
 
     private double lastRollerControlVal = 0;
 
+    private boolean lastHatchPanelSensorVal;
+
     //private int cameraTimerFront = 0;
     //private int cameraTimerRear = 0;
 
@@ -113,6 +116,8 @@ public class TeleopDrive extends CLCommand {
         driverController = TORCControls.GetDriverController();
 
         operatorController = TORCControls.GetOperatorController();
+
+        lastHatchPanelSensorVal = endEffector.getHatchPanelSensor();
     }
     // Called just before this Command runs the first time
     @Override
@@ -132,6 +137,8 @@ public class TeleopDrive extends CLCommand {
         pivotArmElevatorControl();
 
         endEffectorControl();
+
+        autoEndEffector();
         
     }
 
@@ -159,34 +166,6 @@ public class TeleopDrive extends CLCommand {
             // Drive the robot
             haloDrive(driveInput[0], -driveInput[1], false);
         }
-        // Camera select
-        double driveInputSum = driveInput[0] + driveInput[1];
-        // Driving forward
-        
-        /*
-        if (driveInputSum < 0) {
-            cameraTimerFront++;
-        }
-        else {
-            cameraTimerFront = 0;
-        }
-        // Driving reverse
-        if (driveInputSum > 0) {
-            cameraTimerRear++;
-        }
-        else {
-            cameraTimerRear = 0;
-        }
-
-        if (cameraTimerFront >= cameraTimerMax) {
-            cameraTimerFront = 0;
-            RPiCameras.GetInstance().setSelectedCamera(CameraSelect.kFront);
-        }
-        else if (cameraTimerRear >= cameraTimerMax) {
-            cameraTimerRear = 0;
-            RPiCameras.GetInstance().setSelectedCamera(CameraSelect.kRear);
-        }
-        */
     }
 
     private void climbControl() {
@@ -232,7 +211,8 @@ public class TeleopDrive extends CLCommand {
 
         // CG Pickup command
         
-        if (driverController.getRawButton(1)) {//(TORCControls.GetInput(ControllerInput.B_PickupCG, InputState.Pressed) >= 1) {
+        // Cargo Front Pickup
+        if (TORCControls.GetInput(ControllerInput.B_FrontPickupCG, InputState.Pressed) >= 1) {
             pickupCommandInterrupt();
             
             pickupCommand = new GPPickup(gpManager, pivotArm, elevator, endEffector, RobotSides.kFront);
@@ -241,7 +221,7 @@ public class TeleopDrive extends CLCommand {
             //targetedPosition = GamePositions.CargoFloorPickup;
             //targetedGPeice = GPeiceTarget.kCargo;
         }
-        else if (driverController.getRawButton(2)) {
+        else if (TORCControls.GetInput(ControllerInput.B_RearPickupCG, InputState.Pressed) >= 1) {
             pickupCommandInterrupt();
             
             pickupCommand = new GPPickup(gpManager, pivotArm, elevator, endEffector, RobotSides.kRear);
@@ -358,6 +338,22 @@ public class TeleopDrive extends CLCommand {
 
         lastRollerControlVal = rollerControl;
 
+    }
+
+    public void autoEndEffector() {
+        SolenoidStates currentState = endEffector.getSolenoid();
+
+        if (currentState == SolenoidStates.Closed) {
+            // TODO: Determine if the not needs to be flipped
+            if (endEffector.getHatchPanelSensor() && !lastHatchPanelSensorVal) {
+                // Set Solenoid to be open
+                endEffector.setSolenoid(SolenoidStates.Open);
+                new ControllerRumble(TORCControls.GetDriverController(), 0.5, 0.5).start();
+                new ControllerRumble(TORCControls.GetOperatorController(), 0.5, 0.5).start();
+            }
+        }
+
+        lastHatchPanelSensorVal = endEffector.getHatchPanelSensor();
     }
 
     // Called once after isFinished returns true

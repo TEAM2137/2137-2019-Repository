@@ -73,7 +73,7 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 
 		MotorControllers.TalonSRXConfig(elevatorM);
 
-		elevatorM.configContinuousCurrentLimit(5);
+		elevatorM.configContinuousCurrentLimit(10);
 
 		elevatorM.config_kF(0, 0);
 		elevatorM.config_kP(0, KMap.GetKNumeric(KNumeric.DBL_ELEVATOR_KP));

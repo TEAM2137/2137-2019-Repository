@@ -58,7 +58,6 @@ public class RioCameras extends Subsystem {
       
       Mat source = new Mat();
       //Mat temp = new Mat();
-      Mat output = new Mat();
       
       while(!Thread.interrupted()) {
           if (selectedCamera == CameraSelect.kFront) {
@@ -72,8 +71,9 @@ public class RioCameras extends Subsystem {
             if (source.size().width > 160 || source.size().height > 120) {
               Imgproc.resize(source, source, new Size(160, 120));
             }
-            Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
-            outputStream.putFrame(output);
+            //Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
+            outputStream.putFrame(source);
+            source.release();
           }
       }
     }).start();
