@@ -150,19 +150,19 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 	}
 
 	public boolean getHatchPanelSensor() {
-		return canifier.getGeneralInput(hatchPanelSensorPin);
+		return !canifier.getGeneralInput(hatchPanelSensorPin);
 	}
 
 	public void setSolenoid(SolenoidStates _state) {
 		solenoidState = _state; // Update the classes' current solenoid state
 		switch (_state) {
 			case Open:
-				pistonOpenS.set(true);
-				pistonClosedS.set(false);
-				break;
-			case Closed:
 				pistonOpenS.set(false);
 				pistonClosedS.set(true);
+				break;
+			case Closed:
+				pistonOpenS.set(true);
+				pistonClosedS.set(false);
 				break;
 		}
 		System.out.println("Solenoids are being set!");
@@ -206,6 +206,8 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 		SmartDashboard.putBoolean("BallSensor", getBallSensor());
 
 		SmartDashboard.putBoolean("HatchPanelSensor", getHatchPanelSensor());
+
+		SmartDashboard.putString("SolenoidState", getSolenoid().toString());
 
 		SmartDashboard.putNumber("EndEffectorVel", endEffectorM.getSelectedSensorVelocity(0));
 

@@ -1,9 +1,14 @@
 package org.torc.robot2019.program;
 
+import org.torc.robot2019.commands.ControllerRumble;
+
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 
 public class TORCControls {
+
     /*
      * Declare currently-used controllers up here!
      * (Make sure you define them inline!)
@@ -11,6 +16,21 @@ public class TORCControls {
     private static GenericHID driverController = new XboxController(0);
     private static GenericHID operatorController = new XboxController(1);
     private static GenericHID climberController = new XboxController(2);
+
+    /**
+     * An Enum used for references to specfic controllers from outside classes.
+     */
+    public static enum Controllers {
+        kDriver(driverController), 
+        kOperator(operatorController), 
+        kClimber(climberController);
+
+        GenericHID controller;
+
+        private Controllers(GenericHID _controller) {
+            controller = _controller;
+        }
+    }
 
     public static enum ControllerInput {
 		/**Left Drivetrain Control Axis*/
@@ -58,8 +78,8 @@ public class TORCControls {
 
         A_WristJog(5, operatorController, InputType.Axis), // Right stick Y
 
-        B_OpenWrist(6, operatorController, InputType.Button), // Right bumper
-        B_CloseWrist(5, operatorController, InputType.Button), // Left bumper
+        B_OpenWrist(5, operatorController, InputType.Button), // Left bumper
+        B_CloseWrist(6, operatorController, InputType.Button), // Right bumper
 
         B_RollersOuttake(5, driverController, InputType.Button), // Left bumper
         B_RollersInTake(6, driverController, InputType.Button), // Right bumper
@@ -168,12 +188,12 @@ public class TORCControls {
         return (_value >= 1.0);
     }
 
-    //TODO: get rid of this function and implement it correctly
-    public static GenericHID GetDriverController() {
-        return driverController;
+    public static void SetControllerRumble(Controllers _controller, double _val) {
+        _controller.controller.setRumble(RumbleType.kLeftRumble, _val);
+        _controller.controller.setRumble(RumbleType.kRightRumble, _val);
     }
 
-    public static GenericHID GetOperatorController() {
-        return operatorController;
+    public static void SetControllerRumbleTime(Controllers _controller, double _val, double _time) {
+        new ControllerRumble(_controller.controller, _val, _time).start();
     }
 }

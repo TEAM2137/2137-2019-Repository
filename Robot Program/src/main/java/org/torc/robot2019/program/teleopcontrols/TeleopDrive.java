@@ -12,6 +12,7 @@ import org.torc.robot2019.program.RobotMap;
 import org.torc.robot2019.program.TORCControls;
 import org.torc.robot2019.program.KMap.KNumeric;
 import org.torc.robot2019.program.TORCControls.ControllerInput;
+import org.torc.robot2019.program.TORCControls.Controllers;
 import org.torc.robot2019.program.TORCControls.InputState;
 import org.torc.robot2019.subsystems.BasicDriveTrain;
 import org.torc.robot2019.subsystems.Climber;
@@ -21,11 +22,8 @@ import org.torc.robot2019.subsystems.Elevator.ElevatorPositions;
 import org.torc.robot2019.subsystems.EndEffector.EndEffectorPositions;
 import org.torc.robot2019.subsystems.EndEffector.SolenoidStates;
 import org.torc.robot2019.subsystems.PivotArm;
-import org.torc.robot2019.subsystems.RPiCameras;
-import org.torc.robot2019.subsystems.RioCameras;
 import org.torc.robot2019.subsystems.PivotArm.PivotArmPositions;
 import org.torc.robot2019.subsystems.PivotArm.PivotArmSides;
-import org.torc.robot2019.subsystems.RPiCameras.CameraSelect;
 import org.torc.robot2019.tools.CLCommand;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
 import org.torc.robot2019.tools.MathExtra;
@@ -63,10 +61,6 @@ public class TeleopDrive extends CLCommand {
     public static enum ArmSide { kFront, kBack }
 
     private RobotAutoLevel autoLevelCommand;
-
-    private GenericHID driverController;
-
-    private GenericHID operatorController;
 
     /** Controller inputs for driveline speeds. (0 = left, 1 = right) */
     private double[] driveInput = {0, 0};
@@ -112,10 +106,6 @@ public class TeleopDrive extends CLCommand {
 
         requires(driveTrain);
         requires(pivotArm);
-
-        driverController = TORCControls.GetDriverController();
-
-        operatorController = TORCControls.GetOperatorController();
 
         lastHatchPanelSensorVal = endEffector.getHatchPanelSensor();
     }
@@ -341,15 +331,18 @@ public class TeleopDrive extends CLCommand {
     }
 
     public void autoEndEffector() {
-        SolenoidStates currentState = endEffector.getSolenoid();
-
-        if (currentState == SolenoidStates.Closed) {
+        if (endEffector.getSolenoid() == SolenoidStates.Closed) {
             // TODO: Determine if the not needs to be flipped
-            if (endEffector.getHatchPanelSensor() && !lastHatchPanelSensorVal) {
+            if (!endEffector.getHatchPanelSensor() && lastHatchPanelSensorVal) {
                 // Set Solenoid to be open
                 endEffector.setSolenoid(SolenoidStates.Open);
+                // Rumble driver & operator controller at half for half a second.
+                /*
                 new ControllerRumble(TORCControls.GetDriverController(), 0.5, 0.5).start();
                 new ControllerRumble(TORCControls.GetOperatorController(), 0.5, 0.5).start();
+                */
+                TORCControls.SetControllerRumbleTime(Controllers.kDriver, 0.5, 0.5);
+                TORCControls.SetControllerRumbleTime(Controllers.kOperator, 0.5, 0.5);
             }
         }
 
