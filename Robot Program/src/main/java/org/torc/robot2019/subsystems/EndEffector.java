@@ -26,7 +26,7 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 		 */
 		Zero(0),
 		Travel(2048),
-		Climbing(2993),
+		Climbing(1179),
 		;
 	
 		private int positionValue;

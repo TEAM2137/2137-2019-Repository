@@ -15,7 +15,8 @@ import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.subsystems.Pneumatics;
 import org.torc.robot2019.subsystems.RPiCameras;
 import org.torc.robot2019.subsystems.RioCameras;
-import org.torc.robot2019.subsystems.RPiCameras.CameraSelect;
+//import org.torc.robot2019.subsystems.RPiCameras.CameraSelect;
+import org.torc.robot2019.subsystems.RioCameras.CameraSelect;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
 import org.torc.robot2019.vision.VisionManager;
 
@@ -36,7 +37,7 @@ public class RobotMode {
 	public static void Init() {
 		
 		// Init Cameras
-		//RioCameras.GetInstance();
+		RioCameras.GetInstance();
 		
 		RobotMap.S_Pneumatics = new Pneumatics(
 			(int)KMap.GetKNumeric(KNumeric.INT_PNEUMATICS_PSI_SENSOR_ID));
@@ -86,10 +87,10 @@ public class RobotMode {
 
 		// Control Camera Selection (w/ Driver controller)
 		if (TORCControls.GetInput(ControllerInput.B_SelectCameraFront, InputState.Pressed) >= 1) {
-			RPiCameras.GetInstance().setSelectedCamera(CameraSelect.kFront);
+			RioCameras.GetInstance().setSelectedCamera(CameraSelect.kFront);
 		}
 		else if (TORCControls.GetInput(ControllerInput.B_SelectCameraRear, InputState.Pressed) >= 1) {
-			RPiCameras.GetInstance().setSelectedCamera(CameraSelect.kRear);
+			RioCameras.GetInstance().setSelectedCamera(CameraSelect.kRear);
 		}
 
 		// Variables

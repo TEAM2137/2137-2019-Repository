@@ -7,6 +7,8 @@
 
 package org.torc.robot2019.subsystems;
 
+import java.awt.Dimension;
+
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -24,6 +26,8 @@ public class RioCameras extends Subsystem {
     kFront, kRear;
   }
 
+  private static final Size CAMERA_RESOLUTION = new Size(640, 360);
+
   private CameraSelect selectedCamera = CameraSelect.kFront;
 
   private static RioCameras SingleInstance;
@@ -39,13 +43,13 @@ public class RioCameras extends Subsystem {
     new Thread(() -> {
       UsbCamera cameraF = new UsbCamera("CameraF", 0);
       UsbCamera cameraR = new UsbCamera("CameraR", 1);;
-      cameraF.setVideoMode(VideoMode.PixelFormat.kYUYV, 640, 360, 30);
-      cameraR.setVideoMode(VideoMode.PixelFormat.kYUYV, 640, 360, 30);
+      cameraF.setVideoMode(VideoMode.PixelFormat.kMJPEG, (int)CAMERA_RESOLUTION.width, (int)CAMERA_RESOLUTION.height, 30);
+      cameraR.setVideoMode(VideoMode.PixelFormat.kMJPEG, (int)CAMERA_RESOLUTION.width, (int)CAMERA_RESOLUTION.height, 30);
       
       cameraF.setFPS(30);
       cameraR.setFPS(30);
-      cameraF.setResolution(640, 480);
-      cameraR.setResolution(640, 480);
+      cameraF.setResolution((int)CAMERA_RESOLUTION.width, (int)CAMERA_RESOLUTION.height);
+      cameraR.setResolution((int)CAMERA_RESOLUTION.width, (int)CAMERA_RESOLUTION.height);
       
 
       CameraServer.getInstance().startAutomaticCapture(cameraF);
@@ -54,7 +58,7 @@ public class RioCameras extends Subsystem {
       CvSink cameraFSink = CameraServer.getInstance().getVideo(cameraF);
       CvSink cameraRSink = CameraServer.getInstance().getVideo(cameraR);
 
-      CvSource outputStream = CameraServer.getInstance().putVideo("BWCam", 160, 120);
+      CvSource outputStream = CameraServer.getInstance().putVideo("RioCameras", (int)CAMERA_RESOLUTION.width, (int)CAMERA_RESOLUTION.height);
       
       Mat source = new Mat();
       //Mat temp = new Mat();
@@ -68,13 +72,9 @@ public class RioCameras extends Subsystem {
           }
 
           if (!source.empty()) {
-            if (source.size().width > 160 || source.size().height > 120) {
-              Imgproc.resize(source, source, new Size(160, 120));
-            }
-            //Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
             outputStream.putFrame(source);
-            source.release();
           }
+          source.release();
       }
     }).start();
 

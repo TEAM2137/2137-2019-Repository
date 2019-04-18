@@ -150,7 +150,7 @@ public class TeleopDrive extends CLCommand {
 
         // Set drive mode based on if mantis wheels should move or not
         if (mantisWheelInput[0] > 0.2 || mantisWheelInput[1] > 0.2) {
-            RobotMap.S_DriveTrain.setPercSpeed(-mantisWheelInput[0] * 0.5, mantisWheelInput[1] * 0.5);
+            RobotMap.S_DriveTrain.setPercSpeed(-mantisWheelInput[0] * 0.5, -mantisWheelInput[1] * 0.5);
         }
         else {
             // Drive the robot
@@ -303,7 +303,7 @@ public class TeleopDrive extends CLCommand {
             TORCControls.GetInput(ControllerInput.A_WristJog), 0.2);
         if (endEffectorControl != 0) {
             // Determine control position based on current pivotArm side
-            if (pivotArm.getPivotArmSide() == PivotArmSides.kFront) {
+            if (pivotArm.getPivotArmSide() == PivotArmSides.kRear) {
                 endEffectorControl *= -1;
             }
             endEffector.jogPosition((int)(endEffectorControl * WRIST_JOG_MULTIPLIER));

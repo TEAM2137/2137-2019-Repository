@@ -76,7 +76,7 @@ public class GPPickup extends CLCommand {
         // Start Rollers intake
         endEffector.setRollerPercSpeed(-1);
         // Retract Hatch Intake
-        endEffector.setSolenoid(SolenoidStates.Closed);
+        endEffector.setSolenoid(SolenoidStates.Open);
         
         if (endEffector.getBallSensor()) {
           // Keep ball in w/ Rollers
