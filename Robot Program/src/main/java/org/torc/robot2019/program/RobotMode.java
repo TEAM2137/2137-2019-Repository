@@ -4,6 +4,7 @@ import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.CANifier.GeneralPin;
 
 import org.torc.robot2019.subsystems.ElevatorArmManager;
+import org.torc.robot2019.commands.VisionCorrector;
 import org.torc.robot2019.program.KMap.KNumeric;
 import org.torc.robot2019.program.TORCControls.ControllerInput;
 import org.torc.robot2019.program.TORCControls.InputState;
@@ -15,14 +16,15 @@ import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.subsystems.Pneumatics;
 import org.torc.robot2019.subsystems.RPiCameras;
 import org.torc.robot2019.subsystems.RioCameras;
-//import org.torc.robot2019.subsystems.RPiCameras.CameraSelect;
-import org.torc.robot2019.subsystems.RioCameras.CameraSelect;
+import org.torc.robot2019.subsystems.RPiCameras.CameraSelect;
+//import org.torc.robot2019.subsystems.RioCameras.CameraSelect;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
 import org.torc.robot2019.vision.VisionManager;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //import org.torc.robot2019.robot.subsystems.DriveTrain;
@@ -35,9 +37,11 @@ public class RobotMode {
 	 * should go here.
 	 */
 	public static void Init() {
-		
 		// Init Cameras
-		RioCameras.GetInstance();
+		//RioCameras.GetInstance();
+
+		// Init vision correction command
+		RobotMap.S_VisionCorrector = new VisionCorrector();
 		
 		RobotMap.S_Pneumatics = new Pneumatics(
 			(int)KMap.GetKNumeric(KNumeric.INT_PNEUMATICS_PSI_SENSOR_ID));
@@ -87,10 +91,10 @@ public class RobotMode {
 
 		// Control Camera Selection (w/ Driver controller)
 		if (TORCControls.GetInput(ControllerInput.B_SelectCameraFront, InputState.Pressed) >= 1) {
-			RioCameras.GetInstance().setSelectedCamera(CameraSelect.kFront);
+			RPiCameras.GetInstance().setSelectedCamera(CameraSelect.kFront);
 		}
 		else if (TORCControls.GetInput(ControllerInput.B_SelectCameraRear, InputState.Pressed) >= 1) {
-			RioCameras.GetInstance().setSelectedCamera(CameraSelect.kRear);
+			RPiCameras.GetInstance().setSelectedCamera(CameraSelect.kRear);
 		}
 
 		// Variables

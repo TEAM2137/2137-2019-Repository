@@ -25,8 +25,10 @@ import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.subsystems.PivotArm.PivotArmPositions;
 import org.torc.robot2019.subsystems.PivotArm.PivotArmSides;
 import org.torc.robot2019.tools.CLCommand;
+import org.torc.robot2019.tools.LimelightControl;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
 import org.torc.robot2019.tools.MathExtra;
+import org.torc.robot2019.tools.LimelightControl.LightMode;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.GPeiceTarget;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.GamePositions;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.RobotSides;
@@ -78,11 +80,6 @@ public class TeleopDrive extends CLCommand {
     private double lastRollerControlVal = 0;
 
     private boolean lastHatchPanelSensorVal;
-
-    //private int cameraTimerFront = 0;
-    //private int cameraTimerRear = 0;
-
-    //private final int cameraTimerMax = 500 / 20;
 
     public TeleopDrive(BasicDriveTrain _driveTrain, GamePositionManager _gpManager,
          PivotArm _pivotArm, Climber _climber, Elevator _elevator, EndEffector _endEffector, 
@@ -152,9 +149,24 @@ public class TeleopDrive extends CLCommand {
         if (mantisWheelInput[0] > 0.2 || mantisWheelInput[1] > 0.2) {
             RobotMap.S_DriveTrain.setPercSpeed(-mantisWheelInput[0] * 0.5, -mantisWheelInput[1] * 0.5);
         }
+        // Drive-Controller Drive
         else {
             // Drive the robot
-            haloDrive(driveInput[0], -driveInput[1], false);
+            if (TORCControls.GetInput(ControllerInput.B_EnableVisionCorrection) >= 1) {
+                // Turn light on
+                LimelightControl.setLedMode(LightMode.eOn);
+
+                double forwardSpeed = MathExtra.clamp(driveInput[0], -1, 0.5);
+
+                double offset = RobotMap.S_VisionCorrector.getOffset();
+                RobotMap.S_DriveTrain.setPercSpeed(forwardSpeed - offset, forwardSpeed + offset);
+            }
+            else {
+                // Turn light off
+                LimelightControl.setLedMode(LightMode.eOff);
+                
+                haloDrive(driveInput[0], -driveInput[1], false);
+            }
         }
     }
 

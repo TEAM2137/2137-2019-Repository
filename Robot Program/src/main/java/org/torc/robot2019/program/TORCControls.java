@@ -88,6 +88,8 @@ public class TORCControls {
         B_PivotTravel(4, climberController, InputType.Button), // Y Button
 
         B_DivideDriveTrain(3, driverController, InputType.Axis),
+        /**Vision auto-correction enable*/ 
+        B_EnableVisionCorrection(10, driverController, InputType.Button), // Right Stick 
 
         /**Front Camera select */
         B_SelectCameraFront(0, driverController, InputType.POV), // Up POV
