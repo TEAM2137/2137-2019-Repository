@@ -53,7 +53,7 @@ class VisionPIDCommand extends CLCommand {
 	private double errSum = 0;
 	private double dLastPos = 0;
 	
-	private double pGain = 0.01;// = 0.0025;//0.24;//0.045;
+	private double pGain = 0.015;// = 0.0025;//0.24;//0.045;
 	private double iGain = 0;// = 0;
 	private double dGain = 0;// = 0;//1.5;//0.68;
 

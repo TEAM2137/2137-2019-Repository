@@ -156,7 +156,7 @@ public class TeleopDrive extends CLCommand {
                 // Turn light on
                 LimelightControl.setLedMode(LightMode.eOn);
 
-                double forwardSpeed = MathExtra.clamp(driveInput[0], -1, 0.5);
+                double forwardSpeed = MathExtra.clamp(driveInput[0], -1, 0.25);
 
                 double offset = RobotMap.S_VisionCorrector.getOffset();
                 RobotMap.S_DriveTrain.setPercSpeed(forwardSpeed - offset, forwardSpeed + offset);
@@ -215,15 +215,18 @@ public class TeleopDrive extends CLCommand {
         
         // Cargo Front Pickup
         if (TORCControls.GetInput(ControllerInput.B_FrontPickupCG, InputState.Pressed) >= 1) {
+
+            System.out.println("Front Pickup Command Pressed!");
+            
             pickupCommandInterrupt();
             
             pickupCommand = new GPPickup(gpManager, pivotArm, elevator, endEffector, RobotSides.kFront);
             pickupCommand.start();
-            
-            //targetedPosition = GamePositions.CargoFloorPickup;
-            //targetedGPeice = GPeiceTarget.kCargo;
         }
         else if (TORCControls.GetInput(ControllerInput.B_RearPickupCG, InputState.Pressed) >= 1) {
+
+            System.out.println("Rear Pickup Command Pressed!");
+
             pickupCommandInterrupt();
             
             pickupCommand = new GPPickup(gpManager, pivotArm, elevator, endEffector, RobotSides.kRear);

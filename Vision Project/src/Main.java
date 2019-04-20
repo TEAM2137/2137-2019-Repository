@@ -267,50 +267,10 @@ public final class Main {
     
     // Assign networkTable
     NetworkTable table = ntinst.getTable("dataTable");
-    NetworkTableEntry matNum = table.getEntry("MatAmount");
-    NetworkTableEntry rectNum = table.getEntry("RectAmount");
-    NetworkTableEntry rectList = table.getEntry("RectList");
-    NetworkTableEntry byteArrLength = table.getEntry("ByteArrLength");
-    NetworkTableEntry cameraResolution = table.getEntry("VisionResolution");
     NetworkTableEntry selectedCamera = table.getEntry("SelectedCamera");
-    
-    // Start Seperate procesing threads
-    RectFinder = new T_RectFinder();
-    RectFinder.start();
-    
-    RectSerializeSend = new T_RectSerializeSend(rectList);
-    RectSerializeSend.start();
-    
-    /*
-    ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-    ObjectOutputStream serializer = new ObjectOutputStream(byteStream);
-    */
     
     System.out.println("WHAT IS UP PEEEEEEEEEEIIIIIIMMMMMMPPPPPSSSSS");
     
-    // start cameras
-    /*
-    List<VideoSource> cameras = new ArrayList<>();
-    for (CameraConfig cameraConfig : cameraConfigs) {
-      cameras.add(startCamera(cameraConfig));
-    }
-
-    // start image processing on camera 0 if present
-    if (cameras.size() >= 1) {
-      VideoMode cameraVideoMode = cameras.get(0).getVideoMode();
-      cameraResolution.setNumberArray(new Number[]{cameraVideoMode.width, cameraVideoMode.height});
-      VisionThread visionThread = new VisionThread(cameras.get(0),
-              new GripPipelinePredecessor(), pipeline -> {
-            	  ArrayList<MatOfPoint> output = pipeline.filterContoursOutput(); // Get filtered contours from pipeline
-            	  //System.out.println("Filtered Rect Amount: " + output.size());
-            	  if (output.size() > 0) {
-            		  RectFinder.addMatData(output); // Add data to the multithreaded Queue to be passed around
-            	  }
-              });
-      
-      visionThread.start();
-    }
-    */
     CameraCapture[] cameraArray = new CameraCapture[2];
     
     CvSource outputStream = CameraServer.getInstance().putVideo("RobotCamera", 640, 360);
