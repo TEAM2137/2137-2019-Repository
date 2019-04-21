@@ -335,7 +335,11 @@ public final class Main {
     	}
     }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
     
+    // Triple to garuntee that it's placed in the NT
     selectedCamera.setString("front");
+    selectedCamera.setString("front");
+    selectedCamera.setString("front");
+    
     cameraArray[0].setCapturingFrames(true);
 	cameraArray[1].setCapturingFrames(false);
 

@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import org.torc.robot2019.program.TORCControls.ControllerInput;
 import org.torc.robot2019.program.teleopcontrols.TeleopDrive;
+import org.torc.robot2019.subsystems.EndEffector.SolenoidStates;
 
 public class TeleopMode {
 	
@@ -21,6 +22,8 @@ public class TeleopMode {
 		RobotMap.S_PivotArm.setPosition(RobotMap.S_PivotArm.getEncoder());
 		// Keep End Effector at init position
 		RobotMap.S_EndEffector.setPosition(RobotMap.S_EndEffector.getEncoder());
+		// Default solenoid to open
+		RobotMap.S_EndEffector.setSolenoid(SolenoidStates.Open);
 
 		// Initialize Teleop Drive Command
 		driveCommand = new TeleopDrive(RobotMap.S_DriveTrain, RobotMap.S_GPManager, 

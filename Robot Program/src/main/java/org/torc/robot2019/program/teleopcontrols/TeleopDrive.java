@@ -156,7 +156,7 @@ public class TeleopDrive extends CLCommand {
                 // Turn light on
                 LimelightControl.setLedMode(LightMode.eOn);
 
-                double forwardSpeed = MathExtra.clamp(driveInput[0], -1, 0.25);
+                double forwardSpeed = MathExtra.clamp(driveInput[0], -0.25, 1);
 
                 double offset = RobotMap.S_VisionCorrector.getOffset();
                 RobotMap.S_DriveTrain.setPercSpeed(forwardSpeed - offset, forwardSpeed + offset);

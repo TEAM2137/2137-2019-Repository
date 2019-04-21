@@ -83,7 +83,7 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
     MotorControllers.TalonSRXConfig(m_armPivot);
 
     // Limit ArmPivot to a max current
-    m_armPivot.configContinuousCurrentLimit(10);
+    m_armPivot.configContinuousCurrentLimit(30);
 
     // Limit maximum output speed
     double maxOutputForward = 
