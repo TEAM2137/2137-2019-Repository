@@ -10,15 +10,15 @@ public class GamePositionManager extends Subsystem {
 
     public static enum GamePositions {
         // elevator, pivot, wrist
-    CargoFloorPickup(new GPSingle(0, 918, 2427), // Front Cargo
-                     new GPSingle(0, 918, 2427), // Front Cargo
-                     new GPSingle(0, 3023, 1610), // Rear Cargo
-                     new GPSingle(0, 3023, 1610)),// Rear Cargo
+    CargoFloorPickup(new GPSingle(0, 974, 2455), // Front Cargo
+                     new GPSingle(0, 974, 2455), // Front Cargo
+                     new GPSingle(768, 3065, 1577), // Rear Cargo
+                     new GPSingle(768, 3065, 1577)),// Rear Cargo
 
-        CargoShuttle(new GPSingle(2978, 1965, 3210), // Front Cargo
+        CargoShuttle(new GPSingle(3563, 1965, 3210), // Front Cargo
                      new GPSingle(2978, 1965, 3210), // Front Cargo
-                     new GPSingle(958, 1970, 1179), // Rear Cargo
-                     new GPSingle(958, 1970, 1179)),// Rear Cargo
+                     new GPSingle(2913, 2123, 1179), // Rear Cargo
+                     new GPSingle(2913, 2123, 1179)),// Rear Cargo
 
     CargoHumanPlayer(new GPSingle(0, 0, 0), // Front Cargo
                      new GPSingle(0, 0, 0), // Front Cargo
@@ -27,19 +27,19 @@ public class GamePositionManager extends Subsystem {
 
 RL1AndHatchPanelPickup(
                      new GPSingle(0, 781, 1868), // Front HatchPanel
-                     new GPSingle(0, 1243, 2241), // Front Cargo
-                     new GPSingle(0, 2756, 1922), // Rear HatchPanel
-                     new GPSingle(0, 2761, 1902)),// Rear Cargo
+                     new GPSingle(0, 1319, 2300), // Front Cargo
+                     new GPSingle(0, 2812, 1897), // Rear HatchPanel
+                     new GPSingle(0, 2829, 1902)),// Rear Cargo
 
-        RocketLevel2(new GPSingle(921, 1916, 3001), // Front HatchPanel
-                     new GPSingle(6620, 1978, 2990), // Front Cargo
-                     new GPSingle(6732, 2100, 1358), // Rear HatchPanel
-                     new GPSingle(6637, 2008, 1179)),// Rear Cargo
+        RocketLevel2(new GPSingle(921, 1916, 2953), // Front HatchPanel
+                     new GPSingle(7885, 1998, 2991), // Front Cargo
+                     new GPSingle(6804, 2100, 1227), // Rear HatchPanel
+                     new GPSingle(6637, 2084, 1179)),// Rear Cargo
 
-        RocketLevel3(new GPSingle(14227, 1953, 3017), // Front HatchPanel
-                     new GPSingle(18666, 1999, 2953), // Front Cargo
-                     new GPSingle(18666, 1990, 1281), // Rear HatchPanel
-                     new GPSingle(18666, 1971, 1231)),// Rear Cargo
+        RocketLevel3(new GPSingle(13494, 2041, 3075), // Front HatchPanel
+                     new GPSingle(18666, 2027, 2905), // Front Cargo
+                     new GPSingle(18666, 2094, 1326), // Rear HatchPanel
+                     new GPSingle(18666, 2074, 1231)),// Rear Cargo
                      
         ;
 

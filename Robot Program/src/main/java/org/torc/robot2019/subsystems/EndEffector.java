@@ -25,7 +25,7 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 		 * with no need to use the pivot arm.
 		 */
 		Zero(0),
-		Travel(2048),
+		Travel(2077),
 		Climbing(1179),
 		;
 	

@@ -260,7 +260,9 @@ public final class Main {
 	    	ntinst.startServer();
 	    } else { // If client defined in config json
 	      System.out.println("Setting up NetworkTables client for team " + team);
-	      ntinst.startClientTeam(team);
+	      String teamNum = Integer.toString(team);
+	      System.out.println("Team String: " + teamNum);
+	      ntinst.startClient(String.format("10.%s.%s.2", teamNum.substring(0, 1), teamNum.substring(1, 2)));//startClientTeam(team);
 	    }
     }
     

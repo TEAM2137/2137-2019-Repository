@@ -28,7 +28,7 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
      * Used for when robot should be driving around,
      * with no need to use the pivot arm.
      */
-    Up(1900),
+    Up(2052),
     Climbing(1550),
     // Rear-side positions
     PickupR(824),
