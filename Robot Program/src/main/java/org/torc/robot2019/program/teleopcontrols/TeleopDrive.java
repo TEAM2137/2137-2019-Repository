@@ -240,13 +240,20 @@ public class TeleopDrive extends CLCommand {
         // Arm position control //
 
         // Retracted-up position
-        if (TORCControls.GetInput(ControllerInput.B_PivotUp, InputState.Pressed) >= 1 || 
-                TORCControls.GetInput(ControllerInput.B_PivotTravel, InputState.Pressed) >= 1) {
+        if (TORCControls.GetInput(ControllerInput.B_PivotUp, InputState.Pressed) >= 1) {
             // TODO: Change to GamePosition (with wrist position)?
             pivotArm.setPosition(PivotArmPositions.Up);
             elevator.setPosition(ElevatorPositions.Retracted);
             endEffector.setPosition(EndEffectorPositions.Travel);
         }
+
+        // After Climb-up position
+        if (TORCControls.GetInput(ControllerInput.B_PivotTravel, InputState.Pressed) >= 1) {
+            // TODO: Make this a variable or something. Corgi.
+            elevArmManager.setPosition(2052, 0);
+            endEffector.setPosition(1159);
+        }
+
         // Up-for-climing position
         if (TORCControls.GetInput(ControllerInput.B_PivotClimbing, InputState.Pressed) >= 1) {
             pivotArm.setPosition(PivotArmPositions.Climbing);

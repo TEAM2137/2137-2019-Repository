@@ -95,9 +95,8 @@ public class TORCControls {
         B_SelectCameraFront(0, driverController, InputType.POV), // Up POV
         /**Rear Camera select */
         B_SelectCameraRear(180, driverController, InputType.POV), // Down POV
-        
-        /**PivotArm Intake position*/
-        //B_PivotHorizontal(1, driverController, InputType.Button), // A button
+        /**Reset Wrist encoder offset */
+        B_ReinitWristEncoder(10, operatorController, InputType.Button), // Right Stick
         ;
         
         private int id;

@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 
 public class DisabledMode {
 	public static void Init() {
-		Scheduler.getInstance().removeAll(); // Remove all commands
+		//Scheduler.getInstance().removeAll(); // Remove all commands
 		CommandList.StopAllCommandLists(); // Stop all CommandLists
 		
 		// Garuntee that arm doesn't have a set target upon next enable

@@ -97,6 +97,11 @@ public class RobotMode {
 			RPiCameras.GetInstance().setSelectedCamera(CameraSelect.kRear);
 		}
 
+		// Operator Reset EndEffector Sensor Offset 
+		if (TORCControls.GetInput(ControllerInput.B_ReinitWristEncoder, InputState.Pressed) >= 1) {
+			RobotMap.S_EndEffector.resetSensorOffset();
+		}
+
 		// Variables
 		SmartDashboard.putNumber("PSI", RobotMap.S_Pneumatics.getPSI());
 

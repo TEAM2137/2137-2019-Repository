@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import org.torc.robot2019.program.TORCControls.ControllerInput;
 import org.torc.robot2019.program.teleopcontrols.TeleopDrive;
 import org.torc.robot2019.subsystems.EndEffector.SolenoidStates;
+import org.torc.robot2019.tools.LimelightControl;
 
 public class TeleopMode {
 	
@@ -14,6 +15,9 @@ public class TeleopMode {
 	public static void Init() {
 		System.out.println("Teleop Mode Enabled!!");
 		System.out.println("RobotType: " + KMap.GetRobotType().toString());
+
+		// Reset limelight NT instance
+		//LimelightControl.resetTableInstance();
 
 		// Home elevator
 		RobotMap.S_Elevator.homeElevator();

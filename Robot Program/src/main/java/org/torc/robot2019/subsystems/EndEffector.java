@@ -1,5 +1,10 @@
 package org.torc.robot2019.subsystems;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.CANifier.GeneralPin;
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -83,7 +88,7 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 		endEffectorM.configClosedLoopPeakOutput(0, 1);
 
 		endEffectorM.config_kF(0, 5.6);
-		endEffectorM.config_kP(0, 8);//KMap.GetKNumeric(KNumeric.DBL_END_EFFECTOR_KP));
+		endEffectorM.config_kP(0, 6.5);//KMap.GetKNumeric(KNumeric.DBL_END_EFFECTOR_KP));
 		endEffectorM.config_kI(0, 0);//KMap.GetKNumeric(KNumeric.DBL_END_EFFECTOR_KI));
 		endEffectorM.config_kD(0, 0);
 		endEffectorM.config_IntegralZone(0, 0);//(int)KMap.GetKNumeric(KNumeric.INT_END_EFFECTOR_KIZONE));
@@ -104,12 +109,50 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 
 		hatchPanelSensorPin = _hatchPanelSensorPin;
 
-		int absolutePosition = endEffectorM.getSensorCollection().getPulseWidthPosition();
+		resetSensorOffset();
+
+		SmartDashboard.putNumber("EEDesiredPos", 2048);
+
+	}
+
+	public void resetSensorOffset() {
+
+		int samples = (int)KMap.GetKNumeric(KNumeric.INT_END_EFFECTOR_NUMBER_OF_PULSE_SAMPLES);
+
+		List<Integer> collectedSamples = new ArrayList<Integer>();
+
+		for (int i = 0; i < samples; i++) {
+			collectedSamples.add(endEffectorM.getSensorCollection().getPulseWidthPosition());
+		}
+
+		Collections.sort(collectedSamples);
+
+		//System.out.println("collectedSamples Pre-Trim: ");
+		//System.out.println(collectedSamples.toString());
+
+		// remove upper and lower bounds
+		collectedSamples.remove(0);
+		collectedSamples.remove(collectedSamples.size() - 1);
+
+		//System.out.println("collectedSamples Post-Trim: ");
+		//System.out.println(collectedSamples.toString());
+
+		// Determine average
+		int sumValue = 0;
+
+		for (Integer i : collectedSamples) {
+			sumValue += i;
+		}
+
+		int absolutePosition = sumValue / collectedSamples.size();
+
+		//System.out.println("absolutePosition: " + absolutePosition);
+
 		absolutePosition += KMap.GetKNumeric(KNumeric.INT_END_EFFECTOR_ENCODER_OFFSET);
 		absolutePosition &= 0xFFF;// Mask out overflows, keep bottom 12 bits
 		endEffectorM.setSelectedSensorPosition(absolutePosition, 0, 10);
 
-		SmartDashboard.putNumber("EEDesiredPos", 2048);
+		System.out.println("EndEffector Sensor Position Reset!");
 	}
 	
 	protected void setWristPercSpeedUnchecked(double _speed) {
