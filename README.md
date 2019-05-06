@@ -3,6 +3,9 @@ This is the repository for the robot code for the 2019 robot for Team 2137 TORC.
 
 Yay.
 
+Thanks to everybody who has helped out throught the creation of this repository this season.
+You've all proven pudding in my eyes.
+
 ## Repository Layout
 
 This repository is organized into different folders, based on the different project
