@@ -1,5 +1,10 @@
 package org.torc.robot2019.subsystems;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.CANifier.GeneralPin;
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -10,13 +15,11 @@ import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.program.KMap.KNumeric;
 import org.torc.robot2019.robot.InheritedPeriodic;
 import org.torc.robot2019.robot.Robot;
-import org.torc.robot2019.tools.CLCommand;
 import org.torc.robot2019.tools.MathExtra;
 import org.torc.robot2019.tools.MotorControllers;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class EndEffector extends Subsystem implements InheritedPeriodic {
@@ -27,7 +30,8 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 		 * with no need to use the pivot arm.
 		 */
 		Zero(0),
-		Travel(3235),
+		Travel(2077),
+		Climbing(1179),
 		;
 	
 		private int positionValue;
@@ -47,17 +51,22 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 	
 	public final static int END_EFFECTOR_MAX_POSITION = 
 		(int)KMap.GetKNumeric(KNumeric.INT_END_EFFECTOR_WRIST_MAX_POSITION);
+
+	public final static int END_EFFECTOR_MIN_POSITION = 
+		(int)KMap.GetKNumeric(KNumeric.INT_END_EFFECTOR_WRIST_MIN_POSITION);
 	
-	private int targetPosition = 0;
+	private int targetPosition = 2048;
 	
-	private boolean hasBeenHomed = false;
+	// private boolean hasBeenHomed = false;
 	
-	private EndEffector_Home endEffectorHomer;
+	// private EndEffector_Home endEffectorHomer;
 
 	private CANifier canifier;
 
-	private GeneralPin endstopPin;
-	private GeneralPin ballSensorPin;
+	private GeneralPin ballSensorPin1;
+	private GeneralPin ballSensorPin2;
+
+	private GeneralPin hatchPanelSensorPin;
 
 	private Solenoid pistonOpenS;
 	private Solenoid pistonClosedS;
@@ -65,7 +74,8 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 	private SolenoidStates solenoidState = SolenoidStates.Open;
 	
 	public EndEffector(int _endEffectorMID, int _rollerMID, int _PCMID, int _pistonOpenSID, 
-		int _pistonClosedSID, CANifier _canifier, GeneralPin _endstopPin, GeneralPin _ballSensorPin) {
+		int _pistonClosedSID, CANifier _canifier, GeneralPin _ballSensorPin1, GeneralPin _ballSensorPin2,
+		GeneralPin _hatchPanelSensorPin) {
 		// Add to periodic list
 		Robot.AddToPeriodic(this);
 		
@@ -77,11 +87,14 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 		
 		endEffectorM.configClosedLoopPeakOutput(0, 1);
 
-		endEffectorM.config_kF(0, 0);
-		endEffectorM.config_kP(0, KMap.GetKNumeric(KNumeric.DBL_END_EFFECTOR_KP));
-		endEffectorM.config_kI(0, KMap.GetKNumeric(KNumeric.DBL_END_EFFECTOR_KI));
+		endEffectorM.config_kF(0, 5.6);
+		endEffectorM.config_kP(0, 6.5);//KMap.GetKNumeric(KNumeric.DBL_END_EFFECTOR_KP));
+		endEffectorM.config_kI(0, 0);//KMap.GetKNumeric(KNumeric.DBL_END_EFFECTOR_KI));
 		endEffectorM.config_kD(0, 0);
-		endEffectorM.config_IntegralZone(0, (int)KMap.GetKNumeric(KNumeric.INT_END_EFFECTOR_KIZONE));
+		endEffectorM.config_IntegralZone(0, 0);//(int)KMap.GetKNumeric(KNumeric.INT_END_EFFECTOR_KIZONE));
+
+		endEffectorM.configMotionCruiseVelocity(200);
+		endEffectorM.configMotionAcceleration(200);
 
 		rollerM = new VictorSPX(_rollerMID);
 
@@ -90,39 +103,56 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 
 		canifier = _canifier;
 
-		endstopPin = _endstopPin;
-		ballSensorPin = _ballSensorPin;
+		// endstopPin = _endstopPin;
+		ballSensorPin1 = _ballSensorPin1;
+		ballSensorPin2 = _ballSensorPin2;
+
+		hatchPanelSensorPin = _hatchPanelSensorPin;
+
+		resetSensorOffset();
+
+		SmartDashboard.putNumber("EEDesiredPos", 2048);
+
 	}
-	
-	public void homeEndEffector() {
-		if (hasBeenHomed) {
-			//deHomeEndEffector();
-			System.out.println("End effector already homed; Not re-homing...");
-			return;
+
+	public void resetSensorOffset() {
+
+		int samples = (int)KMap.GetKNumeric(KNumeric.INT_END_EFFECTOR_NUMBER_OF_PULSE_SAMPLES);
+
+		List<Integer> collectedSamples = new ArrayList<Integer>();
+
+		for (int i = 0; i < samples; i++) {
+			collectedSamples.add(endEffectorM.getSensorCollection().getPulseWidthPosition());
 		}
-		endEffectorHomer = new EndEffector_Home(this);
-		endEffectorHomer.start();
-	}
-	
-	/**
-	 * Sets the end effector's state to "unHomed", requiring 
-	 * another homing to work again.
-	 */
-	/*
-	public void deHomeEndEffector() {
-		if (endEffectorHomer != null && endEffectorHomer.isRunning()) {
-			endEffectorHomer.cancel();
-			endEffectorHomer.free();
-			endEffectorHomer = null;
+
+		Collections.sort(collectedSamples);
+
+		//System.out.println("collectedSamples Pre-Trim: ");
+		//System.out.println(collectedSamples.toString());
+
+		// remove upper and lower bounds
+		collectedSamples.remove(0);
+		collectedSamples.remove(collectedSamples.size() - 1);
+
+		//System.out.println("collectedSamples Post-Trim: ");
+		//System.out.println(collectedSamples.toString());
+
+		// Determine average
+		int sumValue = 0;
+
+		for (Integer i : collectedSamples) {
+			sumValue += i;
 		}
-		hasBeenHomed = false;
-		targetPosition = 0;
-		System.out.println("EndEffector De-Homed!!");
-	}
-	*/
-	
-	public boolean getHomed() {
-		return hasBeenHomed;
+
+		int absolutePosition = sumValue / collectedSamples.size();
+
+		//System.out.println("absolutePosition: " + absolutePosition);
+
+		absolutePosition += KMap.GetKNumeric(KNumeric.INT_END_EFFECTOR_ENCODER_OFFSET);
+		absolutePosition &= 0xFFF;// Mask out overflows, keep bottom 12 bits
+		endEffectorM.setSelectedSensorPosition(absolutePosition, 0, 10);
+
+		System.out.println("EndEffector Sensor Position Reset!");
 	}
 	
 	protected void setWristPercSpeedUnchecked(double _speed) {
@@ -130,10 +160,6 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 	}
 
 	public void setWristPercSpeed(double _speed) {
-		if (endEffectorHomer != null && endEffectorHomer.isRunning()) {
-			System.out.println("EndEffector currently homing, cannot move!");
-			return;
-		}
 		setWristPercSpeedUnchecked(_speed);
 	}
 
@@ -146,62 +172,40 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 	}
 
 	public void setPosition(int _position) {
-		if (!hasBeenHomed) {
-			hasNotHomedAlert();
-			return;
-		}
-		targetPosition = MathExtra.clamp(_position, 0, END_EFFECTOR_MAX_POSITION);
-		endEffectorM.set(ControlMode.Position, targetPosition);
+		targetPosition = MathExtra.clamp(_position, END_EFFECTOR_MIN_POSITION, END_EFFECTOR_MAX_POSITION);
+		endEffectorM.set(ControlMode.MotionMagic, targetPosition);
 	}
 
 	public void jogPosition(int positionInc) {
-		if (!hasBeenHomed) {
-			hasNotHomedAlert();
-			return;
-		}
-		/*
-		elevatorTargetPosition += positionInc;
-		elevatorTargetPosition = MathExtra.clamp(elevatorTargetPosition, 0, ELEVATOR_MAX_POSITION);
-		*/
 		setPosition(targetPosition += positionInc);
 	}
-	
-	protected void zeroEncoder() {
-		endEffectorM.setSelectedSensorPosition(0);
-	}
 
-	protected void maxEncoder() {
-		endEffectorM.setSelectedSensorPosition((int)KMap.GetKNumeric(
-			KNumeric.INT_END_EFFECTOR_WRIST_MAX_POSITION));
-	}
-	
 	public void printEncoder() {
-		//System.out.println(elevator.getSelectedSensorPosition(0));
 		SmartDashboard.putNumber("EndEffectorEncoder", endEffectorM.getSelectedSensorPosition());
 	}
 	
 	public int getEncoder() {
 		return endEffectorM.getSelectedSensorPosition();
 	}
-	
-	public boolean getWristEndstop() {
-		return !canifier.getGeneralInput(endstopPin);
-	}
 
 	public boolean getBallSensor() {
-		return !canifier.getGeneralInput(ballSensorPin);
+		return !canifier.getGeneralInput(ballSensorPin1) || !canifier.getGeneralInput(ballSensorPin2);
+	}
+
+	public boolean getHatchPanelSensor() {
+		return !canifier.getGeneralInput(hatchPanelSensorPin);
 	}
 
 	public void setSolenoid(SolenoidStates _state) {
 		solenoidState = _state; // Update the classes' current solenoid state
 		switch (_state) {
 			case Open:
-				pistonOpenS.set(true);
-				pistonClosedS.set(false);
-				break;
-			case Closed:
 				pistonOpenS.set(false);
 				pistonClosedS.set(true);
+				break;
+			case Closed:
+				pistonOpenS.set(true);
+				pistonClosedS.set(false);
 				break;
 		}
 		System.out.println("Solenoids are being set!");
@@ -225,10 +229,6 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 	public SolenoidStates getSolenoid() {
 		return solenoidState;
 	}
-	
-	private static void hasNotHomedAlert() {
-		System.out.println("Cannot move EndEffector; has not homed!!");
-	}
 
 	@Override
 	protected void initDefaultCommand() {
@@ -236,89 +236,25 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 	
 	@Override
 	public void Periodic() {
-		// Check if homer has homed
-		if (!hasBeenHomed && endEffectorHomer != null && endEffectorHomer.isFinished()) {
-			System.out.println("EndEffector Homed!!");
-			endEffectorHomer.free();
-			endEffectorHomer = null;
-			hasBeenHomed = true;
-			setPosition(6000);
-		}
 
 		// Print Encoders
 		printEncoder();
-		
+
 		SmartDashboard.putNumber("EndEffectorError", targetPosition - getEncoder());
 		SmartDashboard.putNumber("EndEffectorEncoder", getEncoder());
+		SmartDashboard.putNumber("EndEffectorRawEncoder", endEffectorM.getSensorCollection().getPulseWidthPosition());
+
 		SmartDashboard.putNumber("EndEffectorTarget", targetPosition);
-		//System.out.println("ElevatorEncoder " + endEffectorM.getSelectedSensorPosition(0));
-		SmartDashboard.putBoolean("WristEndstop", getWristEndstop());
+
 		SmartDashboard.putBoolean("BallSensor", getBallSensor());
-		
+
+		SmartDashboard.putBoolean("HatchPanelSensor", getHatchPanelSensor());
+
+		SmartDashboard.putString("SolenoidState", getSolenoid().toString());
+
 		SmartDashboard.putNumber("EndEffectorVel", endEffectorM.getSelectedSensorVelocity(0));
-		//System.out.println("ElevatorVel " + endEffectorM.getSelectedSensorVelocity(0));
-	}
-	
-}
-class EndEffector_Home extends CLCommand {
-	
-	public static enum HomingStates { firstMoveDown, secondMoveUp }
-	
-	/**
-	 * The calling Subsystem of the command.
-	 */
-	EndEffector endEffectorSubsystem; 
-	
-	HomingStates homingState = HomingStates.firstMoveDown;
-	
-	double firstMoveDownPerc = 0.3;
-	double secondMoveUpPerc = 0.3;
-	
-	public EndEffector_Home(EndEffector _endEffector) {
-		// Use requires() here to declare subsystem dependencies
-		endEffectorSubsystem = _endEffector;
-		requires(endEffectorSubsystem);
-	}
 
-	// Called just before this Command runs the first time
-	@Override
-	protected void initialize() {
-		System.out.println("EndEffector_Home Init");
-	}
-
-	// Called repeatedly when this Command is scheduled to run
-	@Override
-	protected void execute() {
-		switch (homingState) {
-			case firstMoveDown:
-				endEffectorSubsystem.setWristPercSpeedUnchecked(firstMoveDownPerc);
-				if (endEffectorSubsystem.getWristEndstop()) {
-					System.out.println("EndEffector: firstMoveDown Done!");
-					homingState = HomingStates.secondMoveUp;
-				}
-				break;
-			case secondMoveUp:
-				endEffectorSubsystem.setWristPercSpeedUnchecked(-secondMoveUpPerc);
-				if (!endEffectorSubsystem.getWristEndstop()) {
-					System.out.println("EndEffector: secondMoveUp Done!");
-					endEffectorSubsystem.maxEncoder();
-					endEffectorSubsystem.setWristPercSpeedUnchecked(0);
-					CLCommandDone = true;
-				}
-				break;
-		}
 		
 	}
-
-	// Called once after isFinished returns true
-	@Override
-	protected void end() {
-		
-	}
-
-	// Called when another command which requires one or more of the same
-	// subsystems is scheduled to run
-	@Override
-	protected void interrupted() {
-	}
+	
 }

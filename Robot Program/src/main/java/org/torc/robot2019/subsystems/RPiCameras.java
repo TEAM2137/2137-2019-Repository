@@ -7,6 +7,9 @@
 
 package org.torc.robot2019.subsystems;
 
+import org.torc.robot2019.robot.InheritedPeriodic;
+import org.torc.robot2019.robot.Robot;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -21,13 +24,25 @@ public class RPiCameras extends Subsystem {
     kFront, kRear;
   }
   
-  private static NetworkTableInstance NtInstance = NetworkTableInstance.getDefault();
+  private static RPiCameras SingleInstance;
 
-  private static NetworkTable NtTable = NtInstance.getTable("dataTable");
+  private NetworkTableInstance NtInstance = NetworkTableInstance.getDefault();
 
-  private static NetworkTableEntry NtCameraSelect = NtTable.getEntry("SelectedCamera");
+  private NetworkTable NtTable = NtInstance.getTable("dataTable");
 
-  public static void setSelectedCamera(CameraSelect _cameraSelect) {
+  private NetworkTableEntry NtCameraSelect = NtTable.getEntry("SelectedCamera");
+
+  private RPiCameras() {
+  }
+
+  public static RPiCameras GetInstance() {
+    if (SingleInstance == null) {
+      SingleInstance = new RPiCameras();
+    }
+    return SingleInstance;
+  }
+
+  public void setSelectedCamera(CameraSelect _cameraSelect) {
     switch(_cameraSelect) {
       case kFront:
         NtCameraSelect.setString("front");
@@ -38,7 +53,7 @@ public class RPiCameras extends Subsystem {
     }
   }
 
-  public static CameraSelect getSelectedCamera() {
+  public CameraSelect getSelectedCamera() {
     if (NtCameraSelect.getString("front").toLowerCase().contains("rear")) {
       return CameraSelect.kRear;
     }
@@ -50,4 +65,5 @@ public class RPiCameras extends Subsystem {
   @Override
   public void initDefaultCommand() {
   }
+
 }

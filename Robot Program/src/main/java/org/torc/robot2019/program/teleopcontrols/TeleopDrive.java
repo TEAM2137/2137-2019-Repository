@@ -5,12 +5,14 @@ import com.ctre.phoenix.CANifier.GeneralPin;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import org.torc.robot2019.subsystems.ElevatorArmManager;
+import org.torc.robot2019.commands.ControllerRumble;
 import org.torc.robot2019.commands.GPPickup;
 import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.program.RobotMap;
 import org.torc.robot2019.program.TORCControls;
 import org.torc.robot2019.program.KMap.KNumeric;
 import org.torc.robot2019.program.TORCControls.ControllerInput;
+import org.torc.robot2019.program.TORCControls.Controllers;
 import org.torc.robot2019.program.TORCControls.InputState;
 import org.torc.robot2019.subsystems.BasicDriveTrain;
 import org.torc.robot2019.subsystems.Climber;
@@ -20,13 +22,13 @@ import org.torc.robot2019.subsystems.Elevator.ElevatorPositions;
 import org.torc.robot2019.subsystems.EndEffector.EndEffectorPositions;
 import org.torc.robot2019.subsystems.EndEffector.SolenoidStates;
 import org.torc.robot2019.subsystems.PivotArm;
-import org.torc.robot2019.subsystems.RPiCameras;
 import org.torc.robot2019.subsystems.PivotArm.PivotArmPositions;
 import org.torc.robot2019.subsystems.PivotArm.PivotArmSides;
-import org.torc.robot2019.subsystems.RPiCameras.CameraSelect;
 import org.torc.robot2019.tools.CLCommand;
+import org.torc.robot2019.tools.LimelightControl;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
 import org.torc.robot2019.tools.MathExtra;
+import org.torc.robot2019.tools.LimelightControl.LightMode;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.GPeiceTarget;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.GamePositions;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.RobotSides;
@@ -62,10 +64,6 @@ public class TeleopDrive extends CLCommand {
 
     private RobotAutoLevel autoLevelCommand;
 
-    private GenericHID driverController;
-
-    private GenericHID operatorController;
-
     /** Controller inputs for driveline speeds. (0 = left, 1 = right) */
     private double[] driveInput = {0, 0};
     /** Controller inputs for mantis wheel speeds. (0 = left, 1 = right) */
@@ -81,10 +79,7 @@ public class TeleopDrive extends CLCommand {
 
     private double lastRollerControlVal = 0;
 
-    private int cameraTimerFront = 0;
-    private int cameraTimerRear = 0;
-
-    private final int cameraTimerMax = 500 / 20;
+    private boolean lastHatchPanelSensorVal;
 
     public TeleopDrive(BasicDriveTrain _driveTrain, GamePositionManager _gpManager,
          PivotArm _pivotArm, Climber _climber, Elevator _elevator, EndEffector _endEffector, 
@@ -109,9 +104,7 @@ public class TeleopDrive extends CLCommand {
         requires(driveTrain);
         requires(pivotArm);
 
-        driverController = TORCControls.GetDriverController();
-
-        operatorController = TORCControls.GetOperatorController();
+        lastHatchPanelSensorVal = endEffector.getHatchPanelSensor();
     }
     // Called just before this Command runs the first time
     @Override
@@ -131,6 +124,8 @@ public class TeleopDrive extends CLCommand {
         pivotArmElevatorControl();
 
         endEffectorControl();
+
+        autoEndEffector();
         
     }
 
@@ -140,7 +135,7 @@ public class TeleopDrive extends CLCommand {
         driveInput[1] = MathExtra.applyDeadband(TORCControls.GetInput(ControllerInput.A_DriveRight), 0.2);
         
         if (TORCControls.GetInput(ControllerInput.B_DivideDriveTrain) >= 0.5) {
-            double multiplier = 0.75;//KMap.GetKNumeric(KNumeric.DBL_TELEOP_DRIVE_SLOW_MULTIPLIER);
+            double multiplier = 0.50;//KMap.GetKNumeric(KNumeric.DBL_TELEOP_DRIVE_SLOW_MULTIPLIER);
             driveInput[0] *= multiplier;
             driveInput[1] *= multiplier;
         }
@@ -152,48 +147,27 @@ public class TeleopDrive extends CLCommand {
 
         // Set drive mode based on if mantis wheels should move or not
         if (mantisWheelInput[0] > 0.2 || mantisWheelInput[1] > 0.2) {
-            RobotMap.S_DriveTrain.setPercSpeed(-mantisWheelInput[0] * 0.5, mantisWheelInput[1] * 0.5);
+            RobotMap.S_DriveTrain.setPercSpeed(-mantisWheelInput[0] * 0.5, -mantisWheelInput[1] * 0.5);
         }
+        // Drive-Controller Drive
         else {
             // Drive the robot
-            haloDrive(driveInput[0], -driveInput[1], false);
-        }
-        // Camera select
-        double driveInputSum = driveInput[0] + driveInput[1];
-        // Driving forward
-        
-        if (driveInputSum < 0) {
-            cameraTimerFront++;
-        }
-        else {
-            cameraTimerFront = 0;
-        }
-        // Driving reverse
-        if (driveInputSum > 0) {
-            cameraTimerRear++;
-        }
-        else {
-            cameraTimerRear = 0;
-        }
+            if (TORCControls.GetInput(ControllerInput.B_EnableVisionCorrection) >= 1) {
+                // Turn light on
+                LimelightControl.setLedMode(LightMode.eOn);
 
-        if (cameraTimerFront >= cameraTimerMax) {
-            cameraTimerFront = 0;
-            RPiCameras.setSelectedCamera(CameraSelect.kFront);
-        }
-        else if (cameraTimerRear >= cameraTimerMax) {
-            cameraTimerRear = 0;
-            RPiCameras.setSelectedCamera(CameraSelect.kRear);
-        }
-        
+                double forwardSpeed = MathExtra.clamp(driveInput[0], -0.25, 1);
 
-        /*
-        if (driveInputSum > 0) {
-            RPiCameras.setSelectedCamera(CameraSelect.kFront);
+                double offset = RobotMap.S_VisionCorrector.getOffset();
+                RobotMap.S_DriveTrain.setPercSpeed(forwardSpeed - offset, forwardSpeed + offset);
+            }
+            else {
+                // Turn light off
+                LimelightControl.setLedMode(LightMode.eOff);
+                
+                haloDrive(driveInput[0], -driveInput[1], false);
+            }
         }
-        else if (driveInputSum < 0) {
-            RPiCameras.setSelectedCamera(CameraSelect.kRear);
-        }
-        */
     }
 
     private void climbControl() {
@@ -239,16 +213,20 @@ public class TeleopDrive extends CLCommand {
 
         // CG Pickup command
         
-        if (driverController.getRawButton(1)) {//(TORCControls.GetInput(ControllerInput.B_PickupCG, InputState.Pressed) >= 1) {
+        // Cargo Front Pickup
+        if (TORCControls.GetInput(ControllerInput.B_FrontPickupCG, InputState.Pressed) >= 1) {
+
+            System.out.println("Front Pickup Command Pressed!");
+            
             pickupCommandInterrupt();
             
             pickupCommand = new GPPickup(gpManager, pivotArm, elevator, endEffector, RobotSides.kFront);
             pickupCommand.start();
-            
-            //targetedPosition = GamePositions.CargoFloorPickup;
-            //targetedGPeice = GPeiceTarget.kCargo;
         }
-        else if (driverController.getRawButton(2)) {
+        else if (TORCControls.GetInput(ControllerInput.B_RearPickupCG, InputState.Pressed) >= 1) {
+
+            System.out.println("Rear Pickup Command Pressed!");
+
             pickupCommandInterrupt();
             
             pickupCommand = new GPPickup(gpManager, pivotArm, elevator, endEffector, RobotSides.kRear);
@@ -268,11 +246,24 @@ public class TeleopDrive extends CLCommand {
             elevator.setPosition(ElevatorPositions.Retracted);
             endEffector.setPosition(EndEffectorPositions.Travel);
         }
+
+        // After Climb-up position
+        if (TORCControls.GetInput(ControllerInput.B_PivotTravel, InputState.Pressed) >= 1) {
+            // TODO: Make this a variable or something. Corgi.
+            /*
+            elevArmManager.setPosition(2052, 0);
+            
+            */
+            pivotArm.setPosition(PivotArmPositions.Up);
+            elevator.setPosition(ElevatorPositions.Retracted);
+            endEffector.setPosition(3210);
+        }
+
         // Up-for-climing position
         if (TORCControls.GetInput(ControllerInput.B_PivotClimbing, InputState.Pressed) >= 1) {
             pivotArm.setPosition(PivotArmPositions.Climbing);
             elevator.setPosition(ElevatorPositions.Retracted);
-            endEffector.setPosition(0);
+            endEffector.setPosition(EndEffectorPositions.Climbing);
         }
 
         // Invert gamepeice target
@@ -336,10 +327,10 @@ public class TeleopDrive extends CLCommand {
     private void endEffectorControl() {
         // Manual Wrist Control
         double endEffectorControl = MathExtra.applyDeadband(
-            -TORCControls.GetInput(ControllerInput.A_WristJog), 0.2);
+            TORCControls.GetInput(ControllerInput.A_WristJog), 0.2);
         if (endEffectorControl != 0) {
             // Determine control position based on current pivotArm side
-            if (pivotArm.getPivotArmSide() == PivotArmSides.kFront) {
+            if (pivotArm.getPivotArmSide() == PivotArmSides.kRear) {
                 endEffectorControl *= -1;
             }
             endEffector.jogPosition((int)(endEffectorControl * WRIST_JOG_MULTIPLIER));
@@ -357,18 +348,32 @@ public class TeleopDrive extends CLCommand {
             TORCControls.GetInput(ControllerInput.B_RollersInTake);
         if (rollerControl != 0) {
             pickupCommandInterrupt();
-            endEffector.setRollerPercSpeed(rollerControl);
-        }
-        else {
-            if ((pickupCommand == null || !pickupCommand.isRunning()) && 
-                lastRollerControlVal != 0) {
-                endEffector.setRollerPercSpeed(0);
-
-            }
+            endEffector.setRollerPercSpeed(rollerControl * 0.75);
+        } else {
+            endEffector.setRollerPercSpeed(endEffector.getBallSensor() ? -0.2 : 0);
         }
 
         lastRollerControlVal = rollerControl;
 
+    }
+
+    public void autoEndEffector() {
+        if (endEffector.getSolenoid() == SolenoidStates.Closed) {
+            // TODO: Determine if the not needs to be flipped
+            if (!endEffector.getHatchPanelSensor() && lastHatchPanelSensorVal) {
+                // Set Solenoid to be open
+                endEffector.setSolenoid(SolenoidStates.Open);
+                // Rumble driver & operator controller at half for half a second.
+                /*
+                new ControllerRumble(TORCControls.GetDriverController(), 0.5, 0.5).start();
+                new ControllerRumble(TORCControls.GetOperatorController(), 0.5, 0.5).start();
+                */
+                TORCControls.SetControllerRumbleTime(Controllers.kDriver, 0.5, 0.5);
+                TORCControls.SetControllerRumbleTime(Controllers.kOperator, 0.5, 0.5);
+            }
+        }
+
+        lastHatchPanelSensorVal = endEffector.getHatchPanelSensor();
     }
 
     // Called once after isFinished returns true
@@ -383,10 +388,13 @@ public class TeleopDrive extends CLCommand {
     protected void interrupted() {
     }
     
-    public void haloDrive(double _wheel, double _throttle, boolean _squared) {
+    public void haloDrive(double _throttle, double _wheel, boolean _squared) {
 		
 		double driverThrottle = MathExtra.clamp(_throttle, -1, 1);
-		double driverWheel = MathExtra.clamp(_wheel, -1, 1);
+        double driverWheel = MathExtra.clamp(_wheel, -1, 1);
+        
+        SmartDashboard.putNumber("Power", driverThrottle);
+        SmartDashboard.putNumber("Turn", driverWheel);
 		
 		if (_squared) {
 			driverThrottle = (Math.pow(driverThrottle, 2) * (driverThrottle<0?-1:1));
@@ -398,13 +406,14 @@ public class TeleopDrive extends CLCommand {
 
 		// Halo Driver Control Algorithm
 		if (Math.abs(driverThrottle) < QUICK_TURN_CONSTANT) {
-			rightMotorOutput = driverThrottle - driverWheel * QUICK_TURN_SENSITIVITY;
-			leftMotorOutput = driverThrottle + driverWheel * QUICK_TURN_SENSITIVITY;
+			rightMotorOutput = driverThrottle - (driverWheel * QUICK_TURN_SENSITIVITY);
+			leftMotorOutput = driverThrottle + (driverWheel * QUICK_TURN_SENSITIVITY);
 		} else {
-			rightMotorOutput = driverThrottle - Math.abs(driverThrottle) * driverWheel * SPEED_TURN_SENSITIVITY;
-			leftMotorOutput = driverThrottle + Math.abs(driverThrottle) * driverWheel * SPEED_TURN_SENSITIVITY;
+			rightMotorOutput = driverThrottle - (Math.abs(driverThrottle) * driverWheel * SPEED_TURN_SENSITIVITY);
+			leftMotorOutput = driverThrottle + (Math.abs(driverThrottle) * driverWheel * SPEED_TURN_SENSITIVITY);
 		}
         // Set drivetrain speed to MotorOutput values
+        //driveTrain.setVelSpeed(leftMotorOutput, rightMotorOutput);
         driveTrain.setPercSpeed(leftMotorOutput, rightMotorOutput);
     }
 
@@ -414,7 +423,7 @@ public class TeleopDrive extends CLCommand {
             pickupCommand.cancel();
             pickupCommand = null;
         }
-        endEffector.setRollerPercSpeed(0);
+        // endEffector.setRollerPercSpeed(0);
     }
 
     private void writeTargetedGPeiceDashboard() {

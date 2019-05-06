@@ -14,7 +14,7 @@ import org.torc.robot2019.tools.CLCommand;
 public class GPPickup extends CLCommand {
 
   public static enum PickupStates {
-    MovingIntoPosition, WaitingForMove, WaitingForGP, MovingToFinalPosition
+    MovingIntoPosition, WaitingForGP, MovingToFinalPosition
   }
 
   private GamePositionManager gPosManager;
@@ -50,7 +50,7 @@ public class GPPickup extends CLCommand {
 
   @Override
   protected void initialize() {
-
+      currentState = PickupStates.MovingIntoPosition;
   }
 
   @Override
@@ -65,43 +65,24 @@ public class GPPickup extends CLCommand {
         System.out.println("GPPPickup: Starting to move into position...");
 
         gPosManager.setPosition(GamePositions.CargoFloorPickup, robotSide, GPeiceTarget.kCargo);
-        currentState = PickupStates.WaitingForMove;
 
-        break;
-      case WaitingForMove:
-        System.out.println("GPPPickup: Waiting for move...");
-
-        System.out.println("elevatorIsAtTarget: " + elevator.isAtTarget());
-        System.out.println("pivotArmIsAtTarget: " + pivotArm.isAtTarget());
-
-        if (elevator.isAtTarget() && pivotArm.isAtTarget()) {
-          currentState = PickupStates.WaitingForGP;
-        }
+        currentState = PickupStates.WaitingForGP;
 
         break;
       case WaitingForGP:
-      System.out.println("GPPPickup: Waiting for GamePeice...");
+
+        System.out.println("GPPPickup: Waiting for GamePeice...");
 
         // Start Rollers intake
-        endEffector.setRollerPercSpeed(1);
-        // Open End Effector
+        endEffector.setRollerPercSpeed(-1);
+        // Retract Hatch Intake
         endEffector.setSolenoid(SolenoidStates.Open);
-
-        /*
-        if (endEffector.getBallSensor()) {
-          ballSenseCounter++;
-        }
-        else {
-          ballSenseCounter = 0;
-        }
-        */
-
-        //if (ballSenseCounter > BALL_SENSE_COUNTER_MAX) {
+        
         if (endEffector.getBallSensor()) {
           // Keep ball in w/ Rollers
-          endEffector.setRollerPercSpeed(0.1);
+          endEffector.setRollerPercSpeed(-0.2);
           // Close solenoid
-          endEffector.setSolenoid(SolenoidStates.Closed);
+          // endEffector.setSolenoid(SolenoidStates.Closed);
           currentState = PickupStates.MovingToFinalPosition;
         }
 
@@ -139,7 +120,6 @@ public class GPPickup extends CLCommand {
 
   @Override
   protected void interrupted() {
-
   }
 
   public void setDirectInterrupt(boolean _value) {

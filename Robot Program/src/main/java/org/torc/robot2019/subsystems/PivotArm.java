@@ -28,8 +28,8 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
      * Used for when robot should be driving around,
      * with no need to use the pivot arm.
      */
-    Up(1900),
-    Climbing(1400),
+    Up(2052),
+    Climbing(1550),
     // Rear-side positions
     PickupR(824),
     Level1R(1024),
@@ -83,7 +83,7 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
     MotorControllers.TalonSRXConfig(m_armPivot);
 
     // Limit ArmPivot to a max current
-    m_armPivot.configContinuousCurrentLimit(10);
+    m_armPivot.configContinuousCurrentLimit(30);
 
     // Limit maximum output speed
     double maxOutputForward = 

@@ -3,6 +3,7 @@ package org.torc.robot2019.program;
 import com.ctre.phoenix.CANifier;
 
 import org.torc.robot2019.subsystems.ElevatorArmManager;
+import org.torc.robot2019.commands.VisionCorrector;
 import org.torc.robot2019.subsystems.BasicDriveTrain;
 import org.torc.robot2019.subsystems.Climber;
 import org.torc.robot2019.subsystems.Elevator;
@@ -10,6 +11,8 @@ import org.torc.robot2019.subsystems.EndEffector;
 import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.subsystems.Pneumatics;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
+
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into
@@ -19,6 +22,8 @@ import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
  */
 public class RobotMap {
 	
+	public static VisionCorrector S_VisionCorrector;
+
 	public static Pneumatics S_Pneumatics;
 
 	public static BasicDriveTrain S_DriveTrain;

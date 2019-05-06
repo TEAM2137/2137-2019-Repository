@@ -73,14 +73,17 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 
 		MotorControllers.TalonSRXConfig(elevatorM);
 
-		elevatorM.configContinuousCurrentLimit(5);
+		elevatorM.configContinuousCurrentLimit(20);
 
-		elevatorM.config_kF(0, 0);
+		elevatorM.configMotionCruiseVelocity(850);
+		elevatorM.configMotionAcceleration(1875);
+
+		elevatorM.config_kF(0, 1.27);
 		elevatorM.config_kP(0, KMap.GetKNumeric(KNumeric.DBL_ELEVATOR_KP));
 		elevatorM.config_kI(0, 0);
 		elevatorM.config_kD(0, 0);
 		elevatorM.config_IntegralZone(0, 0);
-		
+
 		elevatorEndstop = new DigitalInput(_endstopID);
 
 		pivotArm = _pivotArm;
@@ -148,7 +151,7 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 			return;
 		}
 		elevatorTargetPosition = MathExtra.clamp(_position, 0, ELEVATOR_MAX_POSITION);
-		elevatorM.set(ControlMode.Position, elevatorTargetPosition);
+		elevatorM.set(ControlMode.MotionMagic, elevatorTargetPosition);
 	}
 
 	public int getTargetPosition() {

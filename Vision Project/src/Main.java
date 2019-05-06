@@ -32,6 +32,7 @@ import edu.wpi.first.vision.VisionThread;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Rect;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.Videoio;
@@ -259,60 +260,22 @@ public final class Main {
 	    	ntinst.startServer();
 	    } else { // If client defined in config json
 	      System.out.println("Setting up NetworkTables client for team " + team);
-	      ntinst.startClientTeam(team);
+	      String teamNum = Integer.toString(team);
+	      System.out.println("Team String: " + teamNum);
+	      ntinst.startClient(String.format("10.%s.%s.2", teamNum.substring(0, 1), teamNum.substring(1, 2)));//startClientTeam(team);
 	    }
     }
     
     
     // Assign networkTable
     NetworkTable table = ntinst.getTable("dataTable");
-    NetworkTableEntry matNum = table.getEntry("MatAmount");
-    NetworkTableEntry rectNum = table.getEntry("RectAmount");
-    NetworkTableEntry rectList = table.getEntry("RectList");
-    NetworkTableEntry byteArrLength = table.getEntry("ByteArrLength");
-    NetworkTableEntry cameraResolution = table.getEntry("VisionResolution");
     NetworkTableEntry selectedCamera = table.getEntry("SelectedCamera");
-    
-    // Start Seperate procesing threads
-    RectFinder = new T_RectFinder();
-    RectFinder.start();
-    
-    RectSerializeSend = new T_RectSerializeSend(rectList);
-    RectSerializeSend.start();
-    
-    /*
-    ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-    ObjectOutputStream serializer = new ObjectOutputStream(byteStream);
-    */
     
     System.out.println("WHAT IS UP PEEEEEEEEEEIIIIIIMMMMMMPPPPPSSSSS");
     
-    // start cameras
-    /*
-    List<VideoSource> cameras = new ArrayList<>();
-    for (CameraConfig cameraConfig : cameraConfigs) {
-      cameras.add(startCamera(cameraConfig));
-    }
-
-    // start image processing on camera 0 if present
-    if (cameras.size() >= 1) {
-      VideoMode cameraVideoMode = cameras.get(0).getVideoMode();
-      cameraResolution.setNumberArray(new Number[]{cameraVideoMode.width, cameraVideoMode.height});
-      VisionThread visionThread = new VisionThread(cameras.get(0),
-              new GripPipelinePredecessor(), pipeline -> {
-            	  ArrayList<MatOfPoint> output = pipeline.filterContoursOutput(); // Get filtered contours from pipeline
-            	  //System.out.println("Filtered Rect Amount: " + output.size());
-            	  if (output.size() > 0) {
-            		  RectFinder.addMatData(output); // Add data to the multithreaded Queue to be passed around
-            	  }
-              });
-      
-      visionThread.start();
-    }
-    */
     CameraCapture[] cameraArray = new CameraCapture[2];
     
-    CvSource outputStream = CameraServer.getInstance().putVideo("RobotCamera", 160, 120);
+    CvSource outputStream = CameraServer.getInstance().putVideo("RobotCamera", 640, 360);
     
     for (CameraConfig cameraConfig : cameraConfigs) {
     
@@ -343,7 +306,11 @@ public final class Main {
 		
 		// Send captured frames to CameraServer
 		cap.addNewFrameEvent((e) -> {
-			outputStream.putFrame(e);
+			if (!e.empty()) {
+				//Mat square = GetSquareImage(e, 156);
+				outputStream.putFrame(e);
+				//square.release();
+			}
 		});
 		
 		if (cameraConfig.name.toLowerCase().contains("front")) {
@@ -370,7 +337,11 @@ public final class Main {
     	}
     }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
     
+    // Triple to garuntee that it's placed in the NT
     selectedCamera.setString("front");
+    selectedCamera.setString("front");
+    selectedCamera.setString("front");
+    
     cameraArray[0].setCapturingFrames(true);
 	cameraArray[1].setCapturingFrames(false);
 

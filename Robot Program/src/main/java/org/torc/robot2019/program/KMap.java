@@ -42,10 +42,11 @@ public class KMap {
 
         // Elevator
         DBL_ELEVATOR_KP(10, 10),
-        INT_ELEVATOR_MAX_POSITION(14900, 18162),
+        // INT_ELEVATOR_MAX_POSITION(14900, 18162),
+        INT_ELEVATOR_MAX_POSITION(18666, 18666),
         INT_ELEVATOR_TICKS_PER_INCH(250, 250),
         DBL_ELEVATOR_MINIMUM_DISTANCE_FROM_FRAME_EDGE_INCHES(11, 11),
-        DBL_GRABBER_LENGTH_INCHES(19, 19),
+        DBL_GRABBER_LENGTH_INCHES(6, 6), //16?
         INT_ELEVATOR_JOG_ERROR_CUTOFF(2000, 2000),
         INT_ELEVATOR_RANGE_WITHIN_TARGET(10, 10),
         // Teleop Drive
@@ -68,13 +69,16 @@ public class KMap {
         INT_PIVOT_ARM_RANGE_WITHIN_TARGET(20, 20),
         DBL_PIVOT_ARM_MINIMUM_HOLD_PERCENT(0.15, 0.15),
         // End Effector
-        DBL_END_EFFECTOR_KP(2, 2),
-        DBL_END_EFFECTOR_KI(0.01, 0.01),
-        INT_END_EFFECTOR_KIZONE(50, 50),
-        INT_END_EFFECTOR_WRIST_MAX_POSITION(5545, 6000),//5545),
-        DBL_WRIST_JOG_CONTROL_MULTIPLIER(30, 30),
+        DBL_END_EFFECTOR_KP(0, 0),
+        DBL_END_EFFECTOR_KI(0, 0),
+        INT_END_EFFECTOR_KIZONE(0, 0),
+        INT_END_EFFECTOR_WRIST_MIN_POSITION(1179, 1159),
+        INT_END_EFFECTOR_WRIST_MAX_POSITION(3325, 3325),
+        DBL_WRIST_JOG_CONTROL_MULTIPLIER(15, 15),
+        INT_END_EFFECTOR_ENCODER_OFFSET(-1369, -5484),
+        INT_END_EFFECTOR_NUMBER_OF_PULSE_SAMPLES(10, 10),
         // RobotVars
-        DBL_ROBOT_MAX_EXTEND_OUTSIDE_OF_FRAME_INCHES(30, 30)
+        DBL_ROBOT_MAX_EXTEND_OUTSIDE_OF_FRAME_INCHES(30, 30),
         ;
 
         double practiceValue;
@@ -126,8 +130,6 @@ public class KMap {
 		return GetInstance().CurrentRobotType;
     }
     
-    // The following is dirty, dirty code. Right now I can't figure out how to make it
-    // cleaner, so this is what you get right now.
     public static double GetKNumeric(KNumeric _constant) {
         RobotType CurrentRobotType = GetRobotType();
 

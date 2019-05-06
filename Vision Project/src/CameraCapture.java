@@ -26,6 +26,19 @@ public class CameraCapture {
 		}
 	};
 	
+	private Runnable CaptureCheck = new Runnable() {
+		@Override
+		public void run() {
+			while (startCameraInternal() == 1) {
+				try {
+					Thread.sleep(2000);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	};
+	
 	List<CCNewFrameEvent> ccNewFrameEventList = new ArrayList<CCNewFrameEvent>();
 	CCPipelineEvent ccPipelineEvent;
 	CCSetupParametersEvent ccSetupParametersEvent;
@@ -63,26 +76,43 @@ public class CameraCapture {
 	}
 	
 	public void startCamera() {
+		Thread t = new Thread(CaptureCheck);
+		t.start();
+	}
+	
+	/**
+	 * @return an integer as the state of the camera opening attempt:
+	 * 
+	 * <li>0: Successfully opened the camera</li>
+	 * <li>1: Videostream is not available</li>
+	 * <li>2: Capture is null</li>
+	 */
+	private int startCameraInternal() {
 		
 		if (capture == null) {
 			System.err.println("Cannot start camera, capture is null!!");
-			return;
+			return 2;
 		}
 		
 		// start the video capture
 		System.out.println("Opening cameraID: " + cameraDir);
 		//this.capture.open(cameraDir);
-		if (isWindows) {
-			try {
-				this.capture.open(Integer.parseInt(cameraDir));
+		if (!capture.isOpened()) {
+			if (isWindows) {
+				try {
+					this.capture.open(Integer.parseInt(cameraDir));
+				}
+				catch (Exception e) {
+					System.err.println("CameraCapture: Cannot parse int! Attempting directory connection...");
+					capture = new VideoCapture(cameraDir);
+				}
 			}
-			catch (Exception e) {
-				System.err.println("CameraCapture: Cannot parse int! Attempting directory connection...");
-				capture = new VideoCapture(cameraDir);
+			else {
+				this.capture.open(cameraDir);			
 			}
 		}
 		else {
-			this.capture.open(cameraDir);			
+			System.out.println("capture already opened!");
 		}
 		
 		// is the video stream available?
@@ -92,11 +122,12 @@ public class CameraCapture {
 			updateSetupParametersEvent(capture);
 			captureFrames = true;
 			startTimer();
+			return 0;
 		}
 		else {
-			System.out.println("Error with camera connection");
+			System.out.println("Error with camera connection, retrying...");
+			return 1;
 		}
-		
 	}
 	
 	public void setFPS(int _fps) {
