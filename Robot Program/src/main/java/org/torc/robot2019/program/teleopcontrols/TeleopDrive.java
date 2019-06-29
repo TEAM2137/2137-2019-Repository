@@ -81,6 +81,8 @@ public class TeleopDrive extends CLCommand {
 
     private boolean lastHatchPanelSensorVal;
 
+    private int currentLevel = 1;
+
     public TeleopDrive(BasicDriveTrain _driveTrain, GamePositionManager _gpManager,
          PivotArm _pivotArm, Climber _climber, Elevator _elevator, EndEffector _endEffector, 
          ElevatorArmManager _elevArmManager) {
@@ -155,6 +157,7 @@ public class TeleopDrive extends CLCommand {
             if (TORCControls.GetInput(ControllerInput.B_EnableVisionCorrection) >= 1) {
                 // Turn light on
                 LimelightControl.setLedMode(LightMode.eOn);
+                LimelightControl.setPipeline(currentLevel - 1);
 
                 double forwardSpeed = MathExtra.clamp(driveInput[0], -0.25, 1);
 
@@ -166,6 +169,9 @@ public class TeleopDrive extends CLCommand {
                 LimelightControl.setLedMode(LightMode.eOff);
                 
                 haloDrive(driveInput[0], -driveInput[1], false);
+            }
+            if (TORCControls.GetInput(ControllerInput.A_OverrideLEDs, InputState.Pressed) >= 1 ) {
+                LimelightControl.setLedMode(LightMode.eOn);
             }
         }
     }
@@ -287,12 +293,15 @@ public class TeleopDrive extends CLCommand {
         // Select targetedPosition
         if (TORCControls.GetInput(ControllerInput.B_PivotRocket1, InputState.Pressed) >= 1) {
             targetedPosition = GamePositions.RL1AndHatchPanelPickup;
+            currentLevel = 1;
         }
         else if (TORCControls.GetInput(ControllerInput.B_PivotRocket2, InputState.Pressed) >= 1) {
             targetedPosition = GamePositions.RocketLevel2;
+            currentLevel = 2;
         }
         else if (TORCControls.GetInput(ControllerInput.B_PivotRocket3, InputState.Pressed) >= 1) {
             targetedPosition = GamePositions.RocketLevel3;
+            currentLevel = 3;
         }
         else if (TORCControls.GetInput(ControllerInput.B_PivotShuttle, InputState.Pressed) >= 1) {
             targetedPosition = GamePositions.CargoShuttle;
