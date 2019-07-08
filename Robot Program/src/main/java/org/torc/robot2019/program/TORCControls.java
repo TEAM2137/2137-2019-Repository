@@ -91,7 +91,7 @@ public class TORCControls {
         /**Vision auto-correction enable*/ 
         B_EnableVisionCorrection(10, driverController, InputType.Button), // Right Stick 
 
-        A_OverrideLEDs(270, driverController, InputType.POV), //Left POV
+        A_OverrideLEDs(270, driverController, InputType.POV), //Left POV For vision calibration
 
         /**Front Camera select */
         B_SelectCameraFront(0, driverController, InputType.POV), // Up POV
