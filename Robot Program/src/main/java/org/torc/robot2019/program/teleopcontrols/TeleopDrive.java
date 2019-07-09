@@ -1,11 +1,8 @@
 package org.torc.robot2019.program.teleopcontrols;
 
-import com.ctre.phoenix.CANifier;
-import com.ctre.phoenix.CANifier.GeneralPin;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import org.torc.robot2019.subsystems.ElevatorArmManager;
-import org.torc.robot2019.commands.ControllerRumble;
 import org.torc.robot2019.commands.GPPickup;
 import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.program.RobotMap;
@@ -33,7 +30,6 @@ import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.GPe
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.GamePositions;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.RobotSides;
 
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TeleopDrive extends CLCommand {

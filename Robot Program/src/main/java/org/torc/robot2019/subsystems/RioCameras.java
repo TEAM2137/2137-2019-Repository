@@ -7,11 +7,8 @@
 
 package org.torc.robot2019.subsystems;
 
-import java.awt.Dimension;
-
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
 
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;

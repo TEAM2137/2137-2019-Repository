@@ -10,7 +10,7 @@ package org.torc.robot2019.subsystems;
 import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.program.KMap.KNumeric;
 import org.torc.robot2019.robot.InheritedPeriodic;
-import org.torc.robot2019.robot.Robot;
+import org.torc.robot2019.robot.MainRunTime;
 import org.torc.robot2019.subsystems.Elevator;
 import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.tools.CLCommand;
@@ -30,7 +30,7 @@ public class ElevatorArmManager extends Subsystem implements InheritedPeriodic  
 
   public ElevatorArmManager(PivotArm _pivotArm, Elevator _elevator) {
     // Add this class to periodic update
-    Robot.AddToPeriodic(this);
+    MainRunTime.AddToPeriodic(this);
 
     pivotArm = _pivotArm;
     elevator = _elevator;

@@ -3,7 +3,7 @@ package org.torc.robot2019.tools;
 import java.util.ArrayList;
 
 import org.torc.robot2019.robot.InheritedPeriodic;
-import org.torc.robot2019.robot.Robot;
+import org.torc.robot2019.robot.MainRunTime;
 
 
 /**
@@ -22,7 +22,7 @@ public class CommandList implements InheritedPeriodic {
 	private boolean started = false;
 	
 	public CommandList() {
-		Robot.AddToPeriodic(this);
+		MainRunTime.AddToPeriodic(this);
 		CommandLists.add(this);
 	}
 	

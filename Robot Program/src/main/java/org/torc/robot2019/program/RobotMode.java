@@ -15,16 +15,9 @@ import org.torc.robot2019.subsystems.EndEffector;
 import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.subsystems.Pneumatics;
 import org.torc.robot2019.subsystems.RPiCameras;
-import org.torc.robot2019.subsystems.RioCameras;
 import org.torc.robot2019.subsystems.RPiCameras.CameraSelect;
-//import org.torc.robot2019.subsystems.RioCameras.CameraSelect;
 import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
-import org.torc.robot2019.vision.VisionManager;
 
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //import org.torc.robot2019.robot.subsystems.DriveTrain;

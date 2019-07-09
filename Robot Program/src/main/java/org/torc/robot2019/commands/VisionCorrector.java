@@ -2,8 +2,6 @@ package org.torc.robot2019.commands;
 
 import java.util.ArrayList;
 
-import org.torc.robot2019.robot.InheritedPeriodic;
-import org.torc.robot2019.robot.Robot;
 import org.torc.robot2019.tools.CLCommand;
 import org.torc.robot2019.tools.LimelightControl;
 

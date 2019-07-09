@@ -3,7 +3,6 @@ package org.torc.robot2019.program;
 import org.torc.robot2019.commands.ControllerRumble;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 

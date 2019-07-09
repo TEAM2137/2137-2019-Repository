@@ -4,10 +4,9 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import org.torc.robot2019.program.KMap;
-import org.torc.robot2019.program.RobotMap;
 import org.torc.robot2019.program.KMap.KNumeric;
 import org.torc.robot2019.robot.InheritedPeriodic;
-import org.torc.robot2019.robot.Robot;
+import org.torc.robot2019.robot.MainRunTime;
 import org.torc.robot2019.tools.CLCommand;
 import org.torc.robot2019.tools.MathExtra;
 import org.torc.robot2019.tools.MotorControllers;
@@ -65,7 +64,7 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 	
 	public Elevator(int _elevatorMID, int _endstopID, PivotArm _pivotArm) {
 		// Add to periodic list
-		Robot.AddToPeriodic(this);
+		MainRunTime.AddToPeriodic(this);
 		
 		elevatorM = new TalonSRX(_elevatorMID);
 		// Invert motor phase
@@ -203,10 +202,6 @@ public class Elevator extends Subsystem implements InheritedPeriodic {
 	@Override
 	protected void initDefaultCommand() {
 	}
-	
-	private int previousElevTarget = 0;
-
-	private boolean lastLimited = false;
 
 	@Override
 	public void Periodic() {

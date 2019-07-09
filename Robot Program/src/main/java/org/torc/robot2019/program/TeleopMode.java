@@ -1,12 +1,7 @@
 package org.torc.robot2019.program;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import org.torc.robot2019.program.TORCControls.ControllerInput;
 import org.torc.robot2019.program.teleopcontrols.TeleopDrive;
 import org.torc.robot2019.subsystems.EndEffector.SolenoidStates;
-import org.torc.robot2019.tools.LimelightControl;
 
 public class TeleopMode {
 	

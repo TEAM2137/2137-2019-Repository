@@ -1,9 +1,5 @@
 package org.torc.robot2019.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
@@ -11,11 +7,8 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANPIDController;
 
-import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.robot.InheritedPeriodic;
-import org.torc.robot2019.robot.Robot;
-import org.torc.robot2019.tools.MathExtra;
-import org.torc.robot2019.tools.MotorControllers;
+import org.torc.robot2019.robot.MainRunTime;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -45,7 +38,7 @@ public class BasicDriveTrain extends Subsystem implements InheritedPeriodic {
     public BasicDriveTrain(int _leftMID, int _rightMID, int _leftS0ID, int _rightS0ID,
         int _leftS1ID, int _rightS1ID, int _pigeonID) {
         // "Subscribe" to inherited Periodic
-        Robot.AddToPeriodic(this);
+        MainRunTime.AddToPeriodic(this);
 
         leftMSpark = new CANSparkMax(_leftMID, MotorType.kBrushless);
         rightMSpark = new CANSparkMax(_rightMID, MotorType.kBrushless);

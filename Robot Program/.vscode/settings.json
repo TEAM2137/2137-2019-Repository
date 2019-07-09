@@ -8,8 +8,19 @@
     "**/.DS_Store": true,
     "bin/": true,
     ".classpath": true,
-    ".project": true
-  },
+    ".project": true,
+    ".idea": true,
+    ".wpilib": true,
+    ".settings": true,
+    ".gradle": true,
+    "build": true,
+    "vendordeps": true,
+    "gradle": true,
+    "**/.classpath": true,
+    "**/.project": true,
+    "**/.settings": true,
+    "**/.factorypath": true
+},
   "wpilib.online": true,
   "wpilib.autoStartRioLog": false
 }

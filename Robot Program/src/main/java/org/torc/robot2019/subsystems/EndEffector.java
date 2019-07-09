@@ -14,7 +14,7 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.program.KMap.KNumeric;
 import org.torc.robot2019.robot.InheritedPeriodic;
-import org.torc.robot2019.robot.Robot;
+import org.torc.robot2019.robot.MainRunTime;
 import org.torc.robot2019.tools.MathExtra;
 import org.torc.robot2019.tools.MotorControllers;
 
@@ -77,7 +77,7 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 		int _pistonClosedSID, CANifier _canifier, GeneralPin _ballSensorPin1, GeneralPin _ballSensorPin2,
 		GeneralPin _hatchPanelSensorPin) {
 		// Add to periodic list
-		Robot.AddToPeriodic(this);
+		MainRunTime.AddToPeriodic(this);
 		
 		endEffectorM = new TalonSRX(_endEffectorMID);
 

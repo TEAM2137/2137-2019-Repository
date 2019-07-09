@@ -3,8 +3,6 @@ package org.torc.robot2019.program;
 import org.torc.robot2019.tools.CommandList;
 import org.torc.robot2019.program.disabledmodecontrols.DisabledModeControl;
 
-import edu.wpi.first.wpilibj.command.Scheduler;
-
 public class DisabledMode {
 
 	private static DisabledModeControl disabledModeCommand; 

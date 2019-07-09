@@ -8,13 +8,12 @@
 package org.torc.robot2019.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.program.KMap.KNumeric;
 import org.torc.robot2019.robot.InheritedPeriodic;
-import org.torc.robot2019.robot.Robot;
+import org.torc.robot2019.robot.MainRunTime;
 import org.torc.robot2019.tools.MathExtra;
 import org.torc.robot2019.tools.MotorControllers;
 
@@ -76,7 +75,7 @@ public class PivotArm extends Subsystem implements InheritedPeriodic {
 
   public PivotArm(int _armPivotID) {
     // Add this class to InheritedPeriodic list
-    Robot.AddToPeriodic(this);
+    MainRunTime.AddToPeriodic(this);
 
     m_armPivot = new TalonSRX(_armPivotID);
 

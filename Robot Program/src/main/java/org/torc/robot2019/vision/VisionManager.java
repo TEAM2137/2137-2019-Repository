@@ -1,7 +1,6 @@
 package org.torc.robot2019.vision;
 
 import java.awt.Dimension;
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
 
