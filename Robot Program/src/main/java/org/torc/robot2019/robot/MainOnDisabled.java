@@ -1,8 +1,7 @@
 package org.torc.robot2019.robot;
 
-import com.AnnotationScanner.Annotations.OnDisabled;
-
-import org.torc.robot2019.OpMode;
+import org.torc.robot2019.annotation_scanner.OpMode;
+import org.torc.robot2019.annotation_scanner.annotations.*;
 import org.torc.robot2019.program.DisabledMode;
 
 @OnDisabled(name = "Main On Disabled")

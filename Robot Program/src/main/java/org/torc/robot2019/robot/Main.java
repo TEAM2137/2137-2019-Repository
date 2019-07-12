@@ -1,6 +1,6 @@
 package org.torc.robot2019.robot;
 
-import org.torc.robot2019.RobotStateTracker;
+import org.torc.robot2019.annotation_scanner.RobotStateTracker;
 
 import edu.wpi.first.wpilibj.RobotBase;
 

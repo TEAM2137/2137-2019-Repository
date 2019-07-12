@@ -1,4 +1,4 @@
-package com.AnnotationScanner.Annotations;
+package org.torc.robot2019.annotation_scanner.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

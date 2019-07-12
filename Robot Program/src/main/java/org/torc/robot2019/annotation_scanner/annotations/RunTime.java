@@ -1,4 +1,4 @@
-package com.AnnotationScanner.Annotations;
+package org.torc.robot2019.annotation_scanner.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface TeleOp {
+public @interface RunTime {
     /**
      * The identifier for determining which item should be instantiated
      */

@@ -1,6 +1,4 @@
-package com.AnnotationScanner.Filters;
-
-import com.AnnotationScanner.Filters.ProjectClassCollector;
+package org.torc.robot2019.annotation_scanner.filters;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;

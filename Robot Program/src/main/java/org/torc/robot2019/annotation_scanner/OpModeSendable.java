@@ -1,6 +1,8 @@
-package org.torc.robot2019;
+package org.torc.robot2019.annotation_scanner;
 
-import com.AnnotationScanner.Filters.OpModeRegistrarManager;
+import org.torc.robot2019.annotation_scanner.annotations.*;
+import org.torc.robot2019.annotation_scanner.filters.OpModeRegistrarManager;
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 @SuppressWarnings("all")

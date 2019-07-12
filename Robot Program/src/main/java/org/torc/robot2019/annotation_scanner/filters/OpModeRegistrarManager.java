@@ -1,10 +1,6 @@
-package com.AnnotationScanner.Filters;
+package org.torc.robot2019.annotation_scanner.filters;
 
-import com.AnnotationScanner.Annotations.Autonomous;
-import com.AnnotationScanner.Annotations.Disabled;
-import com.AnnotationScanner.Annotations.OnDisabled;
-import com.AnnotationScanner.Annotations.RunTime;
-import com.AnnotationScanner.Annotations.TeleOp;
+import org.torc.robot2019.annotation_scanner.annotations.*;
 
 import java.io.File;
 import java.net.URISyntaxException;

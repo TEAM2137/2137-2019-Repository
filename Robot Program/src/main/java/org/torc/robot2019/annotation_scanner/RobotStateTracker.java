@@ -1,4 +1,4 @@
-package org.torc.robot2019;
+package org.torc.robot2019.annotation_scanner;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -6,7 +6,8 @@ import java.lang.reflect.InvocationTargetException;
 import javax.management.RuntimeErrorException;
 
 //Imports
-import com.AnnotationScanner.Filters.OpModeRegistrarManager;
+import org.torc.robot2019.annotation_scanner.annotations.*;
+import org.torc.robot2019.annotation_scanner.filters.OpModeRegistrarManager;
 import org.torc.robot2019.robot.Main;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.hal.FRCNetComm.tInstances;

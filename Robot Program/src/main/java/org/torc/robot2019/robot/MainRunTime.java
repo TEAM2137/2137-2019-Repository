@@ -2,9 +2,8 @@ package org.torc.robot2019.robot;
 
 import java.util.ArrayList;
 
-import com.AnnotationScanner.Annotations.RunTime;
-
-import org.torc.robot2019.OpMode;
+import org.torc.robot2019.annotation_scanner.OpMode;
+import org.torc.robot2019.annotation_scanner.annotations.*;
 import org.torc.robot2019.program.RobotMode;
 
 import edu.wpi.first.wpilibj.command.Command;
