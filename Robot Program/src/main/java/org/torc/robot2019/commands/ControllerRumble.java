@@ -1,3 +1,4 @@
+/*
 package org.torc.robot2019.commands;
 
 import org.torc.robot2019.tools.CLCommand;
@@ -18,7 +19,7 @@ public class ControllerRumble extends CLCommand {
 	 * @param cont
 	 * @param time
 	 * Amount of time (in seconds) for the controller to rumble.
-	 */
+	 *//*
 	public ControllerRumble(GenericHID _controller, double _value, double _time) {
 		controller = _controller;
 		rumbleTime = _time;
@@ -42,3 +43,4 @@ public class ControllerRumble extends CLCommand {
 	}
     
 }
+*/
