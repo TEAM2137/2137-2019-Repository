@@ -16,67 +16,51 @@ public class OpModeSendable {
         System.out.println("Running OpMode Sendable");
         
         System.out.println("Amount of Autonomous Names -- " + opModeRegistrarManager.getListAutonomousNames().size());
-        boolean firstTime = true;
         for(String name : opModeRegistrarManager.getListAutonomousNames()){
-            if(firstTime){
-                this.autoSendable.setDefaultOption(name, opModeRegistrarManager.searchForOpMode(name));
-                System.out.println("Added Autonomous Default: " + name + " " + opModeRegistrarManager.searchForOpMode(name).getName());
-                firstTime = false;
-            }
-
             this.autoSendable.addOption(name, opModeRegistrarManager.searchForOpMode(name));
         }
 
         System.out.println("Amount of TeleOp -- " + opModeRegistrarManager.getListTeleOpNames().size());
-        firstTime = true;
         for(String name : opModeRegistrarManager.getListTeleOpNames()){
-            if(firstTime){
-                this.teleSendable.setDefaultOption(name, opModeRegistrarManager.searchForOpMode(name));
-                System.out.println("Added TeleOp Default: " + name + " " + opModeRegistrarManager.searchForOpMode(name).getName());
-                firstTime = false;
-            }
-
             this.teleSendable.addOption(name, opModeRegistrarManager.searchForOpMode(name));
         }
 
         System.out.println("Amount of Disabled -- " + opModeRegistrarManager.getListOnDisabledNames().size());
-        firstTime = true;
         for(String name : opModeRegistrarManager.getListOnDisabledNames()){
-            if(firstTime){
-                this.onDisabledSendable.setDefaultOption(name, opModeRegistrarManager.searchForOpMode(name));
-                System.out.println("Added Disabled Default: " + name + " " + opModeRegistrarManager.searchForOpMode(name).getName());
-                firstTime = false;
-            }
-
             this.onDisabledSendable.addOption(name, opModeRegistrarManager.searchForOpMode(name));
         }
 
         System.out.println("Amount of Run Time -- " + opModeRegistrarManager.getListRunTimeNames().size());
-        firstTime = true;
         for(String name : opModeRegistrarManager.getListRunTimeNames()){
-            if(firstTime){
-                this.runTimeSendable.setDefaultOption(name, opModeRegistrarManager.searchForOpMode(name));
-                System.out.println("Added RunTime Default: " + name + " " + opModeRegistrarManager.searchForOpMode(name).getName());
-                firstTime = false;
-            }
-
             this.runTimeSendable.addOption(name, opModeRegistrarManager.searchForOpMode(name));
         }
     }
 
     public Class getAutoSendableCurrentVal(){
-        return this.autoSendable.getSelected();
+        if(this.autoSendable.getSelected() != null)
+            return this.autoSendable.getSelected();
+        else
+            return DefaultAutonomous.class;    
     }
 
     public Class getTeleSendableCurrentVal(){
-        return this.teleSendable.getSelected();
+        if(this.teleSendable.getSelected() != null)
+            return this.teleSendable.getSelected();
+        else
+            return DefaultTeleOp.class;    
     }
     
     public Class getOnDisabledSendableCurrentVal(){
-        return this.onDisabledSendable.getSelected();
+        if(this.onDisabledSendable.getSelected() != null)
+            return this.onDisabledSendable.getSelected();
+        else
+            return DefaultOnDisbaled.class;
     }
 
     public Class getRunTimeCurrentVal(){
-        return this.runTimeSendable.getSelected();
+        if(this.runTimeSendable.getSelected() != null)
+            return this.runTimeSendable.getSelected();
+        else
+            return DefaultRunTime.class;
     }
 }

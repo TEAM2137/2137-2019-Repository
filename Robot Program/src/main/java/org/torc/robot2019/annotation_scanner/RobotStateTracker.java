@@ -71,7 +71,7 @@ public class RobotStateTracker extends RobotBase {
         //    System.out.println("Run Time Op Mode Error While Loading the Class For The First Time");
         //}
 
-        while (!requestStop) {
+        while (!Thread.interrupted()) {
             try {
                 if (checkForOpModeStateChange()) {
                     this.callINIT(true);

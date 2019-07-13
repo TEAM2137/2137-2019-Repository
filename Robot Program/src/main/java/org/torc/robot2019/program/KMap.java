@@ -135,11 +135,9 @@ public class KMap {
 
         if (CurrentRobotType == RobotType.Competition) {
             return _constant.competitionValue;
-        }
-        else if (CurrentRobotType == RobotType.Practice) {
+        } else if (CurrentRobotType == RobotType.Practice) {
             return _constant.practiceValue;
-        }
-        else {
+        } else {
             System.out.printf("GetKNumeric: Warning! RobotType \"%s\" not an " +
             "implemented RobotType!!. Returning comp value...", CurrentRobotType.name());
             return _constant.competitionValue;
