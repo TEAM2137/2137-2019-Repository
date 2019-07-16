@@ -5,7 +5,6 @@ import com.ctre.phoenix.CANifier.GeneralPin;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import org.torc.robot2019.subsystems.ElevatorArmManager;
-import org.torc.robot2019.commands.ControllerRumble;
 import org.torc.robot2019.commands.GPPickup;
 import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.program.RobotMap;
@@ -377,8 +376,6 @@ public class TeleopDrive extends CLCommand {
                 new ControllerRumble(TORCControls.GetDriverController(), 0.5, 0.5).start();
                 new ControllerRumble(TORCControls.GetOperatorController(), 0.5, 0.5).start();
                 */
-                TORCControls.SetControllerRumbleTime(Controllers.kDriver, 0.5, 0.5);
-                TORCControls.SetControllerRumbleTime(Controllers.kOperator, 0.5, 0.5);
             }
         }
 
