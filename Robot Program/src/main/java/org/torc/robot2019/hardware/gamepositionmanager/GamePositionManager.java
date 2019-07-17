@@ -1,8 +1,8 @@
-package org.torc.robot2019.subsystems.gamepositionmanager;
+package org.torc.robot2019.hardware.gamepositionmanager;
 
-import org.torc.robot2019.subsystems.ElevatorArmManager;
-import org.torc.robot2019.subsystems.EndEffector;
-import org.torc.robot2019.subsystems.gamepositionmanager.GPSingle;
+import org.torc.robot2019.hardware.ElevatorArmManager;
+import org.torc.robot2019.hardware.EndEffector;
+import org.torc.robot2019.hardware.gamepositionmanager.GPSingle;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 

@@ -1,13 +1,13 @@
 package org.torc.robot2019.commands;
 
-import org.torc.robot2019.subsystems.Elevator;
-import org.torc.robot2019.subsystems.EndEffector;
-import org.torc.robot2019.subsystems.PivotArm;
-import org.torc.robot2019.subsystems.EndEffector.SolenoidStates;
-import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
-import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.GPeiceTarget;
-import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.GamePositions;
-import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.RobotSides;
+import org.torc.robot2019.hardware.Elevator;
+import org.torc.robot2019.hardware.EndEffector;
+import org.torc.robot2019.hardware.PivotArm;
+import org.torc.robot2019.hardware.EndEffector.SolenoidStates;
+import org.torc.robot2019.hardware.gamepositionmanager.GamePositionManager;
+import org.torc.robot2019.hardware.gamepositionmanager.GamePositionManager.GPeiceTarget;
+import org.torc.robot2019.hardware.gamepositionmanager.GamePositionManager.GamePositions;
+import org.torc.robot2019.hardware.gamepositionmanager.GamePositionManager.RobotSides;
 
 import org.torc.robot2019.tools.CLCommand;
 

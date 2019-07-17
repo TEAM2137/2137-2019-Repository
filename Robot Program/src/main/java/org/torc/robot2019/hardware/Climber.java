@@ -1,4 +1,4 @@
-package org.torc.robot2019.subsystems;
+package org.torc.robot2019.hardware;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;

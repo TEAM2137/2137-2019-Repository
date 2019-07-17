@@ -5,14 +5,12 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package org.torc.robot2019.subsystems;
+package org.torc.robot2019.hardware;
 
 import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.program.KMap.KNumeric;
 import org.torc.robot2019.robot.InheritedPeriodic;
 import org.torc.robot2019.robot.MainRunTime;
-import org.torc.robot2019.subsystems.Elevator;
-import org.torc.robot2019.subsystems.PivotArm;
 import org.torc.robot2019.tools.CLCommand;
 
 import edu.wpi.first.wpilibj.command.Subsystem;

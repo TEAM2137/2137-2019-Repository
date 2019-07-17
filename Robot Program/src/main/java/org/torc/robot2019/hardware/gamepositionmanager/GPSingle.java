@@ -1,4 +1,4 @@
-package org.torc.robot2019.subsystems.gamepositionmanager;
+package org.torc.robot2019.hardware.gamepositionmanager;
 
 /** Defines a singular game position, 
  * used mostly by the GamePositionManager class. */

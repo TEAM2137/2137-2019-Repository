@@ -2,15 +2,15 @@ package org.torc.robot2019.program;
 
 import com.ctre.phoenix.CANifier;
 
-import org.torc.robot2019.subsystems.ElevatorArmManager;
+import org.torc.robot2019.hardware.ElevatorArmManager;
 import org.torc.robot2019.commands.VisionCorrector;
-import org.torc.robot2019.subsystems.BasicDriveTrain;
-import org.torc.robot2019.subsystems.Climber;
-import org.torc.robot2019.subsystems.Elevator;
-import org.torc.robot2019.subsystems.EndEffector;
-import org.torc.robot2019.subsystems.PivotArm;
-import org.torc.robot2019.subsystems.Pneumatics;
-import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
+import org.torc.robot2019.hardware.BasicDriveTrain;
+import org.torc.robot2019.hardware.Climber;
+import org.torc.robot2019.hardware.Elevator;
+import org.torc.robot2019.hardware.EndEffector;
+import org.torc.robot2019.hardware.PivotArm;
+import org.torc.robot2019.hardware.Pneumatics;
+import org.torc.robot2019.hardware.gamepositionmanager.GamePositionManager;
 
 
 /**

@@ -1,4 +1,4 @@
-package org.torc.robot2019.subsystems;
+package org.torc.robot2019.hardware;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.revrobotics.CANSparkMax;

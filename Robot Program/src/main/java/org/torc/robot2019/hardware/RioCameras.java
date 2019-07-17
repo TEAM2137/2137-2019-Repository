@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package org.torc.robot2019.subsystems;
+package org.torc.robot2019.hardware;
 
 import org.opencv.core.Mat;
 import org.opencv.core.Size;

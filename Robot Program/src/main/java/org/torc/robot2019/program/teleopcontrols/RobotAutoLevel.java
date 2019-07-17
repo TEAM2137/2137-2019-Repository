@@ -7,8 +7,8 @@
 
 package org.torc.robot2019.program.teleopcontrols;
 
-import org.torc.robot2019.subsystems.BasicDriveTrain;
-import org.torc.robot2019.subsystems.Climber;
+import org.torc.robot2019.hardware.BasicDriveTrain;
+import org.torc.robot2019.hardware.Climber;
 import org.torc.robot2019.tools.CLCommand;
 
 public class RobotAutoLevel extends CLCommand {

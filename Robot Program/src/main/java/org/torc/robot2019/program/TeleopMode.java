@@ -1,7 +1,8 @@
 package org.torc.robot2019.program;
 
 import org.torc.robot2019.program.teleopcontrols.TeleopDrive;
-import org.torc.robot2019.subsystems.EndEffector.SolenoidStates;
+import org.torc.robot2019.hardware.EndEffector.SolenoidStates;
+import org.torc.robot2019.program.RobotMap;
 
 public class TeleopMode {
 	

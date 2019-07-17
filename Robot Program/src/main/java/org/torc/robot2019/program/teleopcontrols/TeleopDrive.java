@@ -2,7 +2,7 @@ package org.torc.robot2019.program.teleopcontrols;
 
 import com.revrobotics.CANSparkMax.IdleMode;
 
-import org.torc.robot2019.subsystems.ElevatorArmManager;
+import org.torc.robot2019.hardware.ElevatorArmManager;
 import org.torc.robot2019.commands.GPPickup;
 import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.program.RobotMap;
@@ -11,24 +11,24 @@ import org.torc.robot2019.program.KMap.KNumeric;
 import org.torc.robot2019.program.TORCControls.ControllerInput;
 import org.torc.robot2019.program.TORCControls.Controllers;
 import org.torc.robot2019.program.TORCControls.InputState;
-import org.torc.robot2019.subsystems.BasicDriveTrain;
-import org.torc.robot2019.subsystems.Climber;
-import org.torc.robot2019.subsystems.Elevator;
-import org.torc.robot2019.subsystems.EndEffector;
-import org.torc.robot2019.subsystems.Elevator.ElevatorPositions;
-import org.torc.robot2019.subsystems.EndEffector.EndEffectorPositions;
-import org.torc.robot2019.subsystems.EndEffector.SolenoidStates;
-import org.torc.robot2019.subsystems.PivotArm;
-import org.torc.robot2019.subsystems.PivotArm.PivotArmPositions;
-import org.torc.robot2019.subsystems.PivotArm.PivotArmSides;
+import org.torc.robot2019.hardware.BasicDriveTrain;
+import org.torc.robot2019.hardware.Climber;
+import org.torc.robot2019.hardware.Elevator;
+import org.torc.robot2019.hardware.EndEffector;
+import org.torc.robot2019.hardware.Elevator.ElevatorPositions;
+import org.torc.robot2019.hardware.EndEffector.EndEffectorPositions;
+import org.torc.robot2019.hardware.EndEffector.SolenoidStates;
+import org.torc.robot2019.hardware.PivotArm;
+import org.torc.robot2019.hardware.PivotArm.PivotArmPositions;
+import org.torc.robot2019.hardware.PivotArm.PivotArmSides;
 import org.torc.robot2019.tools.CLCommand;
 import org.torc.robot2019.tools.LimelightControl;
-import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager;
+import org.torc.robot2019.hardware.gamepositionmanager.GamePositionManager;
 import org.torc.robot2019.tools.MathExtra;
 import org.torc.robot2019.tools.LimelightControl.LightMode;
-import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.GPeiceTarget;
-import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.GamePositions;
-import org.torc.robot2019.subsystems.gamepositionmanager.GamePositionManager.RobotSides;
+import org.torc.robot2019.hardware.gamepositionmanager.GamePositionManager.GPeiceTarget;
+import org.torc.robot2019.hardware.gamepositionmanager.GamePositionManager.GamePositions;
+import org.torc.robot2019.hardware.gamepositionmanager.GamePositionManager.RobotSides;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -388,7 +388,7 @@ public class TeleopDrive extends CLCommand {
     }
 
     // Called when another command which requires one or more of the same
-    // subsystems is scheduled to run
+    // hardware is scheduled to run
     @Override
     protected void interrupted() {
     }

@@ -1,14 +1,12 @@
 package org.torc.robot2019.hardware;
 
-import java.util.HashMap;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
 import org.torc.robot2019.functions.FileLogger;
 import org.torc.robot2019.functions.Range;
+import org.torc.robot2019.functions.RobotConfig.RobotBases;
 
-public class CustomDrive2019 {
+public class BaseDrive {
 
     public MotorType motorType = MotorType.kBrushless;
 
@@ -44,11 +42,7 @@ public class CustomDrive2019 {
     CANSparkMax leftMotor1, leftMotor2, leftMotor3, rightMotor1, rightMotor2, rightMotor3;
     FileLogger fileLogger;
 
-    enum RobotBases {
-        DEEP_SPACE_2019, POWER_UP_2018, STEAM_WORKS_2017
-    }
-
-    public CustomDrive2019() {
+    public BaseDrive() {
         // Place your code here
     }
 
@@ -206,9 +200,20 @@ public class CustomDrive2019 {
             leftMotor3.set(checkMotorSpeed(-leftSpeed)); 
     }
 
-    public void POVDrive(double joyStickY, double joyStickX){
-        setLeftMotorPower(-joyStickY + joyStickX);
-        setRightMotorPower(-joyStickY - joyStickX);
+    public void POVDrive(double leftJoyStickY, double rightJoyStickX){
+        setLeftMotorPower(-leftJoyStickY + rightJoyStickX);
+        setRightMotorPower(-leftJoyStickY - rightJoyStickX);
     }
 
+    public void MecanumDrive(double leftJoyStickY, double leftJoyStickX, double rightJoyStickX){
+        if (rightMotor1 != null)
+            rightMotor1.set(checkMotorSpeed(leftJoyStickX + -leftJoyStickY + rightJoyStickX));
+        if (rightMotor2 != null)    
+            rightMotor2.set(checkMotorSpeed(-leftJoyStickX + -leftJoyStickY + rightJoyStickX));
+
+        if (leftMotor1 != null)
+            leftMotor1.set(checkMotorSpeed(-leftJoyStickX + -leftJoyStickY + -rightJoyStickX));
+        if (leftMotor2 != null)
+            leftMotor2.set(checkMotorSpeed(-leftJoyStickX + -leftJoyStickY + -rightJoyStickX));
+    }
 }
