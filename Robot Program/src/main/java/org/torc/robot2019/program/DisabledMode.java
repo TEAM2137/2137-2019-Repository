@@ -1,6 +1,6 @@
 package org.torc.robot2019.program;
 
-import org.torc.robot2019.tools.CommandList;
+import org.torc.robot2019.functions.CommandList;
 import org.torc.robot2019.program.disabledmodecontrols.DisabledModeControl;
 
 public class DisabledMode {

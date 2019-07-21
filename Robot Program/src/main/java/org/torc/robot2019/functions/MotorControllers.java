@@ -1,4 +1,4 @@
-package org.torc.robot2019.tools;
+package org.torc.robot2019.functions;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;

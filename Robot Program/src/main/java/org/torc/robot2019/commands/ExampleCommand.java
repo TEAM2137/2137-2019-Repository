@@ -1,6 +1,6 @@
 package org.torc.robot2019.commands;
 
-import org.torc.robot2019.tools.CLCommand;
+import org.torc.robot2019.functions.CLCommand;
 
 /**
  *

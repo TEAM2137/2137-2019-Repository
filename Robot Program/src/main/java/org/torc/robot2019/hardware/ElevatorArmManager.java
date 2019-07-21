@@ -11,7 +11,7 @@ import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.program.KMap.KNumeric;
 import org.torc.robot2019.robot.InheritedPeriodic;
 import org.torc.robot2019.robot.MainRunTime;
-import org.torc.robot2019.tools.CLCommand;
+import org.torc.robot2019.functions.CLCommand;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 

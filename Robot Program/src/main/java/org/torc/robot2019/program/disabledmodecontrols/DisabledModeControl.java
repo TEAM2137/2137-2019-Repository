@@ -11,9 +11,9 @@ import org.torc.robot2019.program.TORCControls;
 import org.torc.robot2019.program.TORCControls.ControllerInput;
 import org.torc.robot2019.program.TORCControls.Controllers;
 import org.torc.robot2019.program.TORCControls.InputState;
-import org.torc.robot2019.tools.CLCommand;
-import org.torc.robot2019.tools.LimelightControl;
-import org.torc.robot2019.tools.LimelightControl.LightMode;
+import org.torc.robot2019.functions.CLCommand;
+import org.torc.robot2019.functions.LimelightControl;
+import org.torc.robot2019.functions.LimelightControl.LightMode;
 
 public class DisabledModeControl extends CLCommand {
   public DisabledModeControl() {

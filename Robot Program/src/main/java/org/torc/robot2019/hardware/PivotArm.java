@@ -14,8 +14,8 @@ import org.torc.robot2019.program.KMap;
 import org.torc.robot2019.program.KMap.KNumeric;
 import org.torc.robot2019.robot.InheritedPeriodic;
 import org.torc.robot2019.robot.MainRunTime;
-import org.torc.robot2019.tools.MathExtra;
-import org.torc.robot2019.tools.MotorControllers;
+import org.torc.robot2019.functions.MathExtra;
+import org.torc.robot2019.functions.MotorControllers;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;

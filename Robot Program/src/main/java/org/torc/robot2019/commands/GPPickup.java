@@ -9,7 +9,7 @@ import org.torc.robot2019.hardware.gamepositionmanager.GamePositionManager.GPeic
 import org.torc.robot2019.hardware.gamepositionmanager.GamePositionManager.GamePositions;
 import org.torc.robot2019.hardware.gamepositionmanager.GamePositionManager.RobotSides;
 
-import org.torc.robot2019.tools.CLCommand;
+import org.torc.robot2019.functions.CLCommand;
 
 public class GPPickup extends CLCommand {
 

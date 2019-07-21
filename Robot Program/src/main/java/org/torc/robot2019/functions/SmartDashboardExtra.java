@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package org.torc.robot2019.tools;
+package org.torc.robot2019.functions;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 

@@ -2,8 +2,8 @@ package org.torc.robot2019.commands;
 
 import java.util.ArrayList;
 
-import org.torc.robot2019.tools.CLCommand;
-import org.torc.robot2019.tools.LimelightControl;
+import org.torc.robot2019.functions.CLCommand;
+import org.torc.robot2019.functions.LimelightControl;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;

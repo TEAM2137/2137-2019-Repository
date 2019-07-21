@@ -1,7 +1,7 @@
 package org.torc.robot2019.commands;
 
-import org.torc.robot2019.tools.CLCommand;
-import org.torc.robot2019.tools.ControllerExtra;
+import org.torc.robot2019.functions.CLCommand;
+import org.torc.robot2019.functions.ControllerExtra;
 
 import edu.wpi.first.wpilibj.GenericHID;
 

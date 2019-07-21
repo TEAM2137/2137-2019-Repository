@@ -9,18 +9,30 @@ public class ArmManager {
     private double dblJoyStickDeadZone  = 0.1;
     private double dblMaxArmPosition    = 0;
     private double dblMinArmPosition    = 0;
+    private double dblMaxPowerOutput    = 1;
     private double dblCurrentTarget     = 0;
     private double dblLastTarget        = 0;
-    private double dblGearRatio         = 0;
+    private double dblGearRatio         = 1;
 
     private CANPIDController canPIDController;
     private CANSparkMax canSparkMax;
+    private ControlType controlType;
 
     public ArmManager(double max, double min, CANSparkMax sparkMax){
         this.dblMaxArmPosition = max;
         this.dblMinArmPosition = min;
 
         this.canPIDController = sparkMax.getPIDController();
+        this.controlType = ControlType.kPosition;
+        this.canSparkMax = sparkMax;
+    }
+
+    public ArmManager(double max, double min, CANSparkMax sparkMax, ControlType _controlType){
+        this.dblMaxArmPosition = max;
+        this.dblMinArmPosition = min;
+
+        this.canPIDController = sparkMax.getPIDController();
+        this.controlType = _controlType;
         this.canSparkMax = sparkMax;
     }
 
@@ -53,7 +65,7 @@ public class ArmManager {
      */
     public void ArmManagerLoop(){
         if(this.dblCurrentTarget != this.dblLastTarget)
-            this.canPIDController.setReference(this.dblCurrentTarget * this.dblGearRatio, ControlType.kPosition);
+            this.canPIDController.setReference(this.dblCurrentTarget * this.dblGearRatio, this.controlType);
 
         this.dblLastTarget = this.dblCurrentTarget;
     }
@@ -64,8 +76,8 @@ public class ArmManager {
      * If you move the controller the PID will be overrided
      */
     public void ArmManagerLoop(double joyStickVal){
-        if(joyStickVal > dblJoyStickDeadZone)
-            this.canSparkMax.set(Range.clip(joyStickVal, -1, 1));
+        if(joyStickVal > dblJoyStickDeadZone && joyStickVal < -dblJoyStickDeadZone)
+            this.canSparkMax.set(Range.clip(joyStickVal, -this.dblMaxPowerOutput, this.dblMaxPowerOutput));
 
         if(this.dblCurrentTarget != this.dblLastTarget)
             this.canPIDController.setReference(this.dblCurrentTarget * this.dblGearRatio, ControlType.kPosition);
@@ -120,5 +132,38 @@ public class ArmManager {
      */
     public CANSparkMax getMotor(){
         return this.canSparkMax;
+    }
+
+    /**
+     * This is the value where we start caring and using it as input
+     * @param dead -- The value of the JoyStickDeadZone
+     */
+    public void setJoyStickDeadBand(double dead){
+        this.dblJoyStickDeadZone = dead;
+    }
+
+    /**
+     * This is the value where we start caring and using it as input
+     * @return -- The value of the Dead Band
+     */
+    public double getJoyStickDeadBand(){
+        return this.dblJoyStickDeadZone;
+    }
+
+    /**
+     * The fastest the motor can go
+     * @param speed -- The max speed
+     */
+    public void setMaxSpeed(double speed){
+        if(speed > 1) this.dblMaxPowerOutput = 1;
+        else this.dblMaxPowerOutput = speed;
+    }
+
+    /**
+     * Get the dastest the motor can go
+     * @return -- The value of Max Power
+     */
+    public double getMaxSpeed(){
+        return this.dblMaxPowerOutput;
     }
 }
