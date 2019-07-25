@@ -21,25 +21,25 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class RobotStateTracker extends RobotBase {
 
     public enum CompState {
-        kAutonomous, kDisabled, kTeleOp, kTest, kNone, kRunning
+        kAutonomous, kDisabled, kTeleOp, kNone, kTest
     }
 
-    OpModeRegistrarManager opModeRegistrarManager;
+    private OpModeRegistrarManager opModeRegistrarManager;
 
-    public CompState m_LastOpModeState = CompState.kNone;
-    public CompState m_CurrentOpModeState = CompState.kNone;
+    private CompState m_LastOpModeState = CompState.kNone;
+    private CompState m_CurrentOpModeState = CompState.kNone;
 
-    public OpModeSendable opModeSendable;
+    private OpModeSendable opModeSendable;
 
-    public boolean requestStop = false;
+    private OpMode opMode;
+    private OpMode runTimeOpMode;
 
-    public Class lastAutoSendable;
-    public Class lastTeleSendable;
-    public Class lastRunTimeSendable;
-    public Class lastOnDisabledSendable;
+    private Class lastRunTimeOpMode;
 
-    protected OpMode opMode;
-    protected OpMode runTimeOpMode;
+    protected Thread runningThread;
+    private Thread runTimeThread;
+    private Runnable runTimeRunnable;
+    private Runnable runningRunnable;
 
     public RobotStateTracker() {
         HAL.report(tResourceType.kResourceType_Framework, tInstances.kFramework_Timed);
@@ -57,37 +57,63 @@ public class RobotStateTracker extends RobotBase {
         LiveWindow.updateValues();
         Shuffleboard.update();
 
-        //try {
-            // Class<?> clazz = (Class) opModeSendable.getRunTimeCurrentVal();
-            // runTimeOpMode = (OpMode) clazz.newInstance();
-            Class<?> clazz = opModeSendable.getRunTimeCurrentVal();
-            
-            //Constructor<?> ctor = clazz.getConstructor(clazz.getClass());
-            //Object object = ctor.newInstance(new Object[] {});
-        //} 
-        //catch(IllegalArgumentException | InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException e1) {
-        //catch(IllegalArgumentException | SecurityException e1) {
-        //    e1.printStackTrace();
-        //    System.out.println("Run Time Op Mode Error While Loading the Class For The First Time");
-        //}
+        try {
+            runTimeRunnable = (OpMode) opModeSendable.getRunTimeCurrentVal().newInstance();
+            runTimeThread = new Thread(runTimeRunnable);
+            runTimeThread.start();
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
 
         while (!Thread.interrupted()) {
-            try {
-                if (checkForOpModeStateChange()) {
-                    this.callINIT(true);
-                } else {
-                    this.callINIT(false);
+            LiveWindow.setEnabled(false);
+            Shuffleboard.disableActuatorWidgets();
+
+            if (checkForOpModeStateChange()) {
+                try {
+                    runningRunnable = getRunningOpModeClass();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("Error With Loading Selected Class in RobotStateTracker");
+                runningThread.interrupt();
+            }
+
+            if (!runningThread.isAlive()) {
+                runningThread = new Thread(runningRunnable);
+                runningThread.start();
+            }
+
+            if (opModeSendable.getRunTimeCurrentVal() != lastRunTimeOpMode) {
+                try {
+                    runTimeRunnable = (OpMode) opModeSendable.getRunTimeCurrentVal().newInstance();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                runTimeThread.interrupt();
+            }
+
+            if(!runTimeThread.isAlive()){
+                runTimeThread = new Thread(runTimeRunnable);
+                runTimeThread.start();
             }
 
             sendInfoToDS();
-
             SmartDashboard.updateValues();
             LiveWindow.updateValues();
             Shuffleboard.update();
+        }
+    }
+
+    protected OpMode getRunningOpModeClass() throws InstantiationException, IllegalAccessException {
+        switch(m_CurrentOpModeState){
+            case kAutonomous:
+                return (OpMode) opModeSendable.getAutoSendableCurrentVal().newInstance();
+            
+            case kTeleOp:
+                return (OpMode) opModeSendable.getTeleSendableCurrentVal().newInstance();
+
+            default:
+                return (OpMode) opModeSendable.getOnDisabledSendableCurrentVal().newInstance();
         }
     }
 
@@ -109,59 +135,6 @@ public class RobotStateTracker extends RobotBase {
 
                 break;
         }
-    }
-
-    protected void callINIT(boolean USEONLYINROBOTSTATETRACKER) throws InstantiationException, IllegalAccessException {
-        LiveWindow.setEnabled(false);
-        Shuffleboard.disableActuatorWidgets();
-
-        if(opModeSendable.getAutoSendableCurrentVal() != lastAutoSendable){
-            if(m_CurrentOpModeState == CompState.kAutonomous){
-                USEONLYINROBOTSTATETRACKER = true;
-            }
-        }
-        
-        if (opModeSendable.getTeleSendableCurrentVal() != lastTeleSendable){
-            if(m_CurrentOpModeState == CompState.kTeleOp){
-                USEONLYINROBOTSTATETRACKER = true;
-            }
-        } 
-        
-        if (opModeSendable.getOnDisabledSendableCurrentVal() != lastOnDisabledSendable){
-            if(m_CurrentOpModeState == CompState.kDisabled){
-                USEONLYINROBOTSTATETRACKER = true;
-            }
-        }
-        
-        if (opModeSendable.getRunTimeCurrentVal() != lastRunTimeSendable){
-            this.runTimeOpMode = (OpMode) opModeSendable.getRunTimeCurrentVal().newInstance();
-            this.runTimeOpMode.INIT();
-        }
-
-        if (USEONLYINROBOTSTATETRACKER) {
-            if (m_CurrentOpModeState == CompState.kAutonomous) {
-                this.opMode = (OpMode) opModeSendable.getAutoSendableCurrentVal().newInstance();
-                this.opMode.INIT();
-            } else if (m_CurrentOpModeState == CompState.kTeleOp) {
-                this.opMode = (OpMode) opModeSendable.getTeleSendableCurrentVal().newInstance();
-                this.opMode.INIT();
-            } else if (m_CurrentOpModeState == CompState.kDisabled) {
-                this.opMode = (OpMode) opModeSendable.getOnDisabledSendableCurrentVal().newInstance();
-                this.opMode.INIT();
-            } 
-        } else {
-            if (m_CurrentOpModeState == CompState.kAutonomous || 
-                m_CurrentOpModeState == CompState.kTeleOp ||
-                m_CurrentOpModeState == CompState.kDisabled) {
-                this.opMode.LOOP();
-            }
-            this.runTimeOpMode.LOOP();        
-        }
-
-        lastAutoSendable = opModeSendable.getAutoSendableCurrentVal();
-        lastTeleSendable = opModeSendable.getTeleSendableCurrentVal();
-        lastOnDisabledSendable = opModeSendable.getOnDisabledSendableCurrentVal();
-        lastRunTimeSendable = opModeSendable.getRunTimeCurrentVal();
     }
 
     public boolean checkForOpModeStateChange() {

@@ -21,18 +21,17 @@ public class MainRunTime extends OpMode {
     }
     
     @Override
-    public void INIT() {
+    public void run() {
 		RobotMode.Init();
-    }
 
-    @Override
-    public void LOOP() {
-		// Manually call the Scheduler "run" command.
-		Scheduler.getInstance().run();
-		// Call all perodic funtions in PeriodicList
-		for(InheritedPeriodic per : PeriodicList) {
-			per.Periodic();
-		}
-		RobotMode.Periodic();
+        while(opModeIsActive()){
+            // Manually call the Scheduler "run" command.
+            Scheduler.getInstance().run();
+            // Call all perodic funtions in PeriodicList
+            for(InheritedPeriodic per : PeriodicList) {
+                per.Periodic();
+            }
+            RobotMode.Periodic();
+        }
     }
 }

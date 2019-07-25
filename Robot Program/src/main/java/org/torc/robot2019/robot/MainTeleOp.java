@@ -9,13 +9,11 @@ import org.torc.robot2019.program.TeleopMode;
 public class MainTeleOp extends OpMode {
 
     @Override
-    public void INIT() {
+    public void run() {
 		TeleopMode.Init();
-    }
 
-    @Override
-    public void LOOP() {
-		TeleopMode.Periodic();
+        while(opModeIsActive()){
+            TeleopMode.Periodic();
+        }
     }
-
 }

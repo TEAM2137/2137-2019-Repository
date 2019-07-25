@@ -8,13 +8,11 @@ import org.torc.robot2019.program.DisabledMode;
 public class MainOnDisabled extends OpMode {
 
     @Override
-    public void INIT() {
-		DisabledMode.Init();
-    }
+    public void run() {
+        DisabledMode.Init();
 
-    @Override
-    public void LOOP() {
-		DisabledMode.Periodic();
+        while(opModeIsActive()){
+            DisabledMode.Periodic();
+        }
     }
-
 }

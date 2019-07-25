@@ -8,12 +8,7 @@ import org.torc.robot2019.annotation_scanner.annotations.TeleOp;
 public class DefaultTeleOp extends OpMode{
 
     @Override
-    public void INIT() {
-
-    }
-
-    @Override
-    public void LOOP() {
+    public void run() {
 
     }
 

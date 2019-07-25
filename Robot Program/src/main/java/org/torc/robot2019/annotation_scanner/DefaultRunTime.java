@@ -9,12 +9,7 @@ import org.torc.robot2019.annotation_scanner.annotations.RunTime;
 public class DefaultRunTime extends OpMode{
 
     @Override
-    public void INIT() {
-
-    }
-
-    @Override
-    public void LOOP() {
+    public void run() {
 
     }
 

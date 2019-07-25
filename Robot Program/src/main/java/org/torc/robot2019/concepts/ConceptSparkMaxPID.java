@@ -7,8 +7,6 @@ import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 @TeleOp(name = "Concept Spark Max PID")
@@ -34,7 +32,7 @@ public class ConceptSparkMaxPID extends OpMode {
     boolean firstTimeRunning = true;
 
     @Override
-    public void INIT() {
+    public void run(){
         // PID coefficients
         kLeftP = 0.1;
         kLeftI = 1e-4;
@@ -165,96 +163,95 @@ public class ConceptSparkMaxPID extends OpMode {
         m_pidController_right.setIZone(kRightIZ);
         m_pidController_right.setFF(kRightFF);
         m_pidController_right.setOutputRange(kMinOutput, kMaxOutput);
-    }
 
-    @Override
-    public void LOOP() {
-        // read PID coefficients from SmartDashboard
-        double leftP = SmartDashboard.getNumber("P Gain Left", 0);
-        double leftI = SmartDashboard.getNumber("I Gain Left", 0);
-        double leftD = SmartDashboard.getNumber("D Gain Left", 0);
-        double leftIZ = SmartDashboard.getNumber("I Zone Left", 0);
-        double leftFF = SmartDashboard.getNumber("Feed Forward Left", 0);
+        while(opModeIsActive()){
+            // read PID coefficients from SmartDashboard
+            double leftP = SmartDashboard.getNumber("P Gain Left", 0);
+            double leftI = SmartDashboard.getNumber("I Gain Left", 0);
+            double leftD = SmartDashboard.getNumber("D Gain Left", 0);
+            double leftIZ = SmartDashboard.getNumber("I Zone Left", 0);
+            double leftFF = SmartDashboard.getNumber("Feed Forward Left", 0);
 
-        double rightP = SmartDashboard.getNumber("P Gain Right", 0);
-        double rightI = SmartDashboard.getNumber("I Gain Right", 0);
-        double rightD = SmartDashboard.getNumber("D Gain Right", 0);
-        double rightIZ = SmartDashboard.getNumber("I Zone Right", 0);
-        double rightFF = SmartDashboard.getNumber("Feed Forward Right", 0);
+            double rightP = SmartDashboard.getNumber("P Gain Right", 0);
+            double rightI = SmartDashboard.getNumber("I Gain Right", 0);
+            double rightD = SmartDashboard.getNumber("D Gain Right", 0);
+            double rightIZ = SmartDashboard.getNumber("I Zone Right", 0);
+            double rightFF = SmartDashboard.getNumber("Feed Forward Right", 0);
 
-        double max = SmartDashboard.getNumber("Max Output", 0);
-        double min = SmartDashboard.getNumber("Min Output", 0);
-        double inches = SmartDashboard.getNumber("Set Inches", 0);
-        double wheelDia = SmartDashboard.getNumber("Wheel Dia", 6.0);
+            double max = SmartDashboard.getNumber("Max Output", 0);
+            double min = SmartDashboard.getNumber("Min Output", 0);
+            double inches = SmartDashboard.getNumber("Set Inches", 0);
+            double wheelDia = SmartDashboard.getNumber("Wheel Dia", 6.0);
 
-        // if PID coefficients on SmartDashboard have changed, write new values to
-        // controller
-        if (leftP != kLeftP) {
-            m_pidController_left.setP(leftP);
-            kLeftP = leftP;
-        }
-        if (leftI != kLeftI) {
-            m_pidController_left.setI(leftI);
-            kLeftI = leftI;
-        }
-        if (leftD != kLeftD) {
-            m_pidController_left.setD(leftD);
-            kLeftD = leftD;
-        }
-        if (leftIZ != kLeftIZ) {
-            m_pidController_left.setIZone(leftIZ);
-            kLeftIZ = leftIZ;
-        }
-        if (leftFF != kLeftFF) {
-            m_pidController_left.setFF(leftFF);
-            kLeftFF = leftFF;
-        }
-        if (rightP != kRightP) {
-            m_pidController_right.setP(rightP);
-            kRightP = rightP;
-        }
-        if (rightI != kRightI) {
-            m_pidController_right.setI(rightI);
-            kRightI = rightI;
-        }
-        if (rightD != kRightD) {
-            m_pidController_right.setD(rightD);
-            kRightD = rightD;
-        }
-        if (rightIZ != kRightIZ) {
-            m_pidController_right.setIZone(rightIZ);
-            kRightIZ = rightIZ;
-        }
-        if (rightFF != kRightFF) {
-            m_pidController_right.setFF(rightFF);
-            kRightFF = rightFF;
-        }
-        if ((max != kMaxOutput) || (min != kMinOutput)) {
-            m_pidController_left.setOutputRange(min, max);
-            kMinOutput = min;
-            kMaxOutput = max;
-        }
+            // if PID coefficients on SmartDashboard have changed, write new values to
+            // controller
+            if (leftP != kLeftP) {
+                m_pidController_left.setP(leftP);
+                kLeftP = leftP;
+            }
+            if (leftI != kLeftI) {
+                m_pidController_left.setI(leftI);
+                kLeftI = leftI;
+            }
+            if (leftD != kLeftD) {
+                m_pidController_left.setD(leftD);
+                kLeftD = leftD;
+            }
+            if (leftIZ != kLeftIZ) {
+                m_pidController_left.setIZone(leftIZ);
+                kLeftIZ = leftIZ;
+            }
+            if (leftFF != kLeftFF) {
+                m_pidController_left.setFF(leftFF);
+                kLeftFF = leftFF;
+            }
+            if (rightP != kRightP) {
+                m_pidController_right.setP(rightP);
+                kRightP = rightP;
+            }
+            if (rightI != kRightI) {
+                m_pidController_right.setI(rightI);
+                kRightI = rightI;
+            }
+            if (rightD != kRightD) {
+                m_pidController_right.setD(rightD);
+                kRightD = rightD;
+            }
+            if (rightIZ != kRightIZ) {
+                m_pidController_right.setIZone(rightIZ);
+                kRightIZ = rightIZ;
+            }
+            if (rightFF != kRightFF) {
+                m_pidController_right.setFF(rightFF);
+                kRightFF = rightFF;
+            }
+            if ((max != kMaxOutput) || (min != kMinOutput)) {
+                m_pidController_left.setOutputRange(min, max);
+                kMinOutput = min;
+                kMaxOutput = max;
+            }
 
-        /**
-         * PIDController objects are commanded to a set point using the SetReference()
-         * method.
-         * 
-         * The first parameter is the value of the set point, whose units vary depending
-         * on the control type set in the second parameter.
-         * 
-         * The second parameter is the control type can be set to one of four
-         * parameters: com.revrobotics.ControlType.kDutyCycle
-         * com.revrobotics.ControlType.kPosition com.revrobotics.ControlType.kVelocity
-         * com.revrobotics.ControlType.kVoltage
-         */
+            /**
+             * PIDController objects are commanded to a set point using the SetReference()
+             * method.
+             * 
+             * The first parameter is the value of the set point, whose units vary depending
+             * on the control type set in the second parameter.
+             * 
+             * The second parameter is the control type can be set to one of four
+             * parameters: com.revrobotics.ControlType.kDutyCycle
+             * com.revrobotics.ControlType.kPosition com.revrobotics.ControlType.kVelocity
+             * com.revrobotics.ControlType.kVoltage
+             */
 
-        double revPerInch = (wheelDia * 3.14);
-        double rotations = inches / revPerInch;
-        m_pidController_left.setReference(rotations, ControlType.kPosition);
-        m_pidController_right.setReference(rotations, ControlType.kPosition);
+            double revPerInch = (wheelDia * 3.14);
+            double rotations = inches / revPerInch;
+            m_pidController_left.setReference(rotations, ControlType.kPosition);
+            m_pidController_right.setReference(rotations, ControlType.kPosition);
 
-        SmartDashboard.putNumber("SetPoint Revs", rotations);
-        SmartDashboard.putNumber("ProcessVariable Revs", m_encoder_left.getPosition());
-        SmartDashboard.putNumber("ProcessVariable Revs", m_encoder_right.getPosition());
+            SmartDashboard.putNumber("SetPoint Revs", rotations);
+            SmartDashboard.putNumber("ProcessVariable Revs", m_encoder_left.getPosition());
+            SmartDashboard.putNumber("ProcessVariable Revs", m_encoder_right.getPosition());
+        }
     }
 }

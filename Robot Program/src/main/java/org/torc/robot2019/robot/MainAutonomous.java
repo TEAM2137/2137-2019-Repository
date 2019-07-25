@@ -27,15 +27,14 @@ public class MainAutonomous extends OpMode {
 	 * to the switch structure below with additional strings & commands.
 	 */
     @Override
-    public void INIT() {
+    public void run() {
 		AutonMode.Init();
-    }
     
-    /**
-	 * This function is called periodically during autonomous
-	 */
-    @Override
-    public void LOOP() {
-        AutonMode.Periodic();
+        /**
+	    * This function is called periodically during autonomous
+        */
+        while(opModeIsActive()){
+            AutonMode.Periodic();
+        }
     }
 }

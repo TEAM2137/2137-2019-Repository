@@ -16,23 +16,12 @@ public class ArmManager {
 
     private CANPIDController canPIDController;
     private CANSparkMax canSparkMax;
-    private ControlType controlType;
 
     public ArmManager(double max, double min, CANSparkMax sparkMax){
         this.dblMaxArmPosition = max;
         this.dblMinArmPosition = min;
 
         this.canPIDController = sparkMax.getPIDController();
-        this.controlType = ControlType.kPosition;
-        this.canSparkMax = sparkMax;
-    }
-
-    public ArmManager(double max, double min, CANSparkMax sparkMax, ControlType _controlType){
-        this.dblMaxArmPosition = max;
-        this.dblMinArmPosition = min;
-
-        this.canPIDController = sparkMax.getPIDController();
-        this.controlType = _controlType;
         this.canSparkMax = sparkMax;
     }
 
@@ -65,7 +54,7 @@ public class ArmManager {
      */
     public void ArmManagerLoop(){
         if(this.dblCurrentTarget != this.dblLastTarget)
-            this.canPIDController.setReference(this.dblCurrentTarget * this.dblGearRatio, this.controlType);
+            this.canPIDController.setReference(this.dblCurrentTarget * this.dblGearRatio, ControlType.kPosition);
 
         this.dblLastTarget = this.dblCurrentTarget;
     }
