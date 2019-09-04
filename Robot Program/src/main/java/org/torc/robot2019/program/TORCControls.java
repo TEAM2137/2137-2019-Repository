@@ -1,6 +1,5 @@
 package org.torc.robot2019.program;
 
-import org.torc.robot2019.commands.ControllerRumble;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -196,7 +195,4 @@ public class TORCControls {
         _controller.controller.setRumble(RumbleType.kRightRumble, _val);
     }
 
-    public static void SetControllerRumbleTime(Controllers _controller, double _val, double _time) {
-        new ControllerRumble(_controller.controller, _val, _time).start();
-    }
 }
