@@ -30,8 +30,8 @@ public class EndEffector extends Subsystem implements InheritedPeriodic {
 		 * with no need to use the pivot arm.
 		 */
 		Zero(0),
-		Travel(2077),
-		Climbing(1179),
+		Travel(2019),
+		Climbing(2917),
 		;
 	
 		private int positionValue;
