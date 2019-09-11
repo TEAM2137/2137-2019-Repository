@@ -47,6 +47,8 @@ public class TORCControls {
         A_PogoControl(5, climberController, InputType.Axis), // Right stick Y axis
         /**Pogo-Sticks Auto-adjust enable*/
         B_PogoAuto(10, climberController, InputType.Button), // Right stick push-in
+        /**Pogo-Sticks Auto-adjust TOGGLE */
+        B_PogoAutoToggle(5, climberController, InputType.Button), // Left Bumper
 
         /**Elevator Manual Up-Down Jog */
         A_ElevatorJog(1, operatorController, InputType.Axis),

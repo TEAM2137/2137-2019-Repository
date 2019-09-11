@@ -82,6 +82,12 @@ public class TeleopDrive extends CLCommand {
 
     private int currentLevel = 1;
 
+    private boolean prevPressedAutoLevelToggle = false;
+
+    private boolean autoLevelToggled = false;
+
+    private boolean prevPressedAutoLevelNormal = false;
+
     public TeleopDrive(BasicDriveTrain _driveTrain, GamePositionManager _gpManager,
          PivotArm _pivotArm, Climber _climber, Elevator _elevator, EndEffector _endEffector, 
          ElevatorArmManager _elevArmManager) {
@@ -182,8 +188,19 @@ public class TeleopDrive extends CLCommand {
             KMap.GetKNumeric(KNumeric.DBL_MANTIS_ARM_MAX_PERCENT_OUT);
         RobotMap.S_Climber.setMantisPivotSpeed(mantisPivot);
 
+        if (!prevPressedAutoLevelToggle && TORCControls.GetInput(ControllerInput.B_PogoAutoToggle) >= 1) {
+            autoLevelToggled = !autoLevelToggled;
+        }
+
+        if (prevPressedAutoLevelNormal && !(TORCControls.GetInput(ControllerInput.B_PogoAuto) >= 1)) {
+            autoLevelToggled = false;
+        }
+        
+        prevPressedAutoLevelToggle = TORCControls.GetInput(ControllerInput.B_PogoAutoToggle) >= 1;
+        prevPressedAutoLevelNormal = TORCControls.GetInput(ControllerInput.B_PogoAuto) >= 1;
+
         // Pogo sticks auto control
-        if (TORCControls.GetInput(ControllerInput.B_PogoAuto) >= 1) {
+        if (TORCControls.GetInput(ControllerInput.B_PogoAuto) >= 1 || autoLevelToggled) {
             autoLevelCommand.setApplyPID(true);
             // Set brake idle mode
             driveTrain.setIdleMode(IdleMode.kBrake);
