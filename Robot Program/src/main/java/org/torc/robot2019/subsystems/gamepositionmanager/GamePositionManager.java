@@ -36,7 +36,7 @@ RL1AndHatchPanelPickup(
                      new GPSingle(6804, 2100, 2869), // Rear HatchPanel 1227
                      new GPSingle(6637, 2084, 2917)),// Rear Cargo 1179
 
-        RocketLevel3(new GPSingle(12381, 2041, 1159), // Front HatchPanel 3075
+        RocketLevel3(new GPSingle(12381, 2006, 1159), // Front HatchPanel 3075
                      new GPSingle(18666, 2027, 1295), // Front Cargo 2905
                      new GPSingle(18666, 2094, 2770), // Rear HatchPanel 1326
                      new GPSingle(18666, 2074, 2865)),// Rear Cargo 1231
