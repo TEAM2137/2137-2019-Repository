@@ -1,5 +1,7 @@
 package org.torc.robot2019.robot;
 
+import org.torc.robot2019.annotation.scanner.MultiTeleOp;
+
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -17,6 +19,6 @@ public final class Main {
    * <p>If you change your main robot class, change the parameter type.
    */
   public static void main(String... args) {
-    RobotBase.startRobot(Robot::new);
+    RobotBase.startRobot(MultiTeleOp::new);
   }
 }
