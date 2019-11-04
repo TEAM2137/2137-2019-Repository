@@ -1,6 +1,7 @@
 package org.torc.robot2019.opmodes;
 
 import org.torc.robot2019.annotation.scanner.OpMode;
+import org.torc.robot2019.annotation.scanner.StateMachineInterface;
 import org.torc.robot2019.annotation.scanner.TeleOpFunction;
 
 //Just to note you can not see the annotation code because it is hiden and you have to go
