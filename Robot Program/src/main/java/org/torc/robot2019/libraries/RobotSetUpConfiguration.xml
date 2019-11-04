@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <Setup>
+        <MotorGearReduction>0.5</MotorGearReduction> <comment>This is the gear ratio of the motor gear box</comment>
+        <DriveGearReduction>1</DriveGearReduction> <comment>This is the gear ratio between the gear box and wheel</comment>
+
+        <ReverseLeftMotor1>false</ReverseLeftMotor1>
+        <ReverseLeftMotor2>false</ReverseLeftMotor2>
+        <ReverseRightMotor1>false</ReverseRightMotor1>
+        <ReverseRightMotor2>flase</ReverseRightMotor2>
+
+        <BaseName>DeepSpace2019</BaseName>
+    </Setup>
+
+    <CAN_IDs>
+        <LeftMotor1ID>1</LeftMotor1ID>
+        <LeftMotor2ID>2</LeftMotor2ID>
+        <RightMotor1ID>3</RightMotor1ID>
+        <RightMotor2ID>4</RightMotor2ID>
+    </CAN_IDs>
+</resources>
